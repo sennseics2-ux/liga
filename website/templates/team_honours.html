@@ -1,0 +1,16 @@
+{% if season_honours %}
+<section class="team-honours" aria-labelledby="team-honours-title">
+  <div class="section-heading"><div><div class="eyebrow dark" data-i18n="The trophy cabinet">The trophy cabinet</div><h2 id="team-honours-title" data-i18n="Season honours">Season honours</h2><p data-i18n="Top-three finishes in completed seasons.">Top-three finishes in completed seasons.</p></div></div>
+  <div class="season-honours-grid">
+    {% for honour in season_honours %}
+    <a class="season-honour-card" href="/seasons?season={{ honour.season_id }}">
+      <div class="season-medal medal-{{ honour.medal }}" aria-hidden="true">
+        <span class="medal-ribbon medal-ribbon-left"></span><span class="medal-ribbon medal-ribbon-right"></span>
+        <div class="medal-face"><span class="medal-laurel">❧</span><span class="medal-rank" data-no-i18n>{{ honour.rank }}</span><span class="medal-season" data-no-i18n>{{ honour.season_name }}</span></div>
+      </div>
+      <div class="season-honour-copy"><strong data-i18n="{{ honour.place_label }}">{{ honour.place_label }}</strong><span data-i18n="{{ honour.medal_label }}">{{ honour.medal_label }}</span><span class="honour-season" data-no-i18n>{{ honour.season_name }}</span><span class="honour-link"><span data-i18n="View season">View season</span> <span aria-hidden="true">→</span></span></div>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}

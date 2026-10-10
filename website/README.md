@@ -1,6 +1,14 @@
-# Liga SX-AAC — Chess Fantasy League V27
+# Liga SX-AAC — Chess Fantasy League V28
 
 FastAPI, Jinja templates, SQLite, and an offline PGN replay viewer for a club fantasy chess league. This release adds account recovery and editable identities, season scheduling, and four-player team matches while preserving existing accounts and league data.
+
+## New in v28
+
+- Team profiles display gold, silver and bronze podium badges, each engraved with its season year and linked to that season's results. Badges from every qualifying past season remain visible together.
+- Placements use **team-match league points**: win 3, draw 1, loss 0. Four board scores determine the match result: 2½–1½ is a win, 2–2 is a draw. These medals are independent of the existing fantasy-point standings.
+- Equal league points are resolved by head-to-head match wins, then head-to-head board points, then total season board points. Multi-team ties use a mini-table of all teams tied on league points. Exact remaining ties share their competition rank (1, 1, 3).
+- Only published seasons whose end date has passed and whose complete round schedule has all four board results per match qualify. Historical teams come from the recorded games, not current rosters or budgets. Corrections recalculate honours automatically; incomplete or unconfirmed records receive no provisional medals.
+- This feature is read-only and requires no database migration or regeneration. Assets use `v=28`; Portuguese/English labels and phone layouts are supported.
 
 ## New in v27
 

@@ -11,6 +11,7 @@
     </div>
     <div class="team-overview-metrics"><div><span>ACTIVE PLAYERS</span><strong>{{ current|length }}</strong></div><div><span>FANTASY POINTS</span><strong>{{ current_score }}</strong></div><div><span>TRANSFER BUDGET</span><strong>{{ team.budget }} <small>CR</small></strong></div></div>
   </div>
+  {% include 'team_honours.html' %}
   <div class="section-heading"><div><div class="eyebrow dark">RIGHT NOW</div><h2>Current squad</h2><p data-i18n="These players currently belong to {name}." data-i18n-vars="{{ {'name': team.name}|tojson|forceescape }}">These players currently belong to <span data-no-i18n>{{ team.name }}</span>.</p></div><a class="text-link" href="/standings">View standings ↗</a></div>
   {% if current %}
   <div class="table-scroll"><table class="data-table mobile-cards"><thead><tr><th>PLAYER</th><th>CLUB</th><th>FIDE RATING</th><th>FANTASY POINTS</th><th>STATUS</th></tr></thead><tbody>

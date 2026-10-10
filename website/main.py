@@ -32,6 +32,7 @@ from web_queries import authenticate_account, team_for_member, close_auction_saf
 import database as store
 import account_service as accounts
 import league_seasons as seasons
+from league_honours import season_honours
 
 BASE_DIR = Path(__file__).resolve().parent
 MAX_PHOTO_BYTES = 5 * 1024 * 1024
@@ -893,6 +894,7 @@ def team_detail(request: Request, team_id: int, season: str | None = None):
     store.settle_expired()
     year_now=store.now_utc().year
     with store.read_db() as db:
+        honours=season_honours(db,team_id)
         team=db.execute("""SELECT t.*,u.username AS manager_name
             FROM teams t LEFT JOIN users u ON u.id=t.manager_id WHERE t.id=?""",(team_id,)).fetchone()
         if not team:
@@ -951,7 +953,7 @@ def team_detail(request: Request, team_id: int, season: str | None = None):
               AND a.closed_at>=? AND a.closed_at<?
             ORDER BY a.closed_at DESC,a.id DESC""",
             (team_id,team_id,start,end)).fetchall()
-    return view(request,'team_detail.html',team=team,current=current,
+    return view(request,'team_detail.html',team=team,current=current,season_honours=honours,
                 season=season,seasons=seasons,season_options=season_options,season_name=season_name,membership=membership,
                 management=management,transfers=transfers,team_games=team_games,history_complete=history_complete,
                 current_score=sum(p['points'] for p in current))
