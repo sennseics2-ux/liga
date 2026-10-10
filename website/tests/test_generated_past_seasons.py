@@ -158,3 +158,27 @@ def test_only_managers_need_no_current_roster_and_guests_have_no_accounts(client
     with sqlite3.connect(source) as db:
         assert list(db.execute('SELECT id,owner_team_id FROM players ORDER BY id'))==owners
         assert snapshot(db)==before
+
+
+def test_past_managers_do_not_require_current_appointments_or_activation(client,tmp_path):
+    seed_four_teams()
+    with store.transaction() as db:
+        db.execute('UPDATE teams SET manager_id=NULL')
+        db.execute('DELETE FROM manager_terms WHERE ended_at IS NULL')
+        db.execute('DELETE FROM player_team_terms WHERE ended_at IS NULL')
+        db.execute('UPDATE players SET owner_team_id=NULL')
+        db.execute("UPDATE users SET account_active=0,manager_active=0,player_active=0 WHERE username='manager3'")
+    with sqlite3.connect(store.DB_PATH) as db:
+        before=snapshot(db)
+    output=tmp_path/'independent-history.sqlite3'
+    assert generate(store.DB_PATH,output,allow_historical_guests=True)['board_games']==96
+    with sqlite3.connect(output) as db:
+        assert snapshot(db)==before
+        assert db.execute('SELECT COUNT(*) FROM teams WHERE manager_id IS NOT NULL').fetchone()[0]==0
+        assert db.execute('SELECT COUNT(*) FROM manager_terms WHERE ended_at IS NULL').fetchone()[0]==0
+        assert db.execute('SELECT COUNT(*) FROM player_team_terms WHERE ended_at IS NULL').fetchone()[0]==0
+        assert db.execute('SELECT COUNT(*) FROM manager_terms WHERE ended_at IS NOT NULL').fetchone()[0]==8
+        assert db.execute('SELECT COUNT(DISTINCT manager_id) FROM match_lineups').fetchone()[0]==4
+        assert db.execute('SELECT COUNT(*) FROM manager_invitations').fetchone()[0]==0
+        assert db.execute("SELECT COUNT(*) FROM games WHERE scheduled_at>='2026-07-01'").fetchone()[0]==0
+    with sqlite3.connect(store.DB_PATH) as db:assert snapshot(db)==before

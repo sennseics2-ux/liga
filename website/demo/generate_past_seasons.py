@@ -78,17 +78,25 @@ def _pgn(white, black, when, result, season, round_number, board, location):
 
 def _historical_rosters(db, teams, allow_historical_guests=False):
     """Plan past memberships without requiring or changing current ownership."""
+    candidates=[dict(u) for u in db.execute('''SELECT u.* FROM users u WHERE u.role!='admin' AND
+        (u.role='manager' OR u.manager_active=1 OR EXISTS
+            (SELECT 1 FROM players p WHERE p.user_id=u.id AND p.is_manager_player=1) OR EXISTS
+            (SELECT 1 FROM manager_terms t WHERE t.manager_id=u.id)) ORDER BY u.id''')]
+    if len(candidates)<4:
+        raise ValueError('Four existing manager accounts are needed for the historical seasons. No current team assignment or invitation is required.')
+    # Only mutate these local team dictionaries. Never UPDATE teams.manager_id,
+    # activation flags, availability, invitations or current appointments.
+    for team,manager in zip(teams,candidates[:4]):
+        team['manager_id']=manager['id']
+        if not db.execute('SELECT 1 FROM players WHERE user_id=?',(manager['id'],)).fetchone():
+            db.execute('''INSERT INTO players(name,user_id,is_manager_player,created_at)
+                VALUES(?,?,1,?)''',(manager['name'] or manager['username'],manager['id'],stamp('2024-09-01')))
     managers={team['manager_id'] for team in teams}
     profiles=[dict(p) for p in db.execute('''SELECT p.* FROM players p LEFT JOIN users u ON u.id=p.user_id
         WHERE u.id IS NULL OR u.role!='admin' ORDER BY p.id''')]
     rosters={}
     for team in teams:
-        manager=db.execute('SELECT * FROM users WHERE id=?',(team['manager_id'],)).fetchone()
-        if not manager or not manager['account_active'] or not manager['manager_active']:
-            raise ValueError(f"Team {team['id']} needs an active assigned manager.")
         profile=next((p for p in profiles if p['user_id']==team['manager_id']),None)
-        if profile is None:
-            raise ValueError(f"Team {team['id']} needs a chess profile for its manager.")
         rosters[team['id']]=[profile]
     pool=[]
     for player in profiles:

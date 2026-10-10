@@ -364,8 +364,11 @@ No current-season matches, games or lineups are generated. Existing current/futu
 games or matches cause a safe failure rather than being silently deleted. Games, PGNs and audit records explicitly identify the history as
 **generated demonstration data, not actual past results or actual game moves**.
 
-Requirements: exactly four teams with assigned active managers and manager chess
-profiles. Current teams may have empty player rosters; they do not need 4–24 current
+Requirements: exactly four teams and at least four existing manager accounts.
+Historical managers are selected independently from those accounts; current
+manager assignment, activation, invitation and acceptance are not prerequisites.
+Missing manager chess profiles are added only in the copied database, without
+current ownership. Historical manager appointments are closed at season end. Current teams may have empty player rosters; they do not need 4–24 current
 players. Separate historical assignments fill the past-season lineups. More than
 96 existing players cannot all play across six rounds per season. Existing past
 seasons/games or conflicting dated appointments cause a safe failure. A repeat
