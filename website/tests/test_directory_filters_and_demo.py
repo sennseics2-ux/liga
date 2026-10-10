@@ -21,7 +21,7 @@ def test_player_search_filters_and_safe_sort(client):
                 store._start_player_term(db,pid,team)
     directory=client.get('/players')
     assert directory.status_code==200 and 'Search players' in directory.text
-    assert 'Minimum rating' in directory.text
+    assert 'Minimum FIDE Rating' in directory.text
     assert 'Ana Example' in directory.text
     assert 'Bea Example' in directory.text
     page=client.get('/players',params={'q':'ana','team':str(knights)})
@@ -66,7 +66,7 @@ def test_three_season_demonstration_database(tmp_path,monkeypatch,three_season_d
             for team_id in range(1,9):
                 page=c.get(f'/teams/{team_id}',params={'season':season})
                 assert page.status_code==200
-                assert f'{season} season' in page.text
+                assert f'{season}-{season+1} season' in page.text
                 assert 'Historical coverage is partial' not in page.text
                 assert 'Squad by season' in page.text
                 assert 'Transfers in ' in page.text
@@ -75,5 +75,5 @@ def test_three_season_demonstration_database(tmp_path,monkeypatch,three_season_d
         assert 'Coimbra Knights' in c.get('/teams',params={'q':'Coimbra'}).text
         assert 'Coimbra Knights' not in c.get('/teams',params={'q':'Viseu'}).text
         page=c.get('/teams/1',params={'season':2024})
-        assert '2024 season' in page.text
+        assert '2024-2025 season' in page.text
         assert c.get('/login').status_code==200

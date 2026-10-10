@@ -17,11 +17,11 @@
     <div class="metric-card"><span>CHESS PLAYER</span><strong class="small-stat"><span data-no-i18n>{{ profile.name }}</span></strong><small>Registered identity</small></div>
     <div class="metric-card"><span>FANTASY POINTS</span><strong>{{ profile.points }}</strong><small>Total on record</small></div>
     <div class="metric-card"><span>CURRENT TEAM</span><strong class="small-stat">{% if not member.player_active %}<span data-i18n="Not playing">Not playing</span>{% elif profile.team_name %}<span data-no-i18n>{{ profile.team_name }}</span>{% else %}<span data-i18n="Free agent">Free agent</span>{% endif %}</strong><small>{% if profile.is_manager_player %}Team Manager{% else %}Chess player{% endif %}</small></div>
-    <div class="metric-card"><span>CHESS RATING</span><strong>{{ profile.rating or '—' }}</strong><small>Rating on file</small></div>
+    <div class="metric-card"><span>FIDE RATING</span><strong>{{ profile.rating or '—' }}</strong><small>Standard FIDE rating</small></div>
   </div>
 {% else %}
   <div class="empty-state"><div class="empty-icon">♟</div><h3>No chess player profile yet</h3>
-    <p>{% if owner %}Waiting for your chess profile. The administrator must add and link your chess player record before you can enter the transfer market.{% else %}The administrator has not linked a chess player record to this account.{% endif %}</p>
+    <p>{% if owner %}Waiting for your chess profile. The administrator must activate and link your chess player record before you can enter the transfer market.{% else %}The administrator has not linked a chess player record to this account.{% endif %}</p>
     <a class="btn btn-outline-dark" href="/players">Browse club players →</a>
   </div>
 {% endif %}

@@ -26,7 +26,7 @@ def test_all_keyed_template_copy_has_a_portuguese_translation():
 
 def test_user_facing_domain_errors_have_portuguese_translations():
     catalogue = json.loads((ROOT / "static" / "pt-PT.json").read_text())
-    for filename in ("main.py", "database.py", "game_logic.py", "league_auctions.py", "league_scoring.py", "web_security.py"):
+    for filename in ("main.py", "database.py", "game_logic.py", "league_auctions.py", "league_scoring.py", "account_service.py", "league_seasons.py", "web_security.py"):
         for node in ast.walk(ast.parse((ROOT / filename).read_text())):
             if not isinstance(node, ast.Call) or not isinstance(node.func, ast.Name):
                 continue

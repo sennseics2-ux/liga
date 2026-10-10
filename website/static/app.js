@@ -150,3 +150,20 @@ if (accountToggle && accountMenu) {
   window.addEventListener('online', () => refresh(true));
   window.addEventListener('liga:languagechange', refreshCountdowns);
 })();
+
+// CSP-compatible administration page selector.
+document.querySelectorAll('[data-page-navigation]').forEach(select => {
+  select.addEventListener('change', () => {
+    if (select.value.startsWith('/admin')) window.location.assign(select.value);
+  });
+});
+
+// Recovery secrets stay in the URL fragment and never enter access logs.
+if (window.location.pathname === '/reset-password') {
+  const tokenInput = document.querySelector('input[name="token"]');
+  const token = new URLSearchParams(window.location.hash.slice(1)).get('token');
+  if (tokenInput && token && /^[A-Za-z0-9_-]{40,80}$/.test(token)) {
+    tokenInput.value = token;
+    window.history.replaceState(null, '', '/reset-password');
+  }
+}

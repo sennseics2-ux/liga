@@ -1,0 +1,20 @@
+{% extends 'base.html' %}{% block title %}Account settings{% endblock %}{% block content %}
+<div class="page-banner"><div class="container"><h1 data-i18n="Account settings">Account settings</h1></div></div>
+<section class="section container"><div class="form-card account-security-card">
+{% if error %}<div class="notice notice-error" role="alert" data-i18n="{{ error }}">{{ error }}</div>{% endif %}
+<form method="post" action="/account/settings" class="stack-form"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label><span data-i18n="Name">Name</span><input name="name" value="{{ profile.name }}" minlength="2" maxlength="80" autocomplete="name" required></label>
+<label><span data-i18n="Country">Country</span><input name="country" value="{{ profile.country }}" maxlength="80" autocomplete="country-name"></label>
+<label><span data-i18n="FIDE ID">FIDE ID</span><input name="fide_id" value="{{ profile.fide_id or '' }}" pattern="[0-9]{6,8}" inputmode="numeric" minlength="6" maxlength="8" {% if profile.fide_id_locked %}readonly{% endif %}></label>
+{% if profile.fide_id_locked %}<p class="form-hint" data-i18n="Your FIDE ID is locked by the administrator.">Your FIDE ID is locked by the administrator.</p>{% endif %}
+<p><span data-i18n="FIDE Rating">FIDE Rating</span>: <strong data-no-i18n>{{ profile.fide_rating if profile.fide_rating is not none else '—' }}</strong>{% if profile.fide_rating_month %} · <span data-no-i18n>{{ profile.fide_rating_month }}</span>{% endif %}</p>
+{% if profile.fide_id and (profile.fide_error or profile.fide_rating is none) %}<p class="form-hint" data-i18n="FIDE rating update is pending. The site will retry automatically.">FIDE rating update is pending. The site will retry automatically.</p>{% endif %}
+<label><span data-i18n="Recovery email">Recovery email</span><input type="email" name="email" value="{{ profile.email or '' }}" maxlength="254" autocomplete="email" required></label>
+<label><span data-i18n="Current password (required to change email)">Current password (required to change email)</span><input type="password" name="current_password" autocomplete="current-password" maxlength="256"></label>
+<button class="btn btn-primary" data-i18n="Save settings">Save settings</button></form>
+<p><a href="/account/security" data-i18n="Password & security">Password &amp; security</a></p>
+</div><div class="form-card account-security-card"><h2 data-i18n="Deactivate account">Deactivate account</h2><p data-i18n="Deactivation signs you out. Only an administrator can reactivate your account.">Deactivation signs you out. Only an administrator can reactivate your account.</p>
+<form method="post" action="/account/deactivate" class="stack-form" data-confirm="Deactivate your account?"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label><span data-i18n="Current password">Current password</span><input name="current_password" type="password" required autocomplete="current-password" maxlength="256"></label>
+<label><span data-i18n="Type DEACTIVATE to confirm">Type DEACTIVATE to confirm</span><input name="confirmation" pattern="DEACTIVATE" required></label>
+<button class="btn btn-quiet" data-i18n="Deactivate account">Deactivate account</button></form></div></section>{% endblock %}

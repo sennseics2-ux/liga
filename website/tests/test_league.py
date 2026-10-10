@@ -30,7 +30,9 @@ def token(client, page='/register'):
 
 
 def post(client, endpoint, **kwargs):
-    csrf = token(client, endpoint if endpoint in ('/register', '/login') else '/')
+    if endpoint == '/register' and 'email' not in kwargs:
+        kwargs['email'] = kwargs.get('username','member') + '@example.com'
+    csrf = token(client, endpoint if endpoint in ('/register', '/login', '/forgot-password', '/reset-password') else '/')
     return client.post(endpoint, data={'csrf': csrf, **kwargs}, follow_redirects=True)
 
 
@@ -81,7 +83,7 @@ def test_signup_roles_and_no_auto_team(client):
     register(client, 'lisa', 'player')
     assert 'Waiting for your chess profile' in client.get('/dashboard').text
     with store.read_db() as db:
-        assert db.execute('SELECT COUNT(*) FROM players').fetchone()[0] == 0
+        assert db.execute('SELECT COUNT(*) FROM players').fetchone()[0] == 1
         assert db.execute("SELECT role FROM users WHERE username='lisa'").fetchone()[0] == 'player'
     assert client.get('/auctions').status_code == 200
 
@@ -171,7 +173,7 @@ def test_admin_links_player_registration_to_profile(client):
     login_admin(client)
     assert 'alice' in client.get('/admin').text
     r = post(client, '/admin/players', name='Alice Silva', club='Chess Club', rating='1800', user_id=str(uid))
-    assert 'Added Alice Silva' in r.text
+    assert 'Activated Alice Silva' in r.text
     assert 'Alice Silva' in client.get('/players').text
     assert 'already has a chess profile' in post(client, '/admin/players', name='Alice Double', user_id=str(uid)).text
     with store.read_db() as db:
@@ -296,7 +298,7 @@ def test_existing_v2_manager_assignment_gains_playing_eligibility_on_upgrade(mon
         assert profile['owner_team_id'] == t1
         assert profile['is_manager_player'] == 1
         assert db.execute('SELECT COUNT(*) FROM players WHERE user_id=?', (m1,)).fetchone()[0] == 1
-        assert db.execute('SELECT COUNT(*) FROM players WHERE user_id=?', (m2,)).fetchone()[0] == 0
+        assert db.execute('SELECT COUNT(*) FROM players WHERE user_id=?', (m2,)).fetchone()[0] == 1
         assert db.execute('SELECT manager_id FROM teams WHERE id=?', (t2,)).fetchone()[0] is None
     with pytest.raises(ValueError, match='cannot be listed'):
         store.create_auction(profile['id'], 20, 24)

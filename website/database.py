@@ -6,6 +6,7 @@ import hmac
 import json
 import os
 import secrets
+import re
 import sqlite3
 from pathlib import Path
 
@@ -195,6 +196,7 @@ def init_db():
     try:
         DB_PATH.chmod(0o600)
         db.execute('PRAGMA busy_timeout=20000')
+        db.execute('PRAGMA journal_mode=WAL')
         db.execute('PRAGMA foreign_keys=OFF')
         # On the first upgrade, make a consistent backup of the legacy database.
         # Use SQLite's backup API rather than copying an actively opened database.
@@ -225,11 +227,11 @@ def init_db():
         if legacy:
             migration_table = db.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='schema_migrations'").fetchone()
             upgraded = migration_table and db.execute('SELECT 1 FROM schema_migrations WHERE version=?', (SCHEMA_VERSION,)).fetchone()
-            backup_file = DB_PATH.with_name(DB_PATH.name + '.pre-v24.bak')
+            backup_file = DB_PATH.with_name(DB_PATH.name + '.pre-v25.bak')
             if not upgraded and not backup_file.exists():
                 with sqlite3.connect(backup_file) as backup_db:
                     db.backup(backup_db)
-        for suffix in ('.pre-v2.bak', '.pre-v3.bak', '.pre-v4.bak', '.pre-v9.bak', '.pre-v24.bak'):
+        for suffix in ('.pre-v2.bak', '.pre-v3.bak', '.pre-v4.bak', '.pre-v9.bak', '.pre-v25.bak'):
             backup_file = DB_PATH.with_name(DB_PATH.name + suffix)
             if backup_file.exists():
                 backup_file.chmod(0o600)
@@ -319,14 +321,14 @@ def init_db():
 def readiness():
     """Check the mounted database, required schema and settlement alerts."""
     with read_db() as db:
-        required = {'users', 'teams', 'players', 'auctions', 'games', 'points_ledger', 'audit_log'}
+        required = {'users', 'teams', 'players', 'auctions', 'games', 'points_ledger', 'audit_log', 'seasons', 'team_matches', 'password_resets'}
         actual = {row[0] for row in db.execute("SELECT name FROM sqlite_master WHERE type='table'")}
         if not required <= actual:
             raise sqlite3.DatabaseError('Required league tables are missing.')
         if not db.execute('SELECT 1 FROM schema_migrations WHERE version=?', (SCHEMA_VERSION,)).fetchone():
             raise sqlite3.DatabaseError('The league database needs migration.')
         # Query the columns that current code needs, not just SELECT 1.
-        db.execute('SELECT auth_version,manager_active,player_active FROM users LIMIT 1').fetchone()
+        db.execute('SELECT auth_version,account_active,email,name,fide_id,fide_id_locked,manager_active,player_active FROM users LIMIT 1').fetchone()
         db.execute('SELECT status,failure_reason FROM auctions LIMIT 1').fetchone()
         db.execute('SELECT white_award,black_award,white_team_id,black_team_id,attribution_confirmed FROM games LIMIT 1').fetchone()
         failed = db.execute("SELECT COUNT(*) FROM auctions WHERE status='failed'").fetchone()[0]
@@ -344,8 +346,8 @@ def _reason(value):
 
 
 def _admin_actor(db, actor_id):
-    actor = db.execute('SELECT role FROM users WHERE id=?', (actor_id,)).fetchone()
-    if not actor or actor['role'] != 'admin':
+    actor = db.execute('SELECT role,account_active FROM users WHERE id=?', (actor_id,)).fetchone()
+    if not actor or (actor['role'] != 'admin' or not actor['account_active']):
         raise ValueError('Only administrators can make this change.')
 
 
@@ -494,11 +496,17 @@ def change_account_password(user_id, current_password, new_password):
         return row['auth_version'] + 1
 
 
-def create_account(username, password, role):
-    if not 3 <= len(username) <= 32 or not all(c.isalnum() or c in '_-' for c in username):
-        raise ValueError('Username must be 3–32 characters (letters, numbers, - or _).')
+def validate_username(username):
+    if not isinstance(username, str) or not re.fullmatch(r'[A-Za-z0-9_-]{3,32}', username):
+        raise ValueError('Username must be 3–32 ASCII characters (letters, numbers, - or _).')
     if username.isdecimal():
         raise ValueError('Username cannot contain only numbers.')
+
+
+def create_account(username, password, role, email=None):
+    validate_username(username)
+    from account_service import validate_email
+    email = validate_email(email) if email is not None else None
     if not isinstance(password, str) or not 12 <= len(password) <= 256:
         raise ValueError('Password must contain 12–256 characters.')
     if role not in ('manager', 'player'):
@@ -506,12 +514,16 @@ def create_account(username, password, role):
     encoded_password = hash_password(password)
     with transaction() as db:
         try:
-            return db.execute('''INSERT INTO users(username,password_hash,role,created_at,
-                    manager_active,player_active,manager_available) VALUES (?,?,?,?,?,?,?)''',
+            uid = db.execute('''INSERT INTO users(username,password_hash,role,created_at,
+                    manager_active,player_active,manager_available,email,name) VALUES (?,?,?,?,?,?,?,?,?)''',
                               (username, encoded_password, role, iso(now_utc()),
-                               int(role=='manager'), 1, int(role=='manager'))).lastrowid
+                               int(role=='manager'), 1, int(role=='manager'), email, username)).lastrowid
+            if role=='manager':
+                db.execute('INSERT INTO players(name,user_id,is_manager_player,created_at) VALUES(?,?,1,?)',
+                           (username,uid,iso(now_utc())))
+            return uid
         except sqlite3.IntegrityError:
-            raise ValueError('That username is already taken.') from None
+            raise ValueError('That username or email address is already taken.') from None
 
 
 def create_team(name):
@@ -555,7 +567,7 @@ def _accept_manager(db, team_id, manager_id):
     user = db.execute('SELECT * FROM users WHERE id=?', (manager_id,)).fetchone()
     if not team:
         raise ValueError('Team not found.')
-    if not user or not user['manager_active'] or user['role']=='admin':
+    if not user or not user['account_active'] or not user['manager_active'] or user['role']=='admin':
         raise ValueError('Choose a manager with an active manager role.')
     if db.execute('SELECT 1 FROM teams WHERE manager_id=? AND id!=?', (manager_id,team_id)).fetchone():
         raise ValueError('This manager already runs another team.')
@@ -593,7 +605,7 @@ def invite_manager(team_id, manager_id):
         manager=db.execute('SELECT * FROM users WHERE id=?',(manager_id,)).fetchone()
         if not team or team['manager_id'] is not None:
             raise ValueError('The team must be vacant before sending an invitation.')
-        if not manager or not manager['manager_active'] or not manager['manager_available'] or manager['role']=='admin':
+        if not manager or not manager['account_active'] or not manager['manager_active'] or not manager['manager_available'] or manager['role']=='admin':
             raise ValueError('Choose an available manager with an active manager role.')
         if db.execute('SELECT 1 FROM teams WHERE manager_id=?',(manager_id,)).fetchone():
             raise ValueError('This manager already manages another team.')
@@ -654,7 +666,7 @@ def quit_role(user_id, role):
         raise ValueError('Unknown role.')
     with transaction() as db:
         u=db.execute('SELECT * FROM users WHERE id=?',(user_id,)).fetchone()
-        if not u or u['role']=='admin' or not u[f'{role}_active']:
+        if not u or not u['account_active'] or u['role']=='admin' or not u[f'{role}_active']:
             raise ValueError('This role is not active.')
         if role=='manager':
             team=db.execute('SELECT id FROM teams WHERE manager_id=?',(user_id,)).fetchone()
@@ -695,7 +707,7 @@ def request_role(user_id, role):
         raise ValueError('Unknown role.')
     with transaction() as db:
         user=db.execute('SELECT * FROM users WHERE id=?',(user_id,)).fetchone()
-        if not user or user['role']=='admin':
+        if not user or not user['account_active'] or user['role']=='admin':
             raise ValueError('Account not found.')
         if user[f'{role}_active']:
             raise ValueError(f'Your {role} role is already active.')
@@ -707,13 +719,15 @@ def request_role(user_id, role):
 
 def review_role_request(admin_id,request_id,approve):
     with transaction() as db:
-        admin=db.execute('SELECT role FROM users WHERE id=?',(admin_id,)).fetchone()
+        admin=db.execute('SELECT role,account_active FROM users WHERE id=?',(admin_id,)).fetchone()
         if not admin or admin['role']!='admin':
             raise ValueError('Only administrators can review requests.')
         request=db.execute("SELECT * FROM role_requests WHERE id=? AND status='pending'",(request_id,)).fetchone()
         if not request:
             raise ValueError('This request is no longer pending.')
         user=db.execute('SELECT * FROM users WHERE id=?',(request['user_id'],)).fetchone()
+        if not user['account_active']:
+            raise ValueError('Reactivate the account before approving a role.')
         if approve and user[f"{request['role']}_active"]:
             raise ValueError('That role is already active.')
         if approve:
@@ -750,7 +764,7 @@ def kick_player(manager_id, player_id):
 
 
 def _activate_manager_player(db, team_id, manager_id):
-    user = db.execute('SELECT * FROM users WHERE id=? AND manager_active=1', (manager_id,)).fetchone()
+    user = db.execute('SELECT * FROM users WHERE id=? AND manager_active=1 AND account_active=1', (manager_id,)).fetchone()
     if not user:
         raise ValueError('Manager not found.')
     existing = db.execute('SELECT * FROM players WHERE user_id=?', (manager_id,)).fetchone()
@@ -764,7 +778,7 @@ def _activate_manager_player(db, team_id, manager_id):
             _start_player_term(db,existing['id'],team_id,manager_player=True)
     else:
         player_id=db.execute('''INSERT INTO players(name,owner_team_id,user_id,is_manager_player,created_at)
-            VALUES (?,?,?,1,?)''', (user['username'], team_id, manager_id, iso(now_utc()))).lastrowid
+            VALUES (?,?,?,1,?)''', (user['name'] or user['username'], team_id, manager_id, iso(now_utc()))).lastrowid
         if _roster_tracking_ready(db):
             _start_player_term(db,player_id,team_id,manager_player=True)
 
@@ -780,11 +794,14 @@ def create_player(name, club='', rating=None, user_id=None):
         raise ValueError('Rating must be between 0 and 3500.')
     with transaction() as db:
         if user_id is not None:
-            account = db.execute('SELECT role,player_active FROM users WHERE id=?', (user_id,)).fetchone()
-            if not account or not account['player_active'] or account['role']=='admin':
+            account = db.execute('SELECT role,player_active,account_active,name,fide_rating FROM users WHERE id=?', (user_id,)).fetchone()
+            if not account or not account['account_active'] or not account['player_active'] or account['role']=='admin':
                 raise ValueError('Only a registered player account can be linked to this player.')
             if db.execute('SELECT id FROM players WHERE user_id=?', (user_id,)).fetchone():
                 raise ValueError('This player account already has a chess profile.')
+        if user_id is not None:
+            db.execute('UPDATE users SET name=? WHERE id=?',(name,user_id))
+            rating = account['fide_rating'] if account['fide_rating'] is not None else rating
         try:
             return db.execute('INSERT INTO players(name,club,rating,user_id,created_at) VALUES (?,?,?,?,?)',
                               (name, club, rating, user_id, iso(now_utc()))).lastrowid

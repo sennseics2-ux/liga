@@ -27,9 +27,12 @@ instructions, not evidence that this workspace has changed the live website.
    sudo docker compose down
    sudo rsync -a --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
      --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
-     ~/chess-fantasy-league-v24/ /opt/clubdraft/
+     ~/chess-fantasy-league-v25/ /opt/clubdraft/
+   sudo mkdir -p data backups
+   sudo chown -R 10001:10001 data backups
+   sudo chmod 700 data backups
    sudo docker compose config -q
-   sudo docker compose up -d --build
+   sudo docker compose up -d --build --force-recreate
    sudo docker compose ps
    sudo docker compose logs --tail=80 web backups proxy
    ```
@@ -45,6 +48,149 @@ instructions, not evidence that this workspace has changed the live website.
    Open a PGN game while signed out: it should invite sign-in without providing
    replay data. Sign in and verify replay and PGN download. Confirm Portuguese
    labels and unchanged team/player names. Monitor backups health separately.
+
+## V25 release extraction and configuration
+
+The standalone release ZIP has `chess-fantasy-league-v25/` at its root. GitHub's
+Download ZIP instead contains `liga-main/website/`. Copy the directory containing
+`main.py`, `compose.yaml`, and `league_migrations.py`; copying `liga-main/` directly
+will put the application at the wrong nesting level and leave the old site running.
+
+Use a fresh extraction directory, validate it before downtime, and stop on errors:
+
+```bash
+(
+  set -e
+  ZIP="$HOME/chess-fantasy-league-v25.zip"
+  RELEASE_DIR="$(mktemp -d "$HOME/liga-v25-release.XXXXXX")"
+  unzip -q "$ZIP" -d "$RELEASE_DIR"
+  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v25"
+  if [ ! -f "$SOURCE_DIR/main.py" ]; then
+    SOURCE_DIR="$RELEASE_DIR/liga-main/website"
+  fi
+  test -f "$SOURCE_DIR/compose.yaml"
+  grep -q 'v25_accounts_seasons' "$SOURCE_DIR/league_migrations.py"
+
+  cd /opt/clubdraft
+  sudo docker compose exec -T web python -m deploy.backup_sqlite
+  sudo docker compose down
+  sudo rsync -a \
+    --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
+    --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
+    "$SOURCE_DIR/" /opt/clubdraft/
+  sudo mkdir -p data backups
+  sudo chown -R 10001:10001 data backups
+  sudo chmod 700 data backups
+  sudo docker compose config -q
+  sudo docker compose up -d --build --force-recreate
+  sudo docker compose ps
+  sudo docker compose logs --tail=80 web backups proxy
+)
+```
+
+If encrypted offsite backups are enabled, use both compose files in every compose
+command as described below. Preserve `.env` and `secrets/`. Application startup
+creates a consistent snapshot before migrating. The additional `.pre-v25.bak`
+snapshot preserves the pre-migration database; keep a copy off the VM.
+
+After web is healthy, `/health` must report `"schema":"v25_accounts_seasons"`, and
+the homepage assets must use `v=25`. A browser hard refresh may be necessary.
+
+### SMTP password recovery
+
+Edit the existing private configuration with `sudoedit /opt/clubdraft/.env`.
+Keep existing CHESS_DOMAIN and CHESS_SESSION_SECRET. Add your provider's settings:
+
+```dotenv
+CHESS_SMTP_HOST=smtp.YOUR-PROVIDER.example
+CHESS_SMTP_PORT=587
+CHESS_SMTP_SECURITY=starttls
+CHESS_SMTP_USER=YOUR-SMTP-USERNAME
+CHESS_SMTP_PASSWORD=YOUR-PRIVATE-SMTP-PASSWORD
+CHESS_SMTP_FROM=liga@YOUR-DOMAIN.example
+```
+
+Use the provider's verified sender address. For implicit TLS use security `ssl`
+and port 465. Set credentials privately on the VM, never in GitHub or chat. Compose
+sets CHESS_PUBLIC_URL from the existing domain. New registrations do not send a
+verification code. Existing accounts without emails must add one in Account
+Settings, confirming their current password. Recovery is intentionally generic;
+a deactivated account cannot recover access without administrator reactivation.
+
+After updating `.env`, run `sudo docker compose up -d --force-recreate web` to apply
+it (use both compose files if offsite backups are enabled). Test recovery using an
+email you control. Check SMTP delivery and reset the password through the received
+link. The link expires after one hour; using it or changing the password revokes
+all sessions. Logout also revokes every session for that account.
+
+### FIDE standard ratings
+
+The default lookup uses the documented public endpoint
+`https://fideratings.com/api/player/{fide_id}/current`. The standard rating is
+`current.standard.rating`; its publication month is `current.standard.date`.
+Rapid and blitz ratings are ignored. Documentation and a live player response
+were verified during this release. No API key is required for this endpoint.
+Existing installations get these defaults automatically without adding variables.
+
+Optional overrides in `.env` (normally unnecessary):
+
+```dotenv
+CHESS_FIDE_API_URL_TEMPLATE=https://fideratings.com/api/player/{fide_id}/current
+CHESS_FIDE_RATING_FIELD=current.standard.rating
+CHESS_FIDE_MONTH_FIELD=current.standard.date
+CHESS_FIDE_API_KEY=
+CHESS_FIDE_API_KEY_HEADER=X-Fideratings-Key
+```
+
+Only the requested fideratings.com HTTPS host is accepted. JSON paths use dot
+notation. Historical players with `current_source=last_known_profile` retain their
+last-known standard rating and follow the normal monthly schedule. Players with
+no standard rating display no FIDE Rating. The regular worker checks up to ten due users
+per minute; edited IDs also wake it, and results are saved locally. Large integrations should arrange a
+trusted batch API key with the provider before increasing this rate. Private
+keys must stay out of source control.
+
+New/edited IDs trigger the worker; due work is also checked every minute. Failed
+lookups retain the previous rating and retry after 5 minutes, with backoff capped
+at 6 hours. The next-month lookup runs on the first day, with another check on the
+second. Stale publication months retry every 6 hours. Without publication metadata
+the worker checks daily through day seven. Scheduling uses Europe/Lisbon and
+persists in SQLite, so a restart catches up missed work. Changing a FIDE ID clears
+its old rating; an outstanding response for the previous ID is discarded. A locked
+ID may still receive automatic rating updates.
+
+### Season and account administration
+
+Use the admin dropdown to open Season setup. Create YYYY–YYYY+1, choose dates and
+round count, and schedule every round's team pairings with location and UTC input
+time (public times display in Europe/Lisbon). Publication checks that every
+participating team plays once per round. Season/date edits return the schedule to
+draft; republish it after checking. Used rounds cannot be silently removed.
+
+Managers open Seasons & rounds and select their match. Each submits exactly four
+active roster players in board order before kickoff. Both lineups create four
+board games; colors alternate with the home team white on boards 1 and 3. Managers
+can revise before kickoff until a result or PGN is recorded. Administrators enter
+results/PGNs on the generated games. Missing lineups are shown explicitly and do
+not invent forfeits or results.
+
+Member accounts lets administrators edit Name/Country/FIDE ID, lock IDs, deactivate
+accounts, and reactivate them. Deactivation retains historical records and player
+ownership, revokes sessions, ends manager appointments, cancels pending role
+requests/invitations, and quarantines that player's active auctions. Reactivation
+does not restore a previous manager appointment automatically. The last active
+administrator cannot deactivate; create another administrator through the CLI
+first if an administrator account must be retired.
+
+### Trusted proxy network
+
+V25 assigns Caddy the private IP 172.30.0.10 in subnet 172.30.0.0/24 and trusts only
+that address for forwarded client headers. Standalone startup trusts loopback
+only. If the subnet conflicts with another Docker network, choose an unused
+private subnet and an address within it through CHESS_NETWORK_SUBNET and
+CHESS_PROXY_IP in `.env`, then recreate the compose network. Never publish port
+8000 or configure a wildcard trusted-proxy address. `docker compose config -q`
+checks syntax without displaying your SMTP credentials.
 
 ## First installation
 

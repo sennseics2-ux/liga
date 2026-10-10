@@ -1,6 +1,18 @@
-# Liga SX-AAC — Chess Fantasy League V24
+# Liga SX-AAC — Chess Fantasy League V25
 
-FastAPI, Jinja templates, SQLite, and an offline PGN replay viewer for a club fantasy chess league. This release applies the v23 review fixes and improves member workflows while preserving existing accounts and league data.
+FastAPI, Jinja templates, SQLite, and an offline PGN replay viewer for a club fantasy chess league. This release adds account recovery and editable identities, season scheduling, and four-player team matches while preserving existing accounts and league data.
+
+## New in v25
+
+- Registration requires a unique, valid email address; no verification code is sent. Existing members add their recovery email in Account Settings. SMTP sends one-hour, single-use reset links. Recovery responses do not disclose account existence; tokens are stored hashed and travel in URL fragments to keep them out of access logs.
+- Account Settings edits Name, Country, and a 6–8 digit ASCII FIDE ID. Administrators can edit identities and lock/unlock FIDE IDs. Account edits keep linked player names consistent. FIDE IDs are unique per account.
+- The FIDE Rating worker fetches only the configured standard-rating field, retries failures with persisted backoff, checks the first and second of each month in Europe/Lisbon, and retries stale publication months. Without publication metadata it checks through day seven. The documented public `/api/player/{fide_id}/current` endpoint and standard-rating/publication-month fields are built in; documentation and a live response were verified. No API key is required for this endpoint.
+- Active managers appear in the player directory before team appointment. Administration calls profile creation **Activate a player** and offers a dropdown for teams, role requests, players/transfers, games/results, seasons, and accounts.
+- Seasons are named YYYY–YYYY+1. Administrators edit dates and round count, choose all team pairings, and set match date/time/location. A complete schedule must have the same participating teams playing once per round before publication. Edits return it to draft for review; used rounds cannot be silently deleted.
+- Managers submit exactly four distinct active team players in board order before the match starts. Both submissions generate four chess games with alternating colors. Managers can revise unplayed lineups before the deadline; recorded results/PGNs lock them. A match with recorded games cannot be rescheduled.
+- Members can deactivate their account with their password; administrators can deactivate/reactivate members. Only administrators reactivate accounts, and the last active administrator is protected. Deactivation revokes sessions, cancels pending invitations/role requests, quarantines open player auctions, and ends manager appointments while retaining history. Reactivation does not silently restore an old team appointment.
+- Registration now says **Criar conta** in Portuguese. New account and season workflows are translated.
+- New usernames use ASCII `[A-Za-z0-9_-]` in both registration and administrator CLI. Existing usernames are preserved for a safe migration. SQLite uses WAL; pages and polling skip the writer transaction when no auctions are due. Only the configured proxy IP is trusted for forwarded headers. Logout increments the authentication version and revokes all sessions, including copied cookies.
 
 ## What changed
 

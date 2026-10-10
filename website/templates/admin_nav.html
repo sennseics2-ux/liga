@@ -1,0 +1,3 @@
+<nav class="admin-navigation" aria-label="Administration"><label><span data-i18n="Administration">Administration</span><select data-page-navigation>
+{% for key,path,label in [('admin','/admin','Overview'),('teams','/admin/teams','Team management'),('roles','/admin/roles','Role activation requests'),('players','/admin/players','Players & transfers'),('games','/admin/games','Chess games & results'),('seasons','/admin/seasons','Season setup'),('accounts','/admin/accounts','Member accounts')] %}
+<option value="{{ path }}" {% if admin_section==key %}selected{% endif %} data-i18n="{{ label }}">{{ label }}</option>{% endfor %}</select></label></nav>

@@ -18,6 +18,10 @@ MAX_REQUEST_BYTES = 8 * 1024 * 1024
 def allowed(ip, path):
     if path == '/login':
         limit, window = 20, 10 * 60
+    elif path == '/forgot-password':
+        limit, window = 5, 60 * 60
+    elif path == '/reset-password':
+        limit, window = 10, 10 * 60
     elif path == '/register':
         limit, window = 6, 60 * 60
     elif path == '/account/security':

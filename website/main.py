@@ -8,13 +8,13 @@ import re
 import secrets
 import sqlite3
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from urllib.parse import quote
 from urllib.parse import urlencode
 from zoneinfo import ZoneInfo
 
-from fastapi import FastAPI, Request, HTTPException
+from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
 from starlette.datastructures import UploadFile
 from PIL import Image, ImageOps, UnidentifiedImageError
 from fastapi.responses import HTMLResponse, RedirectResponse, Response, PlainTextResponse, JSONResponse
@@ -30,6 +30,8 @@ from web_security import (BoundedRequestBodyMiddleware, parse_secure_form,
 from web_queries import authenticate_account, team_for_member, close_auction_safely
 
 import database as store
+import account_service as accounts
+import league_seasons as seasons
 
 BASE_DIR = Path(__file__).resolve().parent
 MAX_PHOTO_BYTES = 5 * 1024 * 1024
@@ -53,6 +55,21 @@ def local_time(value):
 TEMPLATES.env.filters['local_time'] = local_time
 
 
+async def rating_loop():
+    import fide_ratings
+    ticks=30
+    while True:
+        if ticks>=30 or fide_ratings.take_wake():
+            ticks=0
+            try:
+                await run_in_threadpool(fide_ratings.sync_ratings)
+            except Exception:
+                import logging
+                logging.getLogger(__name__).error('Rating synchronization failed; the worker will retry.')
+        await asyncio.sleep(2)
+        ticks+=1
+
+
 async def expiry_loop():
     tick = 0
     while True:
@@ -70,14 +87,13 @@ async def lifespan(app):
     await run_in_threadpool(store.init_db)
     await run_in_threadpool(store.settle_expired)
     task = asyncio.create_task(expiry_loop())
+    ratings_task = asyncio.create_task(rating_loop())
     try:
         yield
     finally:
         task.cancel()
-        try:
-            await task
-        except asyncio.CancelledError:
-            pass
+        ratings_task.cancel()
+        await asyncio.gather(task,ratings_task,return_exceptions=True)
 
 
 PRODUCTION = os.getenv("CHESS_ENV", "development").lower() == "production"
@@ -113,8 +129,8 @@ def session_user(request):
     if not isinstance(uid, int):
         return None
     with store.read_db() as db:
-        row = db.execute("SELECT id,username,role,manager_active,player_active,manager_available,auth_version FROM users WHERE id=?", (uid,)).fetchone()
-    if not row or request.session.get('auth_version', 0) != row['auth_version']:
+        row = db.execute("SELECT id,username,role,name,account_active,manager_active,player_active,manager_available,auth_version FROM users WHERE id=?", (uid,)).fetchone()
+    if not row or not row['account_active'] or request.session.get('auth_version', 0) != row['auth_version']:
         request.session.clear()
         return None
     return dict(row)
@@ -137,9 +153,14 @@ async def form_data(request):
 def expected_form_fields(path):
     """Keep mutations small and prevent unexpected uploaded form content."""
     fields = {
-        '/register': ('username', 'password', 'role', 'next'),
+        '/register': ('username', 'password', 'role', 'next', 'email'),
         '/login': ('username', 'password', 'next'),
         '/logout': (),
+        '/forgot-password': ('email',),
+        '/reset-password': ('token','password','confirm_password'),
+        '/account/settings': ('name','country','fide_id','email','current_password'),
+        '/account/deactivate': ('current_password','confirmation'),
+        '/admin/seasons': ('start_year','start_date','end_date','round_count'),
         '/account/security': ('current_password', 'new_password', 'confirm_password'),
         '/my/player/photo': (), '/my/player/photo/remove': (),
         '/my/manager/availability': ('available',),
@@ -152,6 +173,14 @@ def expected_form_fields(path):
     if path in fields:
         return fields[path]
     patterns = (
+        (r'/admin/users/\d+/profile', ('name','country','fide_id','fide_id_locked')),
+        (r'/admin/users/\d+/activation', ('active','confirmation')),
+        (r'/admin/seasons/\d+/edit', ('start_year','start_date','end_date','round_count')),
+        (r'/admin/seasons/\d+/publish', ()),
+        (r'/admin/seasons/\d+/matches', ('round_id','home_team_id','away_team_id','scheduled_at','location')),
+        (r'/admin/matches/\d+/edit', ('round_id','home_team_id','away_team_id','scheduled_at','location')),
+        (r'/matches/\d+/lineup', ('player_1','player_2','player_3','player_4')),
+
         (r'/my/roles/(manager|player)/(quit|request)', ()),
         (r'/my/manager/invitations/\d+/respond', ('decision',)),
         (r'/my/manager/players/\d+/kick', ('confirmation',)),
@@ -311,14 +340,15 @@ async def register(request: Request):
     password = str(data.get("password", ""))
     next_path = safe_return_path(data.get('next'))
     try:
-        user_id = await run_in_threadpool(store.create_account, username, password, role)
+        email = accounts.validate_email(data.get('email'))
+        user_id = await run_in_threadpool(store.create_account, username, password, role, email)
     except ValueError as exc:
-        return await run_in_threadpool(view, request, "auth.html", mode="register", error=str(exc), username=username, selected_role=role, next=next_path)
+        return await run_in_threadpool(view, request, "auth.html", mode="register", error=str(exc), username=username, selected_role=role, email=str(data.get('email','')), next=next_path)
     request.session.clear()
     request.session["user_id"] = user_id
     request.session["auth_version"] = 0
     flash(request, ("Account created. Visit your member profile to review manager invitations and availability." if role == "manager"
-                    else "Player account created. The administrator can now add your chess profile."), "success")
+                    else "Player account created. The administrator can now activate your chess profile."), "success")
     return redirect(next_path)
 
 
@@ -350,6 +380,9 @@ async def login(request: Request):
 @app.post("/logout")
 async def logout(request: Request):
     await form_data(request)
+    user = await run_in_threadpool(session_user, request)
+    if user:
+        await run_in_threadpool(accounts.revoke_sessions, user['id'])
     request.session.clear()
     return redirect("/")
 
@@ -524,7 +557,7 @@ def member_profile(request: Request, username: str):
             suffix = '/manager' if is_manager_tab else ''
             return RedirectResponse(f"/users/{quote(found['username'], safe='')}{suffix}", status_code=308)
         member_id=found['id']
-        member=db.execute('''SELECT id,username,role,manager_active,player_active,manager_available,photo_updated_at
+        member=db.execute('''SELECT id,username,name,country,fide_id,account_active,role,manager_active,player_active,manager_available,photo_updated_at
             FROM users WHERE id=? AND role!='admin' ''',(member_id,)).fetchone()
         owner = bool(viewer and viewer['id']==member_id)
         profile=db.execute("""SELECT p.*,t.name AS team_name FROM players p
@@ -766,7 +799,7 @@ def players(request: Request, q: str = '', team: str = 'all', status: str = 'all
     min_rating_value = parse_optional_int(min_rating, minimum=0, maximum=3500)
     if len(q) > 120:
         q = q[:120]
-    clauses = ['(p.user_id IS NULL OR u.player_active=1)']
+    clauses = ['(p.user_id IS NULL OR (u.account_active=1 AND u.player_active=1))']
     params = []
     if q.strip():
         clauses.append('(p.name LIKE ? OR p.club LIKE ? OR u.username LIKE ?)')
@@ -852,7 +885,7 @@ def team_directory(request: Request, q: str = '', manager: str = 'all',
 
 
 @app.get('/teams/{team_id}', response_class=HTMLResponse)
-def team_detail(request: Request, team_id: int, season: int | None = None):
+def team_detail(request: Request, team_id: int, season: str | None = None):
     """Current roster plus annual membership and manager appointment archives."""
     store.settle_expired()
     year_now=store.now_utc().year
@@ -868,13 +901,19 @@ def team_detail(request: Request, team_id: int, season: int | None = None):
             )""",(team_id,team_id)).fetchone()[0]
         if oldest and oldest.isdigit():
             oldest_year=max(1900,min(oldest_year,int(oldest)))
-        seasons=list(range(year_now,oldest_year-1,-1))
-        if season is None:
-            season=year_now
-        if season not in seasons:
+        configured=[dict(row) for row in db.execute('SELECT * FROM seasons ORDER BY start_year DESC')]
+        season_options=[{'value':f"s{row['id']}",'label':row['name']} for row in configured]
+        season_options += [{'value':str(year),'label':f'{year}-{year+1}'} for year in range(year_now,oldest_year-1,-1)
+                           if year not in {row['start_year'] for row in configured}]
+        season=season or (season_options[0]['value'] if season_options else str(year_now))
+        if str(season).isascii() and str(season).isdigit():
+            matching=next((row for row in configured if row['start_year']==int(season)),None)
+            if matching:
+                season=f"s{matching['id']}"
+        if not any(option['value']==season for option in season_options):
             raise HTTPException(404,'Season unavailable for this team')
-        start=f'{season}-01-01T00:00:00+00:00'
-        end=f'{season+1}-01-01T00:00:00+00:00'
+        start,end,season_name=season_bounds(db,season)
+        seasons=[option['value'] for option in season_options]
         current=db.execute("""SELECT p.*,u.username,u.photo_updated_at FROM players p LEFT JOIN users u ON u.id=p.user_id
             WHERE p.owner_team_id=? ORDER BY CASE WHEN p.user_id=? THEN 0 ELSE 1 END,p.points DESC,p.name COLLATE NOCASE""",
             (team_id,team['manager_id'])).fetchall()
@@ -910,13 +949,30 @@ def team_detail(request: Request, team_id: int, season: int | None = None):
             ORDER BY a.closed_at DESC,a.id DESC""",
             (team_id,team_id,start,end)).fetchall()
     return view(request,'team_detail.html',team=team,current=current,
-                season=season,seasons=seasons,membership=membership,
+                season=season,seasons=seasons,season_options=season_options,season_name=season_name,membership=membership,
                 management=management,transfers=transfers,team_games=team_games,history_complete=history_complete,
                 current_score=sum(p['points'] for p in current))
 
 
 
 # --------------------------- Fixtures & chess games ---------------------------
+
+def season_bounds(db, key):
+    if str(key).startswith('s') and str(key)[1:].isascii() and str(key)[1:].isdigit():
+        row=db.execute('SELECT * FROM seasons WHERE id=?',(int(str(key)[1:]),)).fetchone()
+        if not row:
+            raise HTTPException(400,'Invalid season.')
+        zone=ZoneInfo('Europe/Lisbon')
+        start=datetime.fromisoformat(row['start_date']).replace(tzinfo=zone)
+        end=(datetime.fromisoformat(row['end_date'])+timedelta(days=1)).replace(tzinfo=zone)
+        return store.iso(start),store.iso(end),row['name']
+    if str(key).isascii() and str(key).isdigit() and 1900 <= int(key) <= 2100:
+        configured=db.execute('SELECT id FROM seasons WHERE start_year=?',(int(key),)).fetchone()
+        if configured:
+            return season_bounds(db,f"s{configured['id']}")
+        return f'{key}-01-01T00:00:00+00:00',f'{int(key)+1}-01-01T00:00:00+00:00',f'{key}-{int(key)+1}'
+    raise HTTPException(400,'Invalid season.')
+
 
 def game_rows(db, *, where='1=1', values=(), limit=200, offset=0, order='newest'):
     """Public game summary rows; where clause must be hardcoded by caller."""
@@ -962,10 +1018,9 @@ def games_directory(request: Request, q: str = '', status: str = 'all', season: 
         if status == 'finished':
             clauses.append("g.result!='*'")
         if season != 'all':
-            if not (season.isdecimal() and 2000 <= int(season) <= 2100):
-                raise HTTPException(400, 'Invalid season.')
-            clauses.append('substr(g.scheduled_at,1,4)=?')
-            args.append(season)
+            start,end,_=season_bounds(db,season)
+            clauses.append('g.scheduled_at>=? AND g.scheduled_at<?')
+            args.extend((start,end))
         where = ' AND '.join(clauses) if clauses else '1=1'
         total_count = db.execute(f'''SELECT count(*) FROM games g
             JOIN players wp ON wp.id=g.white_player_id JOIN players bp ON bp.id=g.black_player_id
@@ -975,11 +1030,15 @@ def games_directory(request: Request, q: str = '', status: str = 'all', season: 
         rows = game_rows(db, where=where, values=tuple(args), limit=page_size,
                          offset=(page_number-1)*page_size, order=sort)
         years = [r[0] for r in db.execute('SELECT DISTINCT substr(scheduled_at,1,4) FROM games ORDER BY 1 DESC')]
+        configured=[dict(row) for row in db.execute('SELECT * FROM seasons ORDER BY start_year DESC')]
+        season_options=[{'value':f"s{row['id']}",'label':row['name']} for row in configured]
+        season_options += [{'value':year,'label':f'{year}-{int(year)+1}'} for year in years
+                           if int(year) not in {row['start_year'] for row in configured}]
         upcoming = db.execute("SELECT COUNT(*) FROM games WHERE result='*'").fetchone()[0]
         finished = db.execute("SELECT COUNT(*) FROM games WHERE result!='*'").fetchone()[0]
     filters = {'q':q,'status':status,'season':season,'sort':sort}
     page_url = lambda number: '/games?' + urlencode({**filters, 'page':number})
-    return view(request,'games.html',games=rows,years=years, filters=filters,
+    return view(request,'games.html',games=rows,years=years,season_options=season_options, filters=filters,
                 upcoming=upcoming,finished=finished,page=page_number,page_size=page_size,
                 total_count=total_count,total_pages=total_pages,
                 has_previous=page_number>1,has_next=page_number<total_pages,
@@ -1104,6 +1163,10 @@ def standings(request: Request):
     return view(request, "standings.html", standings=rows)
 
 
+@app.get('/admin/teams', response_class=HTMLResponse)
+@app.get('/admin/roles', response_class=HTMLResponse)
+@app.get('/admin/players', response_class=HTMLResponse)
+@app.get('/admin/games', response_class=HTMLResponse)
 @app.get("/admin", response_class=HTMLResponse)
 def admin(request: Request):
     auth(request, "admin")
@@ -1117,9 +1180,9 @@ def admin(request: Request):
             FROM teams t LEFT JOIN users u ON u.id=t.manager_id ORDER BY t.name""").fetchall()
         managers = db.execute("""SELECT u.id,u.username,u.manager_available,t.name AS team_name,t.id AS team_id
             FROM users u LEFT JOIN teams t ON t.manager_id=u.id
-            WHERE u.manager_active=1 AND u.role!='admin' ORDER BY u.username""").fetchall()
+            WHERE u.manager_active=1 AND u.account_active=1 AND u.role!='admin' ORDER BY u.username""").fetchall()
         player_accounts = db.execute("""SELECT u.id,u.username FROM users u
-            WHERE u.player_active=1 AND u.role!='admin' AND NOT EXISTS (SELECT 1 FROM players p WHERE p.user_id=u.id)
+            WHERE u.player_active=1 AND u.account_active=1 AND u.role!='admin' AND NOT EXISTS (SELECT 1 FROM players p WHERE p.user_id=u.id)
             ORDER BY u.username""").fetchall()
         open_auctions = auction_rows(db)
         recovery_auctions = auction_rows(db, 'failed')
@@ -1127,11 +1190,11 @@ def admin(request: Request):
             LEFT JOIN users u ON u.id=a.actor_id ORDER BY a.id DESC LIMIT 50''').fetchall()
         recent_games=game_rows(db,limit=12)
         requests=db.execute("""SELECT r.*,u.username FROM role_requests r JOIN users u ON u.id=r.user_id
-            WHERE r.status='pending' ORDER BY r.created_at,r.id""").fetchall()
+            WHERE r.status='pending' AND u.account_active=1 ORDER BY r.created_at,r.id""").fetchall()
         invitations=db.execute("""SELECT i.*,u.username,t.name AS team_name FROM manager_invitations i
             JOIN users u ON u.id=i.manager_id JOIN teams t ON t.id=i.team_id
             WHERE i.status='pending' ORDER BY i.id DESC""").fetchall()
-    return view(request, "admin.html", players=players, teams=teams, managers=managers,
+    return view(request, "admin.html", admin_section=request.url.path.rsplit("/",1)[-1], players=players, teams=teams, managers=managers,
                 player_accounts=player_accounts, auctions=open_auctions, recent_games=recent_games,
                 role_requests=requests,
                 invitations=invitations,recovery_auctions=recovery_auctions,audit_entries=audit_entries)
@@ -1220,8 +1283,8 @@ async def admin_add_player(request: Request):
             raise ValueError("Rating must be between 0 and 3500.")
         user_id = int(data.get("user_id")) if str(data.get("user_id", "")).strip() else None
         await run_in_threadpool(store.create_player, name, club, rating, user_id)
-        flash(request, f"Added {name} to the player pool.", "success",
-              key='Added {name} to the player pool.', values={'name':name})
+        flash(request, f"Activated {name} in the player pool.", "success",
+              key='Activated {name} in the player pool.', values={'name':name})
     except (ValueError, OverflowError) as exc:
         flash(request, str(exc), "error")
     return redirect("/admin")
@@ -1291,6 +1354,213 @@ async def admin_update_points(request: Request, player_id: int):
         flash(request, str(exc), "error")
     return redirect("/admin#player-list")
 
+
+
+@app.get('/account/settings', response_class=HTMLResponse)
+def account_settings(request: Request):
+    user=auth(request)
+    return view(request,'account_settings.html',profile=accounts.account(user['id']),error=None)
+
+
+@app.post('/account/settings', response_class=HTMLResponse)
+async def save_account_settings(request: Request):
+    user=await run_in_threadpool(auth,request)
+    data=await form_data(request)
+    try:
+        changed=await run_in_threadpool(accounts.update_profile,user['id'],data.get('name'),data.get('country'),data.get('fide_id'),
+            email=data.get('email'),current_password=data.get('current_password'))
+        if changed:
+            from fide_ratings import wake_rating_worker
+            wake_rating_worker()
+        flash(request,'Account settings saved.','success')
+        return redirect('/account/settings')
+    except ValueError as exc:
+        return await run_in_threadpool(view,request,'account_settings.html',profile=await run_in_threadpool(accounts.account,user['id']),error=str(exc))
+
+
+@app.post('/account/deactivate')
+async def deactivate_account(request: Request):
+    user=await run_in_threadpool(auth,request)
+    data=await form_data(request)
+    try:
+        if data.get('confirmation')!='DEACTIVATE':
+            raise ValueError('Confirm deactivation by typing DEACTIVATE.')
+        await run_in_threadpool(accounts.set_account_active,user['id'],False,actor_id=user['id'],password=data.get('current_password'))
+        request.session.clear()
+        flash(request,'Account deactivated. Only an administrator can reactivate it.','success')
+        return redirect('/login')
+    except ValueError as exc:
+        flash(request,str(exc),'error')
+        return redirect('/account/settings')
+
+
+@app.get('/forgot-password', response_class=HTMLResponse)
+def forgot_password(request: Request):
+    return view(request,'password_recovery.html',mode='request',sent=False,error=None,token='')
+
+
+@app.post('/forgot-password', response_class=HTMLResponse)
+async def request_password_recovery(request: Request, background_tasks: BackgroundTasks):
+    data=await form_data(request)
+    background_tasks.add_task(accounts.send_recovery,str(data.get('email','')))
+    return await run_in_threadpool(view,request,'password_recovery.html',mode='request',sent=True,error=None,token='')
+
+
+@app.get('/reset-password', response_class=HTMLResponse)
+def reset_password_form(request: Request, token: str=''):
+    return view(request,'password_recovery.html',mode='reset',sent=False,error=None,token=token[:100])
+
+
+@app.post('/reset-password', response_class=HTMLResponse)
+async def recover_password(request: Request):
+    data=await form_data(request)
+    token=str(data.get('token',''))
+    try:
+        if data.get('password')!=data.get('confirm_password'):
+            raise ValueError('New passwords do not match.')
+        await run_in_threadpool(accounts.reset_password,token,str(data.get('password','')))
+    except ValueError as exc:
+        return await run_in_threadpool(view,request,'password_recovery.html',mode='reset',sent=False,error=str(exc),token=token[:100])
+    request.session.clear()
+    flash(request,'Password reset. Sign in with your new password.','success')
+    return redirect('/login')
+
+
+@app.get('/admin/accounts', response_class=HTMLResponse)
+def admin_accounts(request: Request):
+    auth(request,'admin')
+    with store.read_db() as db:
+        members=[dict(row) for row in db.execute('SELECT id,username,name,country,fide_id,fide_id_locked,account_active,role FROM users ORDER BY username COLLATE NOCASE')]
+    return view(request,'admin_accounts.html',members=members,admin_section='accounts')
+
+
+@app.post('/admin/users/{user_id}/profile')
+async def admin_edit_account(request: Request,user_id: int):
+    actor=await run_in_threadpool(auth,request,'admin')
+    data=await form_data(request)
+    try:
+        changed=await run_in_threadpool(accounts.update_profile,user_id,data.get('name'),data.get('country'),data.get('fide_id'),
+            actor_id=actor['id'],fide_id_locked=data.get('fide_id_locked')=='1')
+        if changed:
+            from fide_ratings import wake_rating_worker
+            wake_rating_worker()
+        flash(request,'Account profile updated.','success')
+    except ValueError as exc:
+        flash(request,str(exc),'error')
+    return redirect('/admin/accounts')
+
+
+@app.post('/admin/users/{user_id}/activation')
+async def admin_account_activation(request: Request,user_id: int):
+    actor=await run_in_threadpool(auth,request,'admin')
+    data=await form_data(request)
+    try:
+        active=data.get('active')=='1'
+        if data.get('confirmation')!='CONFIRM':
+            raise ValueError('Confirm the account activation change.')
+        # Admin actions use administrator authority, including self-deactivation.
+        password=None
+        if user_id==actor['id'] and not active:
+            raise ValueError('Use account settings to deactivate your own account.')
+        await run_in_threadpool(accounts.set_account_active,user_id,active,actor_id=actor['id'],password=password)
+        flash(request,'Account activation updated.','success')
+    except ValueError as exc:
+        flash(request,str(exc),'error')
+    return redirect('/admin/accounts')
+
+
+@app.get('/admin/seasons', response_class=HTMLResponse)
+def season_setup(request: Request, season_id: int | None=None):
+    auth(request,'admin')
+    with store.read_db() as db:
+        rows=[dict(row) for row in db.execute('SELECT * FROM seasons ORDER BY start_year DESC')]
+        selected=next((row for row in rows if row['id']==season_id),rows[0] if rows else None)
+        rounds=[dict(row) for row in db.execute('SELECT * FROM season_rounds WHERE season_id=? ORDER BY number',(selected['id'],))] if selected else []
+        matches=seasons.match_rows(db,selected['id']) if selected else []
+        teams=[dict(row) for row in db.execute('SELECT id,name FROM teams ORDER BY name')]
+    return view(request,'admin_seasons.html',seasons=rows,selected=selected,rounds=rounds,matches=matches,teams=teams,admin_section='seasons')
+
+
+@app.post('/admin/seasons')
+@app.post('/admin/seasons/{season_id}/edit')
+async def admin_save_season(request: Request,season_id: int | None=None):
+    actor=await run_in_threadpool(auth,request,'admin')
+    data=await form_data(request)
+    try:
+        season_id=await run_in_threadpool(seasons.save_season,data.get('start_year'),data.get('start_date'),data.get('end_date'),data.get('round_count'),actor['id'],season_id)
+        flash(request,'Season setup saved. Review and publish the complete schedule.','success')
+    except ValueError as exc:
+        flash(request,str(exc),'error')
+    return redirect('/admin/seasons'+(f'?season_id={season_id}' if season_id else ''))
+
+
+@app.post('/admin/seasons/{season_id}/publish')
+async def admin_publish_season(request: Request,season_id: int):
+    actor=await run_in_threadpool(auth,request,'admin')
+    await form_data(request)
+    try:
+        await run_in_threadpool(seasons.publish_season,season_id,actor['id'])
+        flash(request,'Season schedule published.','success')
+    except ValueError as exc:
+        flash(request,str(exc),'error')
+    return redirect(f'/admin/seasons?season_id={season_id}')
+
+
+@app.post('/admin/seasons/{season_id}/matches')
+@app.post('/admin/matches/{match_id}/edit')
+async def admin_save_match(request: Request,season_id: int | None=None,match_id: int | None=None):
+    actor=await run_in_threadpool(auth,request,'admin')
+    data=await form_data(request)
+    try:
+        match_id=await run_in_threadpool(seasons.save_match,data.get('round_id'),data.get('home_team_id'),data.get('away_team_id'),data.get('scheduled_at'),data.get('location'),actor['id'],match_id)
+        flash(request,'Match schedule saved.','success')
+    except ValueError as exc:
+        flash(request,str(exc),'error')
+    return redirect('/admin/seasons'+(f'?season_id={season_id}' if season_id else ''))
+
+
+@app.get('/seasons', response_class=HTMLResponse)
+def season_calendar(request: Request):
+    viewer=session_user(request)
+    with store.read_db() as db:
+        matches=seasons.match_rows(db)
+        if not viewer or viewer['role']!='admin':
+            matches=[match for match in matches if match['season_status']=='published']
+    return view(request,'seasons.html',matches=matches)
+
+
+@app.get('/matches/{match_id}', response_class=HTMLResponse)
+def team_match_detail(request: Request,match_id: int):
+    viewer=session_user(request)
+    with store.read_db() as db:
+        match=next((row for row in seasons.match_rows(db) if row['id']==match_id),None)
+        if not match:
+            raise HTTPException(404,'Match not found.')
+        team=get_team(db,viewer) if viewer and viewer['manager_active'] else None
+        if match['season_status']!='published' and not (viewer and (viewer['role']=='admin' or (team and team['id'] in (match['home_team_id'],match['away_team_id'])))):
+            raise HTTPException(404,'Match not found.')
+        own_team=team if team and team['id'] in (match['home_team_id'],match['away_team_id']) else None
+        eligible=seasons.eligible_players(db,own_team['id']) if own_team else []
+        lineups=[dict(row) for row in db.execute('''SELECT lp.*,p.name,t.name AS team_name FROM lineup_players lp
+            JOIN players p ON p.id=lp.player_id JOIN teams t ON t.id=lp.team_id WHERE match_id=? ORDER BY team_id,board''',(match_id,))]
+        selected={row['board']:row['player_id'] for row in lineups if own_team and row['team_id']==own_team['id']}
+        games=[dict(row) for row in db.execute('''SELECT mg.board,g.id,g.result,wp.name AS white_name,bp.name AS black_name
+            FROM match_games mg JOIN games g ON g.id=mg.game_id JOIN players wp ON wp.id=g.white_player_id
+            JOIN players bp ON bp.id=g.black_player_id WHERE mg.match_id=? ORDER BY board''',(match_id,))]
+    return view(request,'team_match.html',match=match,own_team=own_team,eligible=eligible,lineups=lineups,
+                selected_players=selected,board_games=games,deadline_passed=seasons._datetime(match['scheduled_at'])<=store.now_utc())
+
+
+@app.post('/matches/{match_id}/lineup')
+async def manager_lineup(request: Request,match_id: int):
+    manager=await run_in_threadpool(auth,request,'manager')
+    data=await form_data(request)
+    try:
+        await run_in_threadpool(seasons.submit_lineup,match_id,manager['id'],[data.get(f'player_{board}') for board in range(1,5)])
+        flash(request,'Four-player lineup submitted.','success')
+    except ValueError as exc:
+        flash(request,str(exc),'error')
+    return redirect(f'/matches/{match_id}')
 
 
 @app.get("/health")

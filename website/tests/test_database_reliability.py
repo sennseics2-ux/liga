@@ -241,7 +241,7 @@ def test_legacy_ledger_migration_preserves_totals_game_awards_ids_and_bid_refere
     with store.read_db() as db:
         assert db.execute('SELECT points FROM players WHERE id=7').fetchone()[0] == 2
         assert db.execute('SELECT points FROM players WHERE id=9').fetchone()[0] == 10
-    backup = path.with_name(path.name + '.pre-v24.bak')
+    backup = path.with_name(path.name + '.pre-v25.bak')
     assert backup.exists()
     assert backup.stat().st_mode & 0o777 == 0o600
     assert path.stat().st_mode & 0o777 == 0o600

@@ -107,6 +107,13 @@ def _settle_expired(db):
 
 def settle_expired():
     import database as store
+    # The overwhelmingly common page/poll path only needs a read lock.
+    with store.read_db() as db:
+        overdue = db.execute("SELECT 1 FROM auctions WHERE status='open' AND ends_at<=? LIMIT 1",
+                             (store.iso(store.now_utc()),)).fetchone()
+    if not overdue:
+        return 0
+    # Recheck under the writer lock: concurrent workers may have settled it.
     with store.transaction() as db:
         return store._settle_expired(db)
 
@@ -171,9 +178,9 @@ def place_bid(auction_id, team_id, amount, manager_id=None):
         if not team or team['manager_id'] is None:
             raise ValueError('Only an assigned manager can bid for a team.')
         if manager_id is not None:
-            manager = db.execute('SELECT manager_active,role FROM users WHERE id=?', (manager_id,)).fetchone()
+            manager = db.execute('SELECT manager_active,role,account_active FROM users WHERE id=?', (manager_id,)).fetchone()
             if (team['manager_id'] != manager_id or not manager or
-                    not manager['manager_active'] or manager['role']=='admin'):
+                    not manager['account_active'] or not manager['manager_active'] or manager['role']=='admin'):
                 raise ValueError('Your team assignment changed. Refresh the page before bidding.')
         if auction['seller_team_id'] == team_id:
             raise ValueError('You cannot bid on a player you already own.')
@@ -202,8 +209,8 @@ def create_auction(player_id, starting_price, duration_hours):
         if player['is_manager_player']:
             raise ValueError('Managers who play for their own team cannot be listed for transfer.')
         if player['user_id'] is not None:
-            user=db.execute('SELECT player_active FROM users WHERE id=?',(player['user_id'],)).fetchone()
-            if user and not user['player_active']:
+            user=db.execute('SELECT player_active,account_active FROM users WHERE id=?',(player['user_id'],)).fetchone()
+            if user and (not user['account_active'] or not user['player_active']):
                 raise ValueError('This account has no active player role.')
         if db.execute('SELECT id FROM auctions WHERE player_id=? AND status=\'open\'', (player_id,)).fetchone():
             raise ValueError('That player is already listed for transfer.')

@@ -13,6 +13,8 @@ services:
       CHESS_HTTPS_ONLY: "1"
       CHESS_ALLOWED_HOSTS: ${CHESS_DOMAIN:?Set CHESS_DOMAIN in .env}
       CHESS_SESSION_SECRET: ${CHESS_SESSION_SECRET:?Set CHESS_SESSION_SECRET in .env}
+      CHESS_TRUSTED_PROXY_IPS: ${CHESS_PROXY_IP:-172.30.0.10}
+      CHESS_PUBLIC_URL: https://${CHESS_DOMAIN:?Set CHESS_DOMAIN in .env}
     volumes:
       - ./data:/data
       - ./backups:/backups
@@ -85,10 +87,14 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     networks:
-      - internal
+      internal:
+        ipv4_address: ${CHESS_PROXY_IP:-172.30.0.10}
 
 networks:
   internal:
+    ipam:
+      config:
+        - subnet: ${CHESS_NETWORK_SUBNET:-172.30.0.0/24}
 
 volumes:
   caddy_data:

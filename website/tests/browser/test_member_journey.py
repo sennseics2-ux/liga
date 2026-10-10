@@ -227,6 +227,7 @@ def test_member_replay_auction_and_recovery_journey(chromium, league_server, wid
         page.goto(league.base + '/register')
         username = f'NewMember{width}'
         page.locator('input[name=username]').fill(username)
+        page.locator('input[name=email]').fill(username+'@example.com')
         page.locator('select[name=role]').select_option('manager')
         page.locator('input[name=password]').fill(PASSWORD)
         page.locator('form.stack-form button[type=submit]').click()

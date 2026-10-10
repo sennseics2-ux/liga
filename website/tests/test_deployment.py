@@ -74,7 +74,7 @@ with TestClient(app, base_url='https://club.test') as client:
     login = client.get('/login')
     token = re.search(r'name="csrf" value="([^"]+)"', login.text).group(1)
     post = client.post('/register', data={'csrf':token, 'role':'player',
-         'username':'prodmgr', 'password':'StrongerPassword!23'}, follow_redirects=False)
+         'username':'prodmgr', 'password':'StrongerPassword!23','email':'prodmgr@example.com'}, follow_redirects=False)
     assert post.status_code == 303, post.text
     assert 'secure' in post.headers.get('set-cookie','').lower()
     assert client.get('/dashboard').status_code == 200

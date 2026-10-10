@@ -10,7 +10,8 @@
   <div class="member-profile-identity">
     {% if member.photo_updated_at %}<img src="/users/{{ member.username|urlencode }}/photo" class="member-photo" alt="Photo of {{ member.username }}" width="112" height="112">
     {% else %}<div class="member-photo photo-placeholder" aria-hidden="true">♞</div>{% endif %}
-    <div class="identity-details"><h2><span data-no-i18n>{{ member.username }}</span></h2><p>Chess club member</p>
+    <div class="identity-details"><h2><span data-no-i18n>{{ member.username }}</span></h2><p><span data-no-i18n>{{ member.name }}</span> · <span data-no-i18n>{{ member.country }}</span></p>{% if member.fide_id %}<p><span data-i18n="FIDE ID">FIDE ID</span>: <span data-no-i18n>{{ member.fide_id }}</span></p>{% endif %}
+      {% if not member.account_active %}<p class="notice notice-error" data-i18n="Account deactivated">Account deactivated</p>{% endif %}
       <div class="role-indicators" aria-label="Member role status">
         <span class="role-indicator {{ 'role-active' if member.player_active else 'role-inactive' }}"><span class="role-dot" aria-hidden="true"></span><span data-i18n="Player">Player</span> · <span data-i18n="{{ 'Active' if member.player_active else 'Inactive' }}">{{ 'Active' if member.player_active else 'Inactive' }}</span></span>
         <span class="role-indicator {{ 'role-active' if member.manager_active else 'role-inactive' }}"><span class="role-dot" aria-hidden="true"></span><span data-i18n="Manager">Manager</span> · <span data-i18n="{{ 'Active' if member.manager_active else 'Inactive' }}">{{ 'Active' if member.manager_active else 'Inactive' }}</span></span>

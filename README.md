@@ -1,10 +1,10 @@
 # Liga SX-AAC
 
-This repository contains the **v24 league website** and the **1.1.0 mobile apps** for https://liga.sx-aac.com.
+This repository contains the **v25 league website** and the **1.1.0 mobile apps** for https://liga.sx-aac.com.
 
-## Website — v24
+## Website — v25
 
-The website source is in [`website/`](website/). This release applies the v23 review improvements, including recoverable auctions, audited scoring, historical team attribution, upload limits, responsive requests, game pagination, Portuguese translations, mobile usability, and backup tooling.
+The website source is in [`website/`](website/). This release adds email-based password recovery, editable identities and locked FIDE IDs, account deactivation, season scheduling, four-player match lineups, admin navigation, and security fixes. It retains the auction, scoring, localization, backup, and login-only replay improvements from v24. SMTP and the documented FIDE API contract require private deployment configuration; see the hosting guide.
 
 **PGN replay and PGN downloads require a signed-in account.** Fixtures and results remain public. Login returns members to the selected game.
 
@@ -12,7 +12,7 @@ The website source is in [`website/`](website/). This release applies the v23 re
 - [Production deployment, upgrades, backups, and restoration](website/HOSTING.md)
 - [Automated website checks](.github/workflows/website.yml)
 
-Validation: 213 tests passed, including Chromium mobile journeys; the packaged source also passed production checks in a read-only, non-root container. Publishing this repository does not deploy the live website. Follow the hosting instructions to update the server while preserving its database and uploads. Off-server backups require privately configured storage credentials.
+Publishing this repository does not deploy the live website. Follow the hosting instructions to update the server while preserving its database and uploads. Off-server backups require privately configured storage credentials.
 
 ## Mobile apps — 1.1.0
 
