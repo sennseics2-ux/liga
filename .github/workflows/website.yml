@@ -34,6 +34,8 @@ jobs:
           python -m playwright install --with-deps chromium
       - name: Check generated translations
         run: python tools/build_i18n.py --check
+      - name: Check generated dark styling
+        run: python tools/build_dark_theme.py --check
       - name: Run unit, migration, security and browser checks
         run: python -m pytest -q
       - name: Validate deployment configuration

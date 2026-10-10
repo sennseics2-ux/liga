@@ -1,5 +1,6 @@
 """Current managers can edit team pictures on phones and desktop in PT/EN."""
 import os
+import tempfile
 from pathlib import Path
 import pytest
 from playwright.sync_api import expect
@@ -29,7 +30,7 @@ def test_team_picture_upload_and_removal(chromium,league_server,width):
         expect(page.locator('.photo-upload-form button')).to_have_text('Substituir fotografia')
         assert page.locator('.team-profile-picture img').evaluate('(img)=>img.complete && img.naturalWidth===512')
         assert_fits_phone(page)
-        directory=Path('/workspace/review-runtime/v30-screenshots');directory.mkdir(parents=True,exist_ok=True)
+        directory=(Path('/workspace/review-runtime') if Path('/workspace/review-runtime').exists() else Path(tempfile.gettempdir())) / 'v30-screenshots';directory.mkdir(parents=True,exist_ok=True)
         page.screenshot(path=str(directory/f'team-{width}.png'),full_page=True)
         page.goto(league.base+'/teams')
         expect(page.locator(f'img[src="/teams/{team}/photo"]')).to_be_visible();assert_fits_phone(page)

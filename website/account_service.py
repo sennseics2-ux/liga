@@ -84,7 +84,7 @@ def update_profile(user_id, name, country, fide_id, *, email=None, current_passw
                 fide_attempts=CASE WHEN ? THEN 0 ELSE fide_attempts END WHERE id=?''',
                 (name,country,fide_id,lock,normalized_email,changed,changed,changed,changed,changed,user_id))
         except sqlite3.IntegrityError:
-            raise ValueError('That email address or FIDE ID is already associated with another account.') from None
+            raise ValueError('That email address is already associated with another account.') from None
         db.execute('UPDATE players SET name=?,rating=CASE WHEN ? THEN NULL ELSE rating END WHERE user_id=?', (name,changed,user_id))
         if email_changed:
             db.execute('DELETE FROM password_resets WHERE user_id=?', (user_id,))

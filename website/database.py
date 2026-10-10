@@ -237,7 +237,12 @@ def init_db():
             if not backup_file.exists():
                 with sqlite3.connect(backup_file) as backup_db:
                     db.backup(backup_db)
-        for suffix in ('.pre-v2.bak', '.pre-v3.bak', '.pre-v4.bak', '.pre-v9.bak', '.pre-v25.bak', '.pre-v30.bak'):
+        if legacy and not upgraded:
+            backup_file = DB_PATH.with_name(DB_PATH.name + '.pre-v32.bak')
+            if not backup_file.exists():
+                with sqlite3.connect(backup_file) as backup_db:
+                    db.backup(backup_db)
+        for suffix in ('.pre-v2.bak', '.pre-v3.bak', '.pre-v4.bak', '.pre-v9.bak', '.pre-v25.bak', '.pre-v30.bak', '.pre-v32.bak'):
             backup_file = DB_PATH.with_name(DB_PATH.name + suffix)
             if backup_file.exists():
                 backup_file.chmod(0o600)

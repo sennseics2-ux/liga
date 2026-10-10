@@ -218,6 +218,7 @@ def test_member_replay_auction_and_recovery_journey(chromium, league_server, wid
             page.locator('form.stack-form button[type=submit]').click()
         assert failed.value.status == 403
         assert 'text/html' in failed.value.headers['content-type']
+        page.locator('a[data-i18n="Try again"]').wait_for(state='visible')
         assert page.locator('a[data-i18n="Try again"]').count() == 1
         assert_fits_phone(page)
         page.locator('a[data-i18n="Try again"]').click()

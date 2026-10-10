@@ -27,7 +27,7 @@ instructions, not evidence that this workspace has changed the live website.
    sudo docker compose down
    sudo rsync -a --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
      --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
-     ~/chess-fantasy-league-v31/ /opt/clubdraft/
+     ~/chess-fantasy-league-v32/ /opt/clubdraft/
    sudo mkdir -p data backups
    sudo chown -R 10001:10001 data backups
    sudo chmod 700 data backups
@@ -49,9 +49,9 @@ instructions, not evidence that this workspace has changed the live website.
    replay data. Sign in and verify replay and PGN download. Confirm Portuguese
    labels and unchanged team/player names. Monitor backups health separately.
 
-## V31 release extraction and configuration
+## V32 release extraction and configuration
 
-The standalone release ZIP has `chess-fantasy-league-v31/` at its root. GitHub's
+The standalone release ZIP has `chess-fantasy-league-v32/` at its root. GitHub's
 Download ZIP instead contains `liga-main/website/` (or `liga-COMMIT/website/`
 for a commit archive). Copy the directory containing
 `main.py`, `compose.yaml`, and `league_migrations.py`; copying `liga-main/` directly
@@ -62,10 +62,10 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 ```bash
 (
   set -e
-  ZIP="$HOME/chess-fantasy-league-v31.zip"
-  RELEASE_DIR="$(mktemp -d "$HOME/liga-v31-release.XXXXXX")"
+  ZIP="$HOME/chess-fantasy-league-v32.zip"
+  RELEASE_DIR="$(mktemp -d "$HOME/liga-v32-release.XXXXXX")"
   unzip -q "$ZIP" -d "$RELEASE_DIR"
-  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v31"
+  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v32"
   if [ ! -f "$SOURCE_DIR/main.py" ]; then
     for CANDIDATE in "$RELEASE_DIR"/liga-*/website; do
       if [ -f "$CANDIDATE/main.py" ]; then
@@ -76,7 +76,7 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
   test -f "$SOURCE_DIR/main.py"
   test -f "$SOURCE_DIR/compose.yaml"
   test -f "$SOURCE_DIR/deploy/install_past_seasons.sh"
-  grep -q 'v30_team_photos' "$SOURCE_DIR/league_migrations.py"
+  grep -q 'v32_shared_fide_ids' "$SOURCE_DIR/league_migrations.py"
 
   cd /opt/clubdraft
   sudo docker compose exec -T web python -m deploy.backup_sqlite
@@ -97,11 +97,11 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 
 If encrypted offsite backups are enabled, use both compose files in every compose
 command as described below. Preserve `.env` and `secrets/`. Application startup
-creates a consistent snapshot before migrating. The additional `.pre-v30.bak`
+creates a consistent snapshot before migrating. The additional `.pre-v32.bak`
 snapshot preserves the pre-migration database; keep a copy off the VM.
 
-After web is healthy, `/health` must report `"schema":"v30_team_photos"`, and
-the homepage assets must use `v=31`. A browser hard refresh may be necessary.
+After web is healthy, `/health` must report `"schema":"v32_shared_fide_ids"`, and
+the homepage assets must use `v=32`. A browser hard refresh may be necessary.
 Open `/seasons`: it defaults to the current July–June season (2026-2027 in October
 2026), including before its schedule is published. Use the season dropdown to
 view 2024-2025 and 2025-2026; their results no longer appear on the initial page.
@@ -111,8 +111,12 @@ not the separate fantasy standings. Concluded, fully recorded published seasons
 qualify automatically. Sign in as an administrator and open `/admin` for the new
 management dashboard; its cards link to dedicated workspaces. Confirm transfer
 amounts use ♔ and player-profile results are green for wins, red for losses, and
-grey for draws/upcoming fixtures. This upgrade
-does not regenerate or replace the database; do not rerun the historical installer
+grey for draws/upcoming fixtures. Toggle the header moon/sun button and navigate
+between public and account pages: the theme choice should persist. Confirm the
+Results label, all-season player win/draw/loss totals, and the selected team's
+seasonal score/games-played column (a win and draw show `1.5/2`). Accounts can
+now share a FIDE ID; existing per-account FIDE locks and email uniqueness remain.
+This upgrade does not regenerate or replace the database; do not rerun the historical installer
 if those seasons are already present.
 
 ### SMTP password recovery
@@ -186,7 +190,7 @@ time (public times display in Europe/Lisbon). Publication checks that every
 participating team plays once per round. Season/date edits return the schedule to
 draft; republish it after checking. Used rounds cannot be silently removed.
 
-Managers open Seasons & rounds and select their match. Each submits exactly four
+Managers open Results and select their match. Each submits exactly four
 active roster players in board order before kickoff. Both lineups create four
 board games; colors alternate with the home team white on boards 1 and 3. Managers
 can revise before kickoff until a result or PGN is recorded. Administrators enter
@@ -360,9 +364,9 @@ Playwright is unavailable.
 
 ## Generate and install the two past seasons
 
-Install V31 application files first using the upgrade commands above. Keep the
+Install V32 application files first using the upgrade commands above. Keep the
 existing `.env`, accounts, and data. Startup applies the additive
-`v30_team_photos` migration and assets use `v=31`. Team pictures live in SQLite,
+`v32_shared_fide_ids` migration and assets use `v=32`. Team pictures live in SQLite,
 so existing database backups include them. Do not run this generator as part
 of an ordinary application upgrade.
 

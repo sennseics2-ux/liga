@@ -1,5 +1,6 @@
 """Accessible admin actions and visible pre-match privacy on narrow screens."""
 import os
+import tempfile
 from pathlib import Path
 import pytest
 from playwright.sync_api import expect
@@ -25,7 +26,7 @@ def test_admin_cancel_and_reinvite_and_private_lineups(chromium,league_server,wi
     context=chromium.new_context(viewport={'width':width,'height':900})
     context.route('**/*',lambda route:route.continue_() if route.request.url.startswith(league.base+'/') else route.abort())
     page=context.new_page();errors=[];page.on('pageerror',lambda error:errors.append(str(error)))
-    directory=Path('/workspace/review-runtime/v31-screenshots');directory.mkdir(parents=True,exist_ok=True)
+    directory=(Path('/workspace/review-runtime') if Path('/workspace/review-runtime').exists() else Path(tempfile.gettempdir())) / 'v31-screenshots';directory.mkdir(parents=True,exist_ok=True)
     try:
         page.on('dialog',lambda dialog:dialog.accept())
         sign_in(page,league.base,'BrowserAdmin');page.goto(league.base+'/admin/teams')

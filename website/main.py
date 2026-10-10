@@ -33,6 +33,7 @@ import database as store
 import account_service as accounts
 import league_seasons as seasons
 from league_honours import season_honours
+from player_statistics import player_totals, team_season_scores
 
 BASE_DIR = Path(__file__).resolve().parent
 MAX_PHOTO_BYTES = 5 * 1024 * 1024
@@ -633,6 +634,8 @@ def member_profile(request: Request, username: str):
             (profile['id'],)).fetchall() if profile else []
         member_games=game_rows(db,where='g.white_player_id=? OR g.black_player_id=?',
                                values=(profile['id'],profile['id']), limit=8) if profile else []
+        visible, visibility_values=public_game_visibility()
+        career=player_totals(db,profile['id'],visible,visibility_values) if profile else None
         # Invitations, pending role applications, and bid positions are private.
         invitations=[]
         request_rows=[]
@@ -658,7 +661,7 @@ def member_profile(request: Request, username: str):
                 profile=profile,team=team,roster=roster,score=score,bids=bids,reserved=reserved,
                 available=team['budget']-reserved if team else 0,
                 history=history,invitations=invitations,request_rows=request_rows,member_games=member_games,
-                past_teams=past_teams)
+                past_teams=past_teams,career=career)
 
 
 @app.post('/my/roles/{role}/quit')
@@ -972,6 +975,9 @@ def team_detail(request: Request, team_id: int, season: str | None = None):
         if not any(option['value']==season for option in season_options):
             raise HTTPException(404,'Season unavailable for this team')
         start,end,season_name=season_bounds(db,season)
+        visible, visibility_values=public_game_visibility()
+        season_scores=team_season_scores(db,team_id,start,end,
+            int(season[1:]) if str(season).startswith('s') else None,visible,visibility_values)
         seasons=[option['value'] for option in season_options]
         current=db.execute("""SELECT p.*,u.username,u.photo_updated_at FROM players p LEFT JOIN users u ON u.id=p.user_id
             WHERE p.owner_team_id=? ORDER BY CASE WHEN p.user_id=? THEN 0 ELSE 1 END,p.points DESC,p.name COLLATE NOCASE""",
@@ -1005,7 +1011,7 @@ def team_detail(request: Request, team_id: int, season: str | None = None):
     return view(request,'team_detail.html',team=team,current=current,season_honours=honours,
                 season=season,seasons=seasons,season_options=season_options,season_name=season_name,membership=membership,
                 management=management,transfers=transfers,team_games=team_games,history_complete=history_complete,
-                current_score=sum(p['points'] for p in current))
+                current_score=sum(p['points'] for p in current),season_scores=season_scores)
 
 
 

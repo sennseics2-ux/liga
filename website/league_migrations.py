@@ -6,7 +6,8 @@ foreign keys before committing, and creates a consistent pre-upgrade backup.
 LEDGER_VERSION = 'v24_reliability_ledger'
 ATTRIBUTION_VERSION = 'v24_historical_attribution'
 ACCOUNTS_VERSION = 'v25_accounts_seasons'
-SCHEMA_VERSION = 'v30_team_photos'
+TEAM_PHOTOS_VERSION = 'v30_team_photos'
+SCHEMA_VERSION = 'v32_shared_fide_ids'
 
 
 def apply(db, applied_at):
@@ -14,6 +15,7 @@ def apply(db, applied_at):
     _apply_attribution(db, applied_at)
     _apply_v25(db, applied_at)
     _apply_team_photos(db, applied_at)
+    _apply_shared_fide_ids(db, applied_at)
 
 
 def _apply_ledger(db, applied_at):
@@ -158,9 +160,17 @@ def _apply_v25(db, applied_at):
 
 
 def _apply_team_photos(db, applied_at):
-    if db.execute('SELECT 1 FROM schema_migrations WHERE version=?', (SCHEMA_VERSION,)).fetchone():
+    if db.execute('SELECT 1 FROM schema_migrations WHERE version=?', (TEAM_PHOTOS_VERSION,)).fetchone():
         return
     db.execute('''CREATE TABLE team_photos (
         team_id INTEGER PRIMARY KEY REFERENCES teams(id) ON DELETE CASCADE,
         photo_data BLOB NOT NULL, updated_at TEXT NOT NULL)''')
+    db.execute('INSERT INTO schema_migrations(version,applied_at) VALUES(?,?)', (TEAM_PHOTOS_VERSION,applied_at))
+
+
+def _apply_shared_fide_ids(db, applied_at):
+    if db.execute('SELECT 1 FROM schema_migrations WHERE version=?', (SCHEMA_VERSION,)).fetchone():
+        return
+    db.execute('DROP INDEX IF EXISTS users_fide_unique')
+    db.execute('CREATE INDEX IF NOT EXISTS users_fide_lookup ON users(fide_id) WHERE fide_id IS NOT NULL')
     db.execute('INSERT INTO schema_migrations(version,applied_at) VALUES(?,?)', (SCHEMA_VERSION,applied_at))

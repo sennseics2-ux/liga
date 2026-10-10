@@ -1,6 +1,15 @@
-# Liga SX-AAC — Chess Fantasy League V31
+# Liga SX-AAC — Chess Fantasy League V32
 
 FastAPI, Jinja templates, SQLite, and an offline PGN replay viewer for a club fantasy chess league. This release adds account recovery and editable identities, season scheduling, and four-player team matches while preserving existing accounts and league data.
+
+## New in v32
+
+- Multiple accounts may use the same numeric 6–8 digit FIDE ID. Accounts, ratings, game statistics and lock settings stay independent. Recovery email uniqueness remains enforced. Startup applies `v32_shared_fide_ids`, removing only the FIDE uniqueness index while retaining existing profiles and team pictures; a private `.pre-v32.bak` snapshot is created before migration.
+- Player profiles display wins, draws, losses and completed games across all seasons, including both piece colours and records beyond the recent eight-game preview. Scheduled games do not count; the pre-match privacy embargo also applies to statistics.
+- **Results** replaces **Seasons & rounds** in navigation, titles and manager links. Existing `/seasons` URLs and the season dropdown remain compatible.
+- **Squad by season** shows each member's chess score/games played (for example **1.5/2** for a win and a draw). Scores use the team attribution recorded on each game, not current ownership or fantasy points. Season-match IDs remain authoritative if an admin edits season dates; standalone games use season date boundaries.
+- A header moon/sun button toggles dark mode across every page, including administration, recovery, profiles, auctions, results and replay controls. It follows the device preference initially and saves an explicit choice locally. The preference loads before styles paint; storage-disabled browsers can still toggle. Text, surfaces, controls, borders, focus rings and result colours receive dark styling; uploaded photos and chess pieces retain their original appearance.
+- `static/dark.css` is generated from colour declarations in the main stylesheet by `python tools/build_dark_theme.py`; maintain theme-specific controls and semantic colours in `static/theme.css`. Run the generator after changing main CSS and use `--check` in validation. Assets use `v=32`.
 
 ## New in v31
 
