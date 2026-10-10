@@ -388,3 +388,7 @@ body.home-theme .market-card .card-bottom strong>[data-live-high-bid]{font:inher
 .match-schedule-form { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit,minmax(min(100%,220px),1fr)); }
 .match-schedule-form label { display: grid; gap: .5rem; min-width: 0; }
 .team-fixture-card { display: grid; gap: .5rem; padding: 1.2rem; border: 1px solid #ccc; color: inherit; overflow-wrap: anywhere; }
+
+/* Recovery follows the league's sign-in layout, including its return action. */
+.auth-recovery .auth-layout{align-items:center}.recovery-pitch h1{max-width:11ch}.recovery-help{display:flex;align-items:center;gap:18px;padding:22px 0;border-top:1px solid rgba(255,255,255,.22);margin-top:28px;max-width:430px}.recovery-help>span{font-size:48px;line-height:1;flex-shrink:0}.recovery-help p{margin:0;font-size:14px;line-height:1.7}.recovery-card{min-width:0}.recovery-footer{margin-top:28px;text-align:center}.recovery-footer a{display:inline-flex;align-items:center;min-height:44px;gap:6px}.recovery-success{padding:20px 0 4px}.recovery-success h3{font-size:23px;margin:16px 0 12px}.recovery-success p{line-height:1.7}.recovery-success-icon{display:grid;place-items:center;width:48px;height:48px;border-radius:50%;background:var(--pine);color:#fff;font-size:24px}
+@media(max-width:600px){.auth-recovery .auth-layout{padding-top:26px;padding-bottom:36px}.recovery-pitch h1{max-width:18ch}.recovery-help{margin-top:18px;padding:16px 0}.recovery-card{padding:26px 22px}.recovery-footer{margin-top:18px}}

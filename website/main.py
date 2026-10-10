@@ -27,7 +27,7 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from deploy.security import allowed as auth_rate_allowed, MAX_REQUEST_BYTES
 from web_security import (BoundedRequestBodyMiddleware, parse_secure_form,
                           safe_return_path, browser_http_exception_handler, website_request_limit)
-from web_queries import authenticate_account, team_for_member, close_auction_safely
+from web_queries import authenticate_account, team_for_member, close_auction_safely, AccountDeactivated
 
 import database as store
 import account_service as accounts
@@ -156,7 +156,7 @@ def expected_form_fields(path):
         '/register': ('username', 'password', 'role', 'next', 'email'),
         '/login': ('username', 'password', 'next'),
         '/logout': (),
-        '/forgot-password': ('email',),
+        '/forgot-password': ('username', 'email'),
         '/reset-password': ('token','password','confirm_password'),
         '/account/settings': ('name','country','fide_id','email','current_password'),
         '/account/deactivate': ('current_password','confirmation'),
@@ -366,7 +366,10 @@ async def login(request: Request):
     username = str(data.get("username", "")).strip()
     password = str(data.get("password", ""))
     next_path = safe_return_path(data.get('next'), '')
-    user = await run_in_threadpool(authenticate_account, username, password)
+    try:
+        user = await run_in_threadpool(authenticate_account, username, password)
+    except AccountDeactivated as exc:
+        return await run_in_threadpool(view, request, "auth.html", mode="login", error=str(exc), username=username, next=next_path)
     if not user:
         return await run_in_threadpool(view, request, "auth.html", mode="login", error="Incorrect username or password.", username=username, next=next_path)
     request.session.clear()
@@ -1402,7 +1405,7 @@ def forgot_password(request: Request):
 @app.post('/forgot-password', response_class=HTMLResponse)
 async def request_password_recovery(request: Request, background_tasks: BackgroundTasks):
     data=await form_data(request)
-    background_tasks.add_task(accounts.send_recovery,str(data.get('email','')))
+    background_tasks.add_task(accounts.send_recovery,str(data.get('username','')),str(data.get('email','')))
     return await run_in_threadpool(view,request,'password_recovery.html',mode='request',sent=True,error=None,token='')
 
 

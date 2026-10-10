@@ -42,7 +42,7 @@ def test_registration_settings_recovery_and_admin_lock(chromium,league_server,wi
         page.wait_for_url(league.base+'/')
         result=context.request.get(league.base+'/account/settings',headers={'Cookie':'session='+copied,'Accept':'application/json'})
         assert result.status==401
-        raw=accounts.issue_reset(email)
+        raw=accounts.issue_reset(username,email)
         page.goto(league.base+'/reset-password#token='+raw)
         page.wait_for_function("location.hash === ''")
         assert page.locator('input[name=token]').input_value()==raw

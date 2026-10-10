@@ -1,10 +1,10 @@
 # Liga SX-AAC
 
-This repository contains the **v25 league website** and the **1.1.0 mobile apps** for https://liga.sx-aac.com.
+This repository contains the **v26 league website** and the **1.1.0 mobile apps** for https://liga.sx-aac.com.
 
-## Website — v25
+## Website — v26
 
-The website source is in [`website/`](website/). This release adds email-based password recovery, editable identities and locked FIDE IDs, account deactivation, season scheduling, four-player match lineups, admin navigation, and security fixes. It retains the auction, scoring, localization, backup, and login-only replay improvements from v24. SMTP and the documented FIDE API contract require private deployment configuration; see the hosting guide.
+The website source is in [`website/`](website/). V26 requires both username and email for password recovery, improves the recovery page, explains deactivated-account login failures, and renders Criar conta on Portuguese registration. A private VM generator adds two completed six-round demonstration seasons using current teams and rosters while retaining accounts. Account settings, automatic FIDE standard ratings, season scheduling, lineups, auctions, scoring, backups and login-only PGN replay remain available. Keep SMTP credentials private on the VM; the default public FIDE lookup needs no API key. See the hosting guide for upgrades and database generation.
 
 **PGN replay and PGN downloads require a signed-in account.** Fixtures and results remain public. Login returns members to the selected game.
 

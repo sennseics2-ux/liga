@@ -7,7 +7,7 @@ from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 
 ROOT = Path(__file__).resolve().parents[1]
 WEBSITE = ROOT / 'website'
-VERSION = '25'
+VERSION = '26'
 
 
 def source_files():
@@ -54,5 +54,5 @@ def package(output):
 
 if __name__ == '__main__':
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--output', type=Path, default=ROOT/'build/chess-fantasy-league-v25.zip')
+    parser.add_argument('--output', type=Path, default=ROOT/'build/chess-fantasy-league-v26.zip')
     package(parser.parse_args().output)

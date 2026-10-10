@@ -1,10 +1,15 @@
-# Liga SX-AAC — Chess Fantasy League V25
+# Liga SX-AAC — Chess Fantasy League V26
 
 FastAPI, Jinja templates, SQLite, and an offline PGN replay viewer for a club fantasy chess league. This release adds account recovery and editable identities, season scheduling, and four-player team matches while preserving existing accounts and league data.
 
+## New in v26
+
+- Recovery requires the matching username and email, with a redesigned page and integrated return link. Correct credentials for a deactivated account show administrator reactivation instructions. The registration submit button renders Criar conta by default and assets use v=26.
+- `demo/generate_past_seasons.py` privately copies the existing database and adds generated 2024-2025 and 2025-2026 double round-robin seasons. `deploy/install_past_seasons.sh` stops database users, backs up, generates, validates and restores the copy. See HOSTING.md before running it.
+
 ## New in v25
 
-- Registration requires a unique, valid email address; no verification code is sent. Existing members add their recovery email in Account Settings. SMTP sends one-hour, single-use reset links. Recovery responses do not disclose account existence; tokens are stored hashed and travel in URL fragments to keep them out of access logs.
+- Registration requires a unique, valid email address; no verification code is sent. Existing members add their recovery email in Account Settings. Recovery requires both the username and matching email. SMTP sends one-hour, single-use reset links. Recovery responses do not disclose account existence; tokens are stored hashed and travel in URL fragments to keep them out of access logs.
 - Account Settings edits Name, Country, and a 6–8 digit ASCII FIDE ID. Administrators can edit identities and lock/unlock FIDE IDs. Account edits keep linked player names consistent. FIDE IDs are unique per account.
 - The FIDE Rating worker fetches only the configured standard-rating field, retries failures with persisted backoff, checks the first and second of each month in Europe/Lisbon, and retries stale publication months. Without publication metadata it checks through day seven. The documented public `/api/player/{fide_id}/current` endpoint and standard-rating/publication-month fields are built in; documentation and a live response were verified. No API key is required for this endpoint.
 - Active managers appear in the player directory before team appointment. Administration calls profile creation **Activate a player** and offers a dropdown for teams, role requests, players/transfers, games/results, seasons, and accounts.

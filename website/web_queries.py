@@ -2,11 +2,17 @@
 import database as store
 
 
+class AccountDeactivated(ValueError):
+    pass
+
+
 def authenticate_account(username, password):
     with store.read_db() as db:
         user = db.execute('SELECT * FROM users WHERE username=? COLLATE NOCASE', (username,)).fetchone()
-    if user is None or not user['account_active'] or not store.verify_password(password, user['password_hash']):
+    if user is None or not store.verify_password(password, user['password_hash']):
         return None
+    if not user['account_active']:
+        raise AccountDeactivated('The account has been deactivated. Please contact the administrator to reactivate it.')
     return dict(user)
 
 

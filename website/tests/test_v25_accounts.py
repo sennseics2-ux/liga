@@ -60,7 +60,7 @@ def test_profile_edit_validation_lock_and_administrator_override(client):
 
 
 def test_email_change_requires_password_and_invalidates_old_recovery(client):
-    uid=member();raw=accounts.issue_reset('member@example.com')
+    uid=member();raw=accounts.issue_reset('account_member','member@example.com')
     with pytest.raises(ValueError,match='current password'):
         accounts.update_profile(uid,'Member Name','','',email='new@example.com',current_password='wrong')
     accounts.update_profile(uid,'Member Name','','',email='new@example.com',current_password=PASSWORD)
@@ -72,7 +72,7 @@ def test_email_change_requires_password_and_invalidates_old_recovery(client):
 def test_recovery_single_use_expiry_hashing_and_session_revocation(client,monkeypatch):
     uid=member();post(client,'/login',username='account_member',password=PASSWORD)
     old_cookie=client.cookies.get('session')
-    raw=accounts.issue_reset('member@example.com')
+    raw=accounts.issue_reset('account_member','member@example.com')
     with store.read_db() as db:
         row=db.execute('SELECT * FROM password_resets').fetchone()
         assert raw not in str(dict(row))
@@ -83,7 +83,7 @@ def test_recovery_single_use_expiry_hashing_and_session_revocation(client,monkey
     client.cookies.set('session',old_cookie)
     assert client.get('/account/settings',headers={'Accept':'application/json'}).status_code==401
     assert post(client,'/login',username='account_member',password='RecoveredPassword123!').status_code==200
-    raw=accounts.issue_reset('member@example.com')
+    raw=accounts.issue_reset('account_member','member@example.com')
     later=store.now_utc()+timedelta(hours=2)
     monkeypatch.setattr(store,'now_utc',lambda:later)
     with pytest.raises(ValueError,match='invalid or expired'):
@@ -105,8 +105,8 @@ def test_deactivation_blocks_login_reset_and_reactivation_requires_admin(client)
     with pytest.raises(ValueError,match='administrators'):
         accounts.set_account_active(uid,True,actor_id=uid)
     accounts.set_account_active(uid,False,actor_id=uid,password=PASSWORD)
-    assert accounts.issue_reset('member@example.com') is None
-    assert 'Incorrect username or password.' in post(client,'/login',username='account_member',password=PASSWORD).text
+    assert accounts.issue_reset('account_member','member@example.com') is None
+    assert 'The account has been deactivated. Please contact the administrator to reactivate it.' in post(client,'/login',username='account_member',password=PASSWORD).text
     accounts.set_account_active(uid,True,actor_id=admin)
     assert 'Welcome back' in post(client,'/login',username='account_member',password=PASSWORD).text
     with pytest.raises(ValueError,match='last active administrator'):
@@ -123,7 +123,7 @@ def test_smtp_recovery_uses_tls_and_fragment_token(client,monkeypatch):
     for key,value in {'CHESS_SMTP_HOST':'smtp.example.com','CHESS_SMTP_FROM':'liga@example.com','CHESS_PUBLIC_URL':'https://club.test'}.items():
         monkeypatch.setenv(key,value)
     with patch('account_service.smtplib.SMTP') as smtp:
-        accounts.send_recovery('member@example.com')
+        accounts.send_recovery('account_member','member@example.com')
         transport=smtp.return_value
         assert transport.starttls.called
         message=transport.send_message.call_args.args[0]
@@ -134,8 +134,8 @@ def test_smtp_recovery_uses_tls_and_fragment_token(client,monkeypatch):
 def test_recovery_request_generic_and_all_admin_pages_authorized(client):
     with patch('account_service.send_recovery') as sender:
         result=post(client,'/forgot-password',email='unknown@example.com')
-        assert 'If an active account uses that email' in result.text
-        sender.assert_called_once_with('unknown@example.com')
+        assert 'If the username and email match an active account' in result.text
+        sender.assert_called_once_with('', 'unknown@example.com')
     for url in ['/admin/accounts','/admin/seasons','/admin/teams','/admin/roles','/admin/players','/admin/games']:
         assert client.get(url,headers={'Accept':'application/json'}).status_code==401
     seed_admin();post(client,'/login',username='commissioner',password='adminpass123!')

@@ -136,16 +136,20 @@ def set_account_active(user_id, active, *, actor_id, password=None):
                      'Account activation changed',before={'active':bool(user['account_active'])},after={'active':bool(active)})
 
 
-def issue_reset(email):
+def issue_reset(username, email):
     import database as store
     try:
         email=validate_email(email)
     except ValueError:
         return None
+    username=str(username or '').strip()
+    if not 3 <= len(username) <= 32:
+        return None
     raw=secrets.token_urlsafe(32)
     digest=hashlib.sha256(raw.encode()).hexdigest()
     with store.transaction() as db:
-        user=db.execute('SELECT id,auth_version FROM users WHERE email=? COLLATE NOCASE AND account_active=1',(email,)).fetchone()
+        user=db.execute('''SELECT id,auth_version FROM users WHERE username=? COLLATE NOCASE
+            AND email=? COLLATE NOCASE AND account_active=1''',(username,email)).fetchone()
         if not user:
             return None
         db.execute('DELETE FROM password_resets WHERE user_id=? OR expires_at<?',(user['id'],store.iso(store.now_utc())))
@@ -173,7 +177,7 @@ def reset_password(raw_token, password):
         db.execute('DELETE FROM password_resets WHERE user_id=?',(row['user_id'],))
 
 
-def send_recovery(email):
+def send_recovery(username, email):
     """Background task; never log tokens, recipients, credentials, or reset links."""
     import logging
     public=os.getenv('CHESS_PUBLIC_URL','').rstrip('/')
@@ -182,7 +186,7 @@ def send_recovery(email):
     if not host or not sender or urlsplit(public).scheme != 'https' or not urlsplit(public).netloc:
         logging.getLogger(__name__).warning('Password recovery SMTP or public HTTPS URL is not configured.')
         return
-    token=issue_reset(email)
+    token=issue_reset(username,email)
     if token is None:
         return
     email=validate_email(email)

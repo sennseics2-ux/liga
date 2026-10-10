@@ -27,7 +27,7 @@ instructions, not evidence that this workspace has changed the live website.
    sudo docker compose down
    sudo rsync -a --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
      --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
-     ~/chess-fantasy-league-v25/ /opt/clubdraft/
+     ~/chess-fantasy-league-v26/ /opt/clubdraft/
    sudo mkdir -p data backups
    sudo chown -R 10001:10001 data backups
    sudo chmod 700 data backups
@@ -49,9 +49,9 @@ instructions, not evidence that this workspace has changed the live website.
    replay data. Sign in and verify replay and PGN download. Confirm Portuguese
    labels and unchanged team/player names. Monitor backups health separately.
 
-## V25 release extraction and configuration
+## V26 release extraction and configuration
 
-The standalone release ZIP has `chess-fantasy-league-v25/` at its root. GitHub's
+The standalone release ZIP has `chess-fantasy-league-v26/` at its root. GitHub's
 Download ZIP instead contains `liga-main/website/`. Copy the directory containing
 `main.py`, `compose.yaml`, and `league_migrations.py`; copying `liga-main/` directly
 will put the application at the wrong nesting level and leave the old site running.
@@ -61,14 +61,15 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 ```bash
 (
   set -e
-  ZIP="$HOME/chess-fantasy-league-v25.zip"
-  RELEASE_DIR="$(mktemp -d "$HOME/liga-v25-release.XXXXXX")"
+  ZIP="$HOME/chess-fantasy-league-v26.zip"
+  RELEASE_DIR="$(mktemp -d "$HOME/liga-v26-release.XXXXXX")"
   unzip -q "$ZIP" -d "$RELEASE_DIR"
-  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v25"
+  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v26"
   if [ ! -f "$SOURCE_DIR/main.py" ]; then
     SOURCE_DIR="$RELEASE_DIR/liga-main/website"
   fi
   test -f "$SOURCE_DIR/compose.yaml"
+  test -f "$SOURCE_DIR/deploy/install_past_seasons.sh"
   grep -q 'v25_accounts_seasons' "$SOURCE_DIR/league_migrations.py"
 
   cd /opt/clubdraft
@@ -94,7 +95,7 @@ creates a consistent snapshot before migrating. The additional `.pre-v25.bak`
 snapshot preserves the pre-migration database; keep a copy off the VM.
 
 After web is healthy, `/health` must report `"schema":"v25_accounts_seasons"`, and
-the homepage assets must use `v=25`. A browser hard refresh may be necessary.
+the homepage assets must use `v=26`. A browser hard refresh may be necessary.
 
 ### SMTP password recovery
 
@@ -118,7 +119,7 @@ Settings, confirming their current password. Recovery is intentionally generic;
 a deactivated account cannot recover access without administrator reactivation.
 
 After updating `.env`, run `sudo docker compose up -d --force-recreate web` to apply
-it (use both compose files if offsite backups are enabled). Test recovery using an
+it (use both compose files if offsite backups are enabled). Test recovery using the username and an
 email you control. Check SMTP delivery and reset the password through the received
 link. The link expires after one hour; using it or changing the password revokes
 all sessions. Logout also revokes every session for that account.
@@ -338,3 +339,95 @@ checks and a container build. Historical migration and three-season demo fixture
 are generated locally from sanitized data; external databases are not required.
 Browser checks are required in CI (RUN_BROWSER_TESTS=1) and fail if Chromium or
 Playwright is unavailable.
+
+## Generate and install the two past seasons
+
+Install V26 application files first using the upgrade commands above. Keep the
+existing `.env`, accounts, and data. The database migration version remains
+`v25_accounts_seasons`; V26 changes application behavior and assets (`v=26`).
+
+The generator uses your **private current VM database**, not a downloadable
+fictional replacement. It preserves account IDs, password hashes, recovery emails,
+profile settings, current ownership, current manager appointments, budgets,
+auctions and existing scoring adjustments. Generated results add their normal
+awards to cumulative fantasy points. Unassigned free agents remain unassigned.
+
+It adds 2024-2025 and 2025-2026, each September 1–June 30, with six completed rounds.
+Every team meets each other team twice, once home and once away. There are 12 team
+matches and 48 board games per season (96 games altogether), submitted four-player
+lineups, managers playing, historical roster/manager terms, scored results and
+legal sample PGNs. All eligible current roster players rotate through games in
+both seasons. Games, PGNs and audit records explicitly identify the history as
+**generated demonstration data, not actual past results or actual game moves**.
+
+Requirements: exactly four teams, each with an active playing manager on its
+roster and 4–24 eligible players. With six rounds and four boards, more than 24
+players cannot all play. Activate or assign missing players/managers before
+running. Existing seasons/games in these dates or conflicting historical
+appointments cause a safe failure rather than replacement. It can run only once
+against a given database; a repeat attempt refuses duplicate seasons.
+
+Copy a consistent recent backup off the VM before starting. Then run:
+
+```bash
+cd /opt/clubdraft
+bash deploy/install_past_seasons.sh
+```
+
+For an existing offsite-backup deployment, use:
+
+```bash
+cd /opt/clubdraft
+CHESS_USE_OFFSITE_COMPOSE=1 bash deploy/install_past_seasons.sh
+```
+
+The script stops all Compose services, creates an offline consistent original
+snapshot, generates a separate copy, checks its integrity and foreign keys,
+checkpoints any remaining WAL, and atomically restores the prepared database.
+It restarts services on success or failure. The original backup and prepared copy
+are retained in `backups/past-seasons-TIMESTAMP/`; the exact location is printed.
+The generated database contains private account data. Keep it on the VM and
+never add it to GitHub or send it publicly.
+
+Verify the homepage, login and recovery, `/seasons`, both past-season filters on
+`/games`, and each team's seasonal roster, manager and game archives. Signed-out
+visitors must still be unable to replay/download PGNs. Check:
+
+```bash
+sudo docker compose ps
+sudo docker compose logs --tail=80 web backups
+curl -fsS https://liga.sx-aac.com/health
+```
+
+To generate a copy without installing it (no application data is changed):
+
+```bash
+sudo docker compose exec -T web python demo/generate_past_seasons.py \
+  --source /data/league.sqlite3 \
+  --output /backups/review-past-seasons.sqlite3
+```
+
+This is an online consistent snapshot, useful for reviewing the report. Do not
+later deploy an old review copy after new sign-ups or other database changes;
+the installer generates a fresh copy while all writers are stopped.
+
+### Roll back the generated history
+
+Use the original snapshot from the directory printed by the installer. Replace
+`PASTE-TIMESTAMP` and `PASTE-ORIGINAL-FILENAME` with those actual values:
+
+```bash
+cd /opt/clubdraft
+sudo docker compose down
+sudo docker compose run --rm --no-deps -T --entrypoint python web \
+  -m deploy.backup_sqlite \
+  --restore /backups/past-seasons-PASTE-TIMESTAMP/original/PASTE-ORIGINAL-FILENAME.sqlite3 \
+  --target /data/league.sqlite3 --overwrite
+sudo docker compose up -d
+```
+
+Restore only with all database users stopped. A restore refuses SQLite sidecars;
+if reported, checkpoint the stopped database using the command in
+`deploy/install_past_seasons.sh` before retrying. A full rollback also removes
+any sign-ups or edits made after the original snapshot. Use both Compose files
+in each command when offsite backups are enabled.
