@@ -12,7 +12,7 @@ def test_language_switch_is_in_global_nav_and_portuguese_is_default(client):
         assert response.status_code == 200
         html = response.text
         assert '<html lang="pt-PT">' in html
-        assert 'src="/static/i18n.js?v=32"' in html
+        assert 'src="/static/i18n.js?v=33"' in html
         assert 'id="language-toggle"' in html
         assert 'id="language-flag"' in html
         assert 'src="/static/flags/pt.svg"' in html and 'Português (Portugal)' in html
@@ -22,7 +22,7 @@ def test_language_switch_is_in_global_nav_and_portuguese_is_default(client):
 def test_portuguese_catalogue_uses_european_spelling():
     strings=json.loads((ROOT/'static/pt-PT.json').read_text())
     assert strings['Teams']=='Equipas'
-    assert strings['Team Manager']=='Gestor da equipa'
+    assert strings['Team Manager']=='Capitão da equipa'
     assert strings['Transfer market']=='Mercado de transferências'
     assert strings['Log in']=='Iniciar sessão'
     assert strings['Pieces']=='Peças'
@@ -32,8 +32,8 @@ def test_portuguese_catalogue_uses_european_spelling():
 
 def test_manager_squad_tag_has_only_requested_label(client):
     html=(ROOT/'templates/team_detail.html').read_text()
-    assert '>Team Manager</span>' in html
-    assert 'Team manager · non-transferable' not in html
+    assert '>Team Captain</span>' in html
+    assert 'Team captain · non-transferable' not in html
 
 
 def test_language_works_on_dynamically_updated_pages():

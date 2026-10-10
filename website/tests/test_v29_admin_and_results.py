@@ -44,7 +44,7 @@ def test_admin_overview_links_to_workspaces_and_actions_stay_in_context(client):
     assert 'class="credit-symbol"' in response.text
     assert 'admin-attention-total' in client.get('/admin').text
     overview=client.get('/admin').text
-    assert 'Teams without a manager' in overview
+    assert 'Teams without a captain' in overview
     assert 'method="post" action="/admin/teams"' not in overview
     assert 'id="teams"' not in client.get('/admin/roles').text
     with store.read_db() as db:

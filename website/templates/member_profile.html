@@ -14,9 +14,14 @@
       {% if not member.account_active %}<p class="notice notice-error" data-i18n="Account deactivated">Account deactivated</p>{% endif %}
       <div class="role-indicators" aria-label="Member role status">
         <span class="role-indicator {{ 'role-active' if member.player_active else 'role-inactive' }}"><span class="role-dot" aria-hidden="true"></span><span data-i18n="Player">Player</span> · <span data-i18n="{{ 'Active' if member.player_active else 'Inactive' }}">{{ 'Active' if member.player_active else 'Inactive' }}</span></span>
-        <span class="role-indicator {{ 'role-active' if member.manager_active else 'role-inactive' }}"><span class="role-dot" aria-hidden="true"></span><span data-i18n="Manager">Manager</span> · <span data-i18n="{{ 'Active' if member.manager_active else 'Inactive' }}">{{ 'Active' if member.manager_active else 'Inactive' }}</span></span>
+        <span class="role-indicator {{ 'role-active' if member.manager_active else 'role-inactive' }}"><span class="role-dot" aria-hidden="true"></span><span data-i18n="Captain">Captain</span> · <span data-i18n="{{ 'Active' if member.manager_active else 'Inactive' }}">{{ 'Active' if member.manager_active else 'Inactive' }}</span></span>
       </div>
     </div>
+    {% if career %}
+  <section class="career-record career-record-compact" aria-label="All-season chess record">
+    <dl class="career-stats"><div class="career-stat career-wins"><dt data-i18n="Wins">Wins</dt><dd data-no-i18n>{{ career.wins }}</dd></div><div class="career-stat career-draws"><dt data-i18n="Draws">Draws</dt><dd data-no-i18n>{{ career.draws }}</dd></div><div class="career-stat career-losses"><dt data-i18n="Losses">Losses</dt><dd data-no-i18n>{{ career.losses }}</dd></div><div class="career-stat"><dt data-i18n="Games played">Games played</dt><dd data-no-i18n>{{ career.played }}</dd></div></dl>
+  </section>
+    {% endif %}
   </div>
   <div class="member-profile-header">
     <a href="/players" class="text-link">← All players</a>
@@ -24,7 +29,7 @@
   </div>
   <nav class="profile-tabs" aria-label="Profiles for {{ member.username }}">
     <a href="/users/{{ member.username|urlencode }}" {% if selected_tab == 'player' %}class="selected" aria-current="page"{% endif %}>♟ Player profile</a>
-    <a href="/users/{{ member.username|urlencode }}/manager" {% if selected_tab == 'manager' %}class="selected" aria-current="page"{% endif %}>♞ Manager profile</a>
+    <a href="/users/{{ member.username|urlencode }}/manager" {% if selected_tab == 'manager' %}class="selected" aria-current="page"{% endif %}>♞ Captain profile</a>
   </nav>
   {% if selected_tab == 'player' %}
     {% include 'member_player_section.html' %}

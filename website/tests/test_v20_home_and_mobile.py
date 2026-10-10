@@ -12,7 +12,7 @@ def test_home_is_split_player_left_manager_right_with_accurate_content(client):
     assert response.status_code == 200
     html = response.text
     assert html.index('role-card-player') < html.index('role-card-manager')
-    assert 'FOR PLAYERS' in html and 'FOR MANAGERS' in html
+    assert 'FOR PLAYERS' in html and 'FOR CAPTAINS' in html
     assert 'Play. Compete.' in html and 'Lead your team.' in html
     assert 'replay recorded PGN games' in html
     assert 'Bid for players using your transfer budget' in html
@@ -53,7 +53,7 @@ def test_pt_portugal_translations_and_mobile_brand_rules(client):
     catalogue = json.loads((ROOT/'static/pt-PT.json').read_text())
     assert catalogue['CHESS LEAGUE'] == 'LIGA DE XADREZ'
     assert catalogue['FOR PLAYERS'] == 'PARA JOGADORES'
-    assert catalogue['FOR MANAGERS'] == 'PARA GESTORES'
+    assert catalogue['FOR CAPTAINS'] == 'PARA CAPITÃES'
     assert catalogue['Create account'] == 'Criar conta'
     for label in ['Play. Compete.', 'Make your mark.', 'Lead your team.', 'Build your squad.', 'Explore teams']:
         assert label in catalogue and catalogue[label]

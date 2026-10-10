@@ -27,7 +27,7 @@ instructions, not evidence that this workspace has changed the live website.
    sudo docker compose down
    sudo rsync -a --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
      --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
-     ~/chess-fantasy-league-v32/ /opt/clubdraft/
+     ~/chess-fantasy-league-v33/ /opt/clubdraft/
    sudo mkdir -p data backups
    sudo chown -R 10001:10001 data backups
    sudo chmod 700 data backups
@@ -49,9 +49,9 @@ instructions, not evidence that this workspace has changed the live website.
    replay data. Sign in and verify replay and PGN download. Confirm Portuguese
    labels and unchanged team/player names. Monitor backups health separately.
 
-## V32 release extraction and configuration
+## V33 release extraction and configuration
 
-The standalone release ZIP has `chess-fantasy-league-v32/` at its root. GitHub's
+The standalone release ZIP has `chess-fantasy-league-v33/` at its root. GitHub's
 Download ZIP instead contains `liga-main/website/` (or `liga-COMMIT/website/`
 for a commit archive). Copy the directory containing
 `main.py`, `compose.yaml`, and `league_migrations.py`; copying `liga-main/` directly
@@ -62,10 +62,10 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 ```bash
 (
   set -e
-  ZIP="$HOME/chess-fantasy-league-v32.zip"
-  RELEASE_DIR="$(mktemp -d "$HOME/liga-v32-release.XXXXXX")"
+  ZIP="$HOME/chess-fantasy-league-v33.zip"
+  RELEASE_DIR="$(mktemp -d "$HOME/liga-v33-release.XXXXXX")"
   unzip -q "$ZIP" -d "$RELEASE_DIR"
-  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v32"
+  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v33"
   if [ ! -f "$SOURCE_DIR/main.py" ]; then
     for CANDIDATE in "$RELEASE_DIR"/liga-*/website; do
       if [ -f "$CANDIDATE/main.py" ]; then
@@ -101,7 +101,7 @@ creates a consistent snapshot before migrating. The additional `.pre-v32.bak`
 snapshot preserves the pre-migration database; keep a copy off the VM.
 
 After web is healthy, `/health` must report `"schema":"v32_shared_fide_ids"`, and
-the homepage assets must use `v=32`. A browser hard refresh may be necessary.
+the homepage assets must use `v=33`. A browser hard refresh may be necessary.
 Open `/seasons`: it defaults to the current July–June season (2026-2027 in October
 2026), including before its schedule is published. Use the season dropdown to
 view 2024-2025 and 2025-2026; their results no longer appear on the initial page.
@@ -364,9 +364,9 @@ Playwright is unavailable.
 
 ## Generate and install the two past seasons
 
-Install V32 application files first using the upgrade commands above. Keep the
+Install V33 application files first using the upgrade commands above. Keep the
 existing `.env`, accounts, and data. Startup applies the additive
-`v32_shared_fide_ids` migration and assets use `v=32`. Team pictures live in SQLite,
+`v32_shared_fide_ids` migration and assets use `v=33`. Team pictures live in SQLite,
 so existing database backups include them. Do not run this generator as part
 of an ordinary application upgrade.
 

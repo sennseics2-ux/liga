@@ -5,6 +5,7 @@
 (() => {
   'use strict';
   const PT = __DICTIONARY__;
+  const captainCopy = source => Object.prototype.hasOwnProperty.call(PT, source) ? source.replace(/\b(manager|managers|Manager|Managers|MANAGER|MANAGERS)\b/g, word => ({manager:'captain',managers:'captains',Manager:'Captain',Managers:'Captains',MANAGER:'CAPTAIN',MANAGERS:'CAPTAINS'}[word])) : source;
   const KEY = 'clubdraft.language';
   let language = 'pt-PT';
   try { if (localStorage.getItem(KEY) === 'en') language = 'en'; } catch (_) {}
@@ -18,13 +19,13 @@
   const phrases = [
     [/^Photo of (.+)$/,m=>t('Photo of {name}',{name:m[1]})],
     [/^Profiles for (.+)$/,m=>t('Profiles for {name}',{name:m[1]})],
-    [/^Invite manager for (.+)$/,m=>t('Invite manager for {name}',{name:m[1]})],
+    [/^Invite captain for (.+)$/,m=>t('Invite captain for {name}',{name:m[1]})],
     [/^CHESS GAME #(\d+)( \/)?$/,m=>t('CHESS GAME #{number}',{number:m[1]})+(m[2]||'')],
     [/^CLUB TEAM \/ EST\. (\d{4})$/,m=>t('CLUB TEAM / EST. {year}',{year:m[1]})],
     [/^\/ AUCTION #(\d+)$/,m=>t('/ AUCTION #{number}',{number:m[1]})],
     [/^(\d+) most recent high bids$/,m=>t('{count} most recent high bids',{count:m[1]})],
     [/^for (\d+) credits(\.)?$/,m=>t('for {credits} credits',{credits:m[1]})+(m[2]||'')],
-    [/^No confirmed player membership records are available for (\d{4})\. Older roster details may not have been recorded before this feature was introduced\.$/,m=>t('No confirmed player membership records are available for {year}. Older roster details may not have been recorded before this feature was introduced.',{year:m[1]})],
+    [/^No confirmed player membership records are available for (\d{4}(?:-\d{4})?)\. Older roster details may not have been recorded before this feature was introduced\.$/,m=>t('No confirmed player membership records are available for {year}. Older roster details may not have been recorded before this feature was introduced.',{year:m[1]})],
     [/^The minimum bid is (\d+) credits\.$/,m=>t('The minimum bid is {minimum} credits.',{minimum:m[1]})],
     [/^You have (\d+) credits available for this auction \(other leading bids reserve credits\)\.$/,m=>t('You have {available} credits available for this auction (other leading bids reserve credits).',{available:m[1]})],
     [/^Your (manager|player) role is already active\.$/,m=>t('Your {role} role is already active.',{role:t(m[1])})],
@@ -32,15 +33,15 @@
     [/^Invalid chess moves in PGN: (.+)$/,m=>t('Invalid chess moves in PGN: {detail}',{detail:m[1]})],
     [/^PGN is too long \(maximum (\d+) half-moves\)\.$/,m=>t('PGN is too long (maximum {maximum} half-moves).',{maximum:m[1]})],
     [/^Account menu for (.+)$/, m=>`Menu da conta de ${m[1]}`],
-    [/^Manager: (.+)$/,m=>`Gestor: ${m[1]}`],
+    [/^(?:Manager|Captain): (.+)$/,m=>`Capitão: ${m[1]}`],
     [/^Founded (\d{4}-\d{2}-\d{2})$/,m=>`Fundada em ${m[1]}`],
     [/^Club member since (.+)$/,m=>`Membro do clube desde ${m[1]}`],
     [/^These players currently belong to (.+)\.$/,m=>`Estes jogadores pertencem atualmente à equipa ${m[1]}.`],
     [/^January 1 – December 31, (\d{4}) · all dates UTC\. This is a roster membership history, not a match-results or historical-points table\.$/,m=>`1 de janeiro – 31 de dezembro de ${m[1]} · todas as datas em UTC. Este é um histórico dos plantéis, não uma tabela de resultados ou pontuações por época.`],
-    [/^(\d{4}) season$/,m=>`Época de ${m[1]}`],
-    [/^Transfers in (\d{4})$/,m=>`Transferências em ${m[1]}`],
-    [/^Chess games in (\d{4})$/,m=>`Partidas de xadrez em ${m[1]}`],
-    [/^Managers during (\d{4})$/,m=>`Gestores durante ${m[1]}`],
+    [/^(\d{4}(?:-\d{4})?) season$/,m=>`Época de ${m[1]}`],
+    [/^Transfers in (\d{4}(?:-\d{4})?)$/,m=>`Transferências em ${m[1]}`],
+    [/^Chess games in (\d{4}(?:-\d{4})?)$/,m=>`Partidas de xadrez em ${m[1]}`],
+    [/^Captains during (\d{4}(?:-\d{4})?)$/,m=>`Capitães durante ${m[1]}`],
     [/^Showing (\d+) games \(newest first\)$/,m=>`A mostrar ${m[1]} partidas (mais recentes primeiro)`],
     [/^(\d+) bids?$/,m=>`${m[1]} licitaç${Number(m[1])===1?'ão':'ões'}`],
     [/^(.+) · (\d+) rating$/,m=>`${m[1]} · rating ${m[2]}`],
@@ -54,8 +55,8 @@
     [/^(\d+) half-moves$/,m=>`${m[1]} meios-lances`],
     [/^Move (\d+)(\.|…) (\S+) · (\d+) \/ (\d+) half-moves$/,m=>`Lance ${m[1]}${m[2]} ${m[3]} · ${m[4]} / ${m[5]} meios-lances`],
     [/^(\d+) days?$/,m=>`${m[1]} dia${m[1]==='1'?'':'s'}`],
-    [/^No completed transfers recorded for this team during (\d{4})\.$/,m=>`Não há transferências concluídas desta equipa durante ${m[1]}.`],
-    [/^No fixtures or results recorded for this team during (\d{4})\.$/,m=>`Não há partidas ou resultados registados desta equipa durante ${m[1]}.`]
+    [/^No completed transfers recorded for this team during (\d{4}(?:-\d{4})?)\.$/,m=>`Não há transferências concluídas desta equipa durante ${m[1]}.`],
+    [/^No fixtures or results recorded for this team during (\d{4}(?:-\d{4})?)\.$/,m=>`Não há partidas ou resultados registados desta equipa durante ${m[1]}.`]
   ];
   function localize(original) {
     const str = String(original);
@@ -77,7 +78,7 @@
     const source=String(key);
     // Constrained legacy sentence adapters also cover dynamic domain errors;
     // interpolation values are never passed through this lookup.
-    const value=language==='en' ? source : (PT[source] ?? localize(source));
+    const value=language==='en' ? captainCopy(source) : (PT[source] ?? localize(source));
     return value.replace(/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g,(placeholder,name)=>
       Object.prototype.hasOwnProperty.call(variables,name) ? String(variables[name]) : placeholder);
   }
@@ -115,7 +116,7 @@
     const record = originals.get(node);
     let source = record && (node.nodeValue === record.output || node.nodeValue === record.source)
       ? record.source : node.nodeValue;
-    const output = language==='en' ? source : localize(source);
+    const output = language==='en' ? captainCopy(source) : localize(source);
     originals.set(node,{source,output});
     if (node.nodeValue !== output) node.nodeValue=output;
   }
@@ -126,7 +127,7 @@
     const current=el.getAttribute(attr);
     const record=cache[attr];
     const source=record && (current===record.output || current===record.source) ? record.source : current;
-    const output=language==='en'?source:localize(source);
+    const output=language==='en'?captainCopy(source):localize(source);
     cache[attr]={source,output};
     if (current!==output)el.setAttribute(attr,output);
   }

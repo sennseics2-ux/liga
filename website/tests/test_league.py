@@ -110,7 +110,7 @@ def test_admin_team_creation_assignment_and_manager_player(client):
     assert 'make_player' not in client.get('/admin').text
     assert '/manager-player' not in client.get('/admin').text
     response = post(client, f'/admin/teams/{team_id}/manager', manager_id=str(manager_id))
-    assert 'Manager invitation sent' in response.text
+    assert 'Captain invitation sent' in response.text
     with store.read_db() as db:
         assert db.execute('SELECT manager_id FROM teams WHERE id=?', (team_id,)).fetchone()[0] is None
         invitation_id = db.execute('SELECT id FROM manager_invitations WHERE team_id=?', (team_id,)).fetchone()[0]
@@ -131,7 +131,7 @@ def test_admin_team_creation_assignment_and_manager_player(client):
     logout(client)
     post(client, '/login', username='knight', password='p4ssword!AB12')
     assert 'King’s Guard' in client.get('/dashboard').text
-    assert 'Manager · Active' in re.sub(r'<[^>]+>', '', client.get('/dashboard').text)
+    assert 'Captain · Active' in re.sub(r'<[^>]+>', '', client.get('/dashboard').text)
 
 
 def test_manager_automatically_plays_and_follows_reassignment(client):

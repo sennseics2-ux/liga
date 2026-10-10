@@ -21,11 +21,11 @@ def test_member_tabs_and_old_links(client):
     assert client.get('/my/player', follow_redirects=False).headers['location'] == '/users/lina'
     assert client.get('/my/manager', follow_redirects=False).headers['location'] == '/users/lina/manager'
     page = client.get(f'/users/{uid}').text
-    assert 'Player profile' in page and 'Manager profile' in page
+    assert 'Player profile' in page and 'Captain profile' in page
     assert 'Quit player role' in page
     assert 'href="/users/lina/manager"' in page
     assert 'You have never managed a team' in client.get(f'/users/{uid}/manager').text
-    assert 'Request manager activation' in client.get(f'/users/{uid}/manager').text
+    assert 'Request captain activation' in client.get(f'/users/{uid}/manager').text
     assert client.get('/members', follow_redirects=False).headers['location']=='/players'
     assert 'All players' in client.get(f'/users/{uid}').text
 
@@ -40,16 +40,16 @@ def test_public_profiles_without_private_actions_or_invitations(client):
     register(client, 'visitor', 'player')
     public = client.get(f'/users/{mid}/manager').text
     assert 'Bishops Club' in public
-    assert 'Manager · Active' in re.sub(r'<[^>]+>', '', public)
+    assert 'Captain · Active' in re.sub(r'<[^>]+>', '', public)
     assert 'Management history' in public
     assert 'Resign from team' not in public
-    assert 'Quit manager role' not in public
+    assert 'Quit captain role' not in public
     assert 'Kick player' not in public
     assert 'Your active bids' not in public
     assert 'PRIVATE TRANSFER ACTIVITY' not in public
     assert 'Mark available' not in public
     assert 'Accept invitation' not in public
-    assert 'Request manager activation' not in public
+    assert 'Request captain activation' not in public
     player_page = client.get(f'/users/{mid}').text
     assert 'Quit player role' not in player_page
     assert 'Request player activation' not in player_page

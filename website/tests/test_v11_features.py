@@ -10,7 +10,7 @@ def test_role_indicators_and_owner_only_controls(client):
         uid=db.execute("SELECT id FROM users WHERE username='dual_account'").fetchone()[0]
     html=client.get(f'/users/{uid}').text
     assert 'Player · Active' in re.sub(r'<[^>]+>', '', html)
-    assert 'Manager · Inactive' in re.sub(r'<[^>]+>', '', html)
+    assert 'Captain · Inactive' in re.sub(r'<[^>]+>', '', html)
     assert '<details class="role-settings"' in html
     assert 'Player role:' not in html
     assert 'Account &amp; role settings' in html
@@ -18,7 +18,7 @@ def test_role_indicators_and_owner_only_controls(client):
     logout(client)
     html=client.get(f'/users/{uid}/manager').text
     assert 'Quit player role' not in html
-    assert 'Manager · Inactive' in re.sub(r'<[^>]+>', '', html)
+    assert 'Captain · Inactive' in re.sub(r'<[^>]+>', '', html)
 
 
 def test_history_and_manager_first_in_squad(client):

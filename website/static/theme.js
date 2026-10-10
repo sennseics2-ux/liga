@@ -10,7 +10,7 @@
     const button = document.getElementById('theme-toggle');
     if (button) button.setAttribute('aria-pressed', String(root.dataset.theme === 'dark'));
     const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.content = root.dataset.theme === 'dark' ? '#151922' : '#171819';
+    if (meta) meta.content = root.dataset.theme === 'dark' ? '#10151d' : '#171819';
   };
   document.addEventListener('DOMContentLoaded', () => {
     sync();

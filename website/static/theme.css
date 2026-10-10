@@ -28,3 +28,42 @@
 @media(max-width:1020px){.site-header{height:auto;min-height:unset}.nav-shell{display:grid;grid-template-columns:minmax(0,1fr) 44px 44px;grid-template-areas:'brand theme toggle' 'actions actions actions';align-items:center;gap:8px 10px;padding-top:11px;padding-bottom:11px;height:auto}.brand{grid-area:brand;justify-self:start;max-width:100%}.mobile-toggle{display:block;grid-area:toggle;margin:0;justify-self:end}.theme-toggle{grid-area:theme;width:44px;height:44px;justify-self:end}.nav-actions{grid-area:actions;justify-self:end;max-width:100%}.nav-links{display:none;position:absolute;left:0;right:0;top:100%;background:#fff;flex-direction:column;align-items:stretch;padding:12px 24px 20px;box-shadow:0 15px 25px #1e1e1e1e}.nav-links.open{display:flex}.nav-links a{padding:10px}.login-link{display:inline-flex}}
 :root[data-theme="dark"] .nav-links.open{background:var(--theme-surface)}
 :root[data-theme="dark"] body.home-theme{--paper:var(--theme-page);--ink:var(--theme-text);--muted:var(--theme-muted);--line:var(--theme-border)}
+
+/* V33: compact identity record and an editorial season squad. */
+.member-profile-identity{display:grid;grid-template-columns:auto minmax(0,1fr) auto}
+.member-profile-identity .career-record-compact{padding:0 0 0 22px;margin:0;border:0;border-left:1px solid var(--line);border-radius:0;background:transparent;max-width:360px}
+.career-record-compact .career-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.career-record-compact .career-stat{padding:9px 8px;min-width:0;border:0;border-radius:8px;text-align:center}
+.career-record-compact .career-stat dt{font-size:10px;line-height:1.3;min-height:26px;display:flex;align-items:center;justify-content:center}
+.career-record-compact .career-stat dd{font-size:22px;margin-top:3px;line-height:1.2}
+.season-squad-card{border:1px solid #d2d8e1;border-radius:18px;background:#fff;overflow:hidden;box-shadow:0 8px 28px #1729450a;margin:20px 0 32px}
+.season-squad-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px 24px;background:#edf1f7;border-bottom:1px solid #d2d8e1}
+.season-squad-heading h3{font-size:24px;margin-top:5px}.season-squad-heading .competition-eyebrow{color:#4a596c;font-size:10px}.season-squad-note{font-size:12px;color:#4a596c;font-weight:700}
+.season-squad-card .table-scroll{margin:0;border:0;border-radius:0}.season-squad-table{margin:0;width:100%}.season-squad-table thead th{background:#f7f9fc;color:#46566a;font-size:10px;letter-spacing:.07em;padding:14px 20px;border-bottom:1px solid #dce2eb}
+.season-squad-table tbody td{padding:17px 20px;border-bottom:1px solid #e1e6ed;vertical-align:middle;font-size:12px}.season-squad-table tbody tr:nth-child(even){background:#f7f9fc}.season-squad-table tbody tr:hover{background:#eef3fa}.season-squad-table tbody tr:last-child td{border-bottom:0}
+.squad-avatar{width:38px;height:38px;border-radius:12px;object-fit:cover;flex-shrink:0}.squad-initial{display:grid;place-items:center;background:#e4ebf5;color:#354d71;font:800 17px Manrope,sans-serif}.season-squad-table .strong-link{font-size:14px}.squad-role{display:inline-flex;border-radius:6px;padding:5px 8px;background:#edf0f5;color:#4c586a;font-size:10px;font-weight:700;white-space:nowrap}.squad-captain{background:#e4ebfa;color:#334e82}.season-squad-table .season-player-score{font-size:17px;background:#e7edf8;color:#2d4777;border:1px solid #c9d5eb;border-radius:9px;padding:7px 12px;min-width:66px;text-align:center}.season-squad-table .history-tag{display:block;margin-top:4px}.season-stayed{color:#64748b;font-size:18px}
+/* Separate the page canvas, banners, cards and inset controls in dark mode. */
+:root[data-theme="dark"]{--theme-page:#10151d;--theme-surface:#202c3b;--theme-soft:#2c3c50;--theme-text:#f2f5fa;--theme-muted:#c3cede;--theme-border:#71849e;--theme-raised:#27364a}
+:root[data-theme="dark"] .site-header{background:#182230;border-bottom:1px solid #657991}
+:root[data-theme="dark"] body .page-banner{background:#23344b;border-bottom:1px solid #71849e;color:var(--theme-text)}
+:root[data-theme="dark"] body .page-banner :is(p,.eyebrow){color:#cbd8e9}
+:root[data-theme="dark"] body :is(.member-profile-identity,.admin-panel,.admin-box,.team-overview,.directory-filters,.team-directory-card,.form-card,.competition-panel,.round-card,.match-card,.metric-card){box-shadow:0 8px 24px #0003;border-color:#71849e}
+:root[data-theme="dark"] body :is(.section-heading,.competition-section-heading){border-bottom:1px solid #627792;padding-bottom:16px}
+:root[data-theme="dark"] body :is(.section-alt,.how-section){background:#192535;border-block:1px solid #526781}
+:root[data-theme="dark"] body :is(.admin-panel-heading,.match-card-heading){background:#293b53}
+:root[data-theme="dark"] body :is(.profile-tabs,.season-tabs) a.selected{background:#d5e4ff;color:#17253d;border-color:#d5e4ff}
+:root[data-theme="dark"] body :is(input,select,textarea){background:#141e2c;border-color:#7d90aa}
+:root[data-theme="dark"] .season-squad-card{background:#202c3b;border-color:#71849e;box-shadow:0 10px 30px #0004}
+:root[data-theme="dark"] .season-squad-heading{background:#314863;border-color:#7d90aa}
+:root[data-theme="dark"] .season-squad-heading :is(.competition-eyebrow,.season-squad-note){color:#d5e1f2}
+:root[data-theme="dark"] .season-squad-table thead th{background:#172335;color:#c5d5eb;border-color:#627792}
+:root[data-theme="dark"] .season-squad-table tbody td{border-color:#526782}
+:root[data-theme="dark"] .season-squad-table tbody tr:nth-child(even){background:#293a50}
+:root[data-theme="dark"] .season-squad-table tbody tr:hover{background:#354d69}
+:root[data-theme="dark"] .squad-initial{background:#3b5271;color:#edf4ff}
+:root[data-theme="dark"] .squad-role{background:#35475f;color:#d9e4f3}
+:root[data-theme="dark"] .squad-captain{background:#3e5481;color:#e2ebff}
+:root[data-theme="dark"] .season-squad-table .season-player-score{background:#365078;color:#edf4ff;border-color:#8fa8cc}
+:root[data-theme="dark"] .season-stayed{color:#c3cede}
+@media(max-width:1000px){.member-profile-identity{grid-template-columns:auto minmax(0,1fr)}.member-profile-identity .career-record-compact{grid-column:1/-1;max-width:none;width:100%;border-left:0;border-top:1px solid var(--line);padding:12px 0 0}.career-record-compact .career-stat dt{min-height:0}.career-record-compact .career-stat dd{font-size:20px}}
+@media(max-width:700px){.season-squad-heading{padding:18px;align-items:flex-start}.season-squad-heading h3{font-size:21px}.season-squad-note{max-width:95px;text-align:right}.season-squad-card .season-squad-table tbody{padding:12px;display:grid;gap:12px}.season-squad-table tbody tr{border:1px solid #d2d8e1;border-radius:12px;padding:8px 12px;background:#fff}.season-squad-table tbody td{padding:10px 0}.season-squad-table tbody tr:last-child td{border-bottom:1px solid #e1e6ed}.season-squad-table tbody td:last-child{border-bottom:0!important}.season-squad-table tbody td:first-child{align-items:center}.season-squad-table .table-person{justify-content:flex-end}.season-squad-table tbody td::before{font-size:10px;letter-spacing:.03em}.season-squad-table .history-tag{white-space:normal}:root[data-theme="dark"] .season-squad-table tbody tr{background:#202c3b;border-color:#71849e}:root[data-theme="dark"] .season-squad-table tbody tr:nth-child(even){background:#293a50}:root[data-theme="dark"] .season-squad-table tbody tr:last-child td{border-bottom-color:#526782}}

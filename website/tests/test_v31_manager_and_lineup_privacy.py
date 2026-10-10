@@ -27,17 +27,17 @@ def test_remove_keeps_role_active_and_can_invite_back_to_same_team(client):
     login(client,'commissioner')
     html=client.get('/admin/teams').text
     form=re.search(r'<form[^>]*action="/admin/teams/'+str(team)+r'/remove-manager".*?</form>',html,re.S).group(0)
-    assert 'aria-label="Remove manager"' in form and '<svg' in form
+    assert 'aria-label="Remove captain"' in form and '<svg' in form
     assert 'class="manager-remove-button"' in form
     assert client.post(f'/admin/teams/{team}/remove-manager',data={'confirmation':'REMOVE'}).status_code==403
-    assert 'Manager removed' in post(client,f'/admin/teams/{team}/remove-manager',confirmation='REMOVE').text
+    assert 'Captain removed' in post(client,f'/admin/teams/{team}/remove-manager',confirmation='REMOVE').text
     with store.read_db() as db:
         user=db.execute('SELECT * FROM users WHERE id=?',(manager,)).fetchone()
         assert user['manager_active']==1 and user['manager_available']==1
         assert db.execute('SELECT owner_team_id FROM players WHERE user_id=?',(manager,)).fetchone()[0] is None
         assert db.execute('SELECT ended_at FROM manager_terms WHERE manager_id=?',(manager,)).fetchone()[0]
     assert f'<option value="{manager}"' in client.get('/admin/teams').text
-    assert 'Manager invitation sent' in post(client,f'/admin/teams/{team}/manager',manager_id=str(manager)).text
+    assert 'Captain invitation sent' in post(client,f'/admin/teams/{team}/manager',manager_id=str(manager)).text
     with store.read_db() as db:
         invitation=db.execute("SELECT id FROM manager_invitations WHERE team_id=? AND status='pending'",(team,)).fetchone()[0]
     login(client,'manager_home')

@@ -31,7 +31,7 @@ def test_admin_cancel_and_reinvite_and_private_lineups(chromium,league_server,wi
         page.on('dialog',lambda dialog:dialog.accept())
         sign_in(page,league.base,'BrowserAdmin');page.goto(league.base+'/admin/teams')
         remove=page.locator(f'form[action="/admin/teams/{team}/remove-manager"] button')
-        expect(remove).to_have_attribute('aria-label','Remover gestor');expect(remove.locator('svg')).to_have_count(1)
+        expect(remove).to_have_attribute('aria-label','Remover capitão');expect(remove.locator('svg')).to_have_count(1)
         assert remove.evaluate('(el)=>getComputedStyle(el).color')=='rgb(180, 35, 24)'
         assert_fits_phone(page);page.screenshot(path=str(directory/f'admin-teams-{width}.png'),full_page=True)
         remove.click();page.wait_for_url(league.base+'/admin/teams')

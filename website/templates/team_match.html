@@ -26,7 +26,7 @@
           <div class="board-result-link"><span data-i18n="View game">View game</span><span aria-hidden="true">↗</span></div>
         </a>
       {% else %}
-        <div class="competition-empty board-empty"><span class="empty-chess" aria-hidden="true">♟</span><h3 data-i18n="The boards are waiting">The boards are waiting</h3>{% if not deadline_passed %}<p data-i18n="Board pairings are revealed when the match starts.">Board pairings are revealed when the match starts.</p>{% else %}<p data-i18n="The four board pairings will appear when both managers submit their lineups.">The four board pairings will appear when both managers submit their lineups.</p>{% endif %}</div>
+        <div class="competition-empty board-empty"><span class="empty-chess" aria-hidden="true">♟</span><h3 data-i18n="The boards are waiting">The boards are waiting</h3>{% if not deadline_passed %}<p data-i18n="Board pairings are revealed when the match starts.">Board pairings are revealed when the match starts.</p>{% else %}<p data-i18n="The four board pairings will appear when both captains submit their lineups.">The four board pairings will appear when both captains submit their lineups.</p>{% endif %}</div>
       {% endfor %}
       </div>
       <div class="competition-section-heading lineup-section-heading"><div><p class="competition-eyebrow" data-i18n="The teams">The teams</p><h2 data-i18n="Submitted lineups">Submitted lineups</h2></div></div>
@@ -40,7 +40,7 @@
       </div>
     </div>
     {% if own_team %}
-    <aside class="manager-lineup-panel"><p class="competition-eyebrow" data-i18n="Manager's desk">Manager's desk</p><h2 data-i18n="Your four-player lineup">Your four-player lineup</h2><p class="manager-team-name" data-no-i18n>{{ own_team.name }}</p>
+    <aside class="manager-lineup-panel"><p class="competition-eyebrow" data-i18n="Captain's desk">Captain's desk</p><h2 data-i18n="Your four-player lineup">Your four-player lineup</h2><p class="manager-team-name" data-no-i18n>{{ own_team.name }}</p>
       {% if match.lineup_locked %}<p class="lineup-instructions" data-i18n="Lineups are locked once a game result or PGN has been recorded.">Lineups are locked once a game result or PGN has been recorded.</p>
       {% elif deadline_passed %}<p class="lineup-instructions" data-i18n="The lineup deadline has passed.">The lineup deadline has passed.</p>
       {% else %}<p class="lineup-instructions" data-i18n="Select four different players in board order and submit before the match starts.">Select four different players in board order and submit before the match starts.</p><form method="post" action="/matches/{{ match.id }}/lineup" class="stack-form"><input type="hidden" name="csrf" value="{{ csrf }}">

@@ -1,6 +1,15 @@
-# Liga SX-AAC — Chess Fantasy League V32
+# Liga SX-AAC — Chess Fantasy League V33
 
 FastAPI, Jinja templates, SQLite, and an offline PGN replay viewer for a club fantasy chess league. This release adds account recovery and editable identities, season scheduling, and four-player team matches while preserving existing accounts and league data.
+
+## New in v33
+
+- Public role labels use **Captain / Capitão**, including registration, invitations, role requests and error messages. Stored role identifiers and existing `/manager` links remain compatible; account names and historical records are never rewritten.
+- All-season wins, draws, losses and played totals sit compactly inside the member identity card.
+- The team directory offers name, fantasy-point and budget sorting; removed sort values fall back to name order.
+- Seasonal squads have a season header, avatars, captain badges, score chips and alternating rows, with cards on phones. **Join date / Leave date** replace known-from/until. Leave date is `-` when a term remains open or ends at/after the selected season boundary; departures within the season retain their dates and unknown legacy end dates remain marked unknown.
+- Dark mode separates the page canvas, banners, cards and inset controls with stronger surface contrast and visible borders. Text contrast is checked across public, member and admin pages at 320, 390 and 1440 pixels.
+- Assets use `v=33`. No new database migration is required; health continues reporting `v32_shared_fide_ids`.
 
 ## New in v32
 

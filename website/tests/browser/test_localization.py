@@ -56,7 +56,7 @@ def test_names_and_metadata_survive_portuguese_and_repeated_switches(page):
     ''')
     assert page.locator("#heading").inner_text() == "No tabuleiro."
     assert page.locator("#players-nav").inner_text() == "Jogadores"
-    assert page.locator("#manager").inner_text() == "Gestor: Players"
+    assert page.locator("#manager").inner_text() == "Capitão: Players"
     for language in ("en", "pt-PT", "en", "pt-PT"):
         page.evaluate("lang => LigaI18n.setLanguage(lang)", language)
         assert page.locator("#player").inner_text() == "Players"
@@ -74,12 +74,12 @@ def test_interpolation_is_text_and_live_changes_keep_names(page):
         node.dataset.i18nVars=JSON.stringify({name:'<img src=x onerror=alert(1)>Teams'});
     }''')
     page.wait_for_function("document.querySelector('#manager').textContent.includes('Teams')")
-    assert page.locator("#manager").inner_text() == "Gestor atual: <img src=x onerror=alert(1)>Teams"
+    assert page.locator("#manager").inner_text() == "Capitão atual: <img src=x onerror=alert(1)>Teams"
     assert page.locator("#manager img").count() == 0
     page.evaluate("document.querySelector('#manager').dataset.i18nVars=JSON.stringify({name:'Players'})")
-    page.wait_for_function("document.querySelector('#manager').textContent==='Gestor atual: Players'")
+    page.wait_for_function("document.querySelector('#manager').textContent==='Capitão atual: Players'")
     page.evaluate("LigaI18n.setLanguage('en')")
-    assert page.locator("#manager").inner_text() == "Current manager: Players"
+    assert page.locator("#manager").inner_text() == "Current captain: Players"
 
 
 def test_enum_variables_translate_only_when_explicitly_marked(page):
@@ -88,10 +88,10 @@ def test_enum_variables_translate_only_when_explicitly_marked(page):
                  data-i18n-vars="{variables}" data-i18n-translated-vars="role"></p>
                  <p id="literal" data-i18n="Welcome back, {{name}}!"
                  data-i18n-vars="{html.escape(json.dumps({'name':'manager'}), quote=True)}"></p>''')
-    assert page.locator("#role").inner_text() == "O teu pedido para ativar a função de gestor foi enviado ao administrador."
+    assert page.locator("#role").inner_text() == "O teu pedido para ativar a função de capitão foi enviado ao administrador."
     assert page.locator("#literal").inner_text() == "Bem-vindo de volta, manager!"
     page.evaluate("LigaI18n.setLanguage('en')")
-    assert page.locator("#role").inner_text() == "Your manager role request has been sent to the administrator."
+    assert page.locator("#role").inner_text() == "Your captain role request has been sent to the administrator."
 
 
 def test_replay_copy_errors_and_table_attributes_use_the_selected_language(page):

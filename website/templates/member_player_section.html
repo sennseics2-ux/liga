@@ -16,13 +16,10 @@
   <div class="metric-grid">
     <div class="metric-card"><span>CHESS PLAYER</span><strong class="small-stat"><span data-no-i18n>{{ profile.name }}</span></strong><small>Registered identity</small></div>
     <div class="metric-card"><span>FANTASY POINTS</span><strong>{{ profile.points }}</strong><small>Total on record</small></div>
-    <div class="metric-card"><span>CURRENT TEAM</span><strong class="small-stat">{% if not member.player_active %}<span data-i18n="Not playing">Not playing</span>{% elif profile.team_name %}<span data-no-i18n>{{ profile.team_name }}</span>{% else %}<span data-i18n="Free agent">Free agent</span>{% endif %}</strong><small>{% if profile.is_manager_player %}Team Manager{% else %}Chess player{% endif %}</small></div>
+    <div class="metric-card"><span>CURRENT TEAM</span><strong class="small-stat">{% if not member.player_active %}<span data-i18n="Not playing">Not playing</span>{% elif profile.team_name %}<span data-no-i18n>{{ profile.team_name }}</span>{% else %}<span data-i18n="Free agent">Free agent</span>{% endif %}</strong><small>{% if profile.is_manager_player %}Team Captain{% else %}Chess player{% endif %}</small></div>
     <div class="metric-card"><span>FIDE RATING</span><strong>{{ profile.rating or '—' }}</strong><small>Standard FIDE rating</small></div>
   </div>
-  <section class="career-record" aria-label="All-season chess record">
-    <div class="career-record-heading"><div><p class="competition-eyebrow" data-i18n="ALL SEASONS">ALL SEASONS</p><h2 data-i18n="Career results">Career results</h2></div><p data-i18n="Completed chess games across all seasons.">Completed chess games across all seasons.</p></div>
-    <dl class="career-stats"><div class="career-stat career-wins"><dt data-i18n="Wins">Wins</dt><dd data-no-i18n>{{ career.wins }}</dd></div><div class="career-stat career-draws"><dt data-i18n="Draws">Draws</dt><dd data-no-i18n>{{ career.draws }}</dd></div><div class="career-stat career-losses"><dt data-i18n="Losses">Losses</dt><dd data-no-i18n>{{ career.losses }}</dd></div><div class="career-stat"><dt data-i18n="Games played">Games played</dt><dd data-no-i18n>{{ career.played }}</dd></div></dl>
-  </section>
+
 {% else %}
   <div class="empty-state"><div class="empty-icon">♟</div><h3>No chess player profile yet</h3>
     <p>{% if owner %}Waiting for your chess profile. The administrator must activate and link your chess player record before you can enter the transfer market.{% else %}The administrator has not linked a chess player record to this account.{% endif %}</p>
@@ -37,7 +34,7 @@
 {% for membership in past_teams %}<tr><td data-label="TEAM"><a class="strong-link" href="/teams/{{ membership.team_id }}"><span data-no-i18n>{{ membership.team_name }}</span></a></td>
 <td data-label="JOINED"><time datetime="{{ membership.started_at }}" data-no-i18n>{{ membership.started_at|local_time }}</time>{% if membership.source in ('imported current snapshot','legacy auction listing') %} <span class="history-tag">First confirmed</span>{% endif %}</td>
 <td data-label="LEFT">{% if membership.ended_at %}{% if membership.end_reason == 'unrecorded legacy change; end date unknown' %}Unknown{% else %}<time datetime="{{ membership.ended_at }}" data-no-i18n>{{ membership.ended_at|local_time }}</time>{% endif %}{% else %}Present{% endif %}</td>
-<td data-label="STATUS">{% if not membership.ended_at %}<span class="pill pill-winner">Current</span>{% elif membership.manager_player %}Former manager-player{% else %}Former player{% endif %}</td></tr>{% endfor %}
+<td data-label="STATUS">{% if not membership.ended_at %}<span class="pill pill-winner">Current</span>{% elif membership.manager_player %}Former captain-player{% else %}Former player{% endif %}</td></tr>{% endfor %}
 </tbody></table></div>
 {% else %}<div class="profile-status"><p>No recorded team memberships yet. Older team history may not be available if it predates historical tracking.</p></div>{% endif %}
 {% endif %}

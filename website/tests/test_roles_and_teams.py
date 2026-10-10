@@ -14,7 +14,7 @@ def invite_and_accept(client, team_id, manager_id, username='managerx'):
     logout(client)
     login_admin(client)
     result=post(client,f'/admin/teams/{team_id}/manager', manager_id=str(manager_id))
-    assert 'Manager invitation sent' in result.text
+    assert 'Captain invitation sent' in result.text
     with store.read_db() as db:
         iid=db.execute("SELECT id FROM manager_invitations WHERE team_id=? AND status='pending'",(team_id,)).fetchone()[0]
     logout(client)
@@ -27,9 +27,9 @@ def test_profiles_are_separate_and_never_manager_history(client):
     register(client,'newbie','player')
     assert 'Waiting for your chess profile' in client.get('/my/player').text
     assert 'You have never managed a team' in client.get('/my/manager').text
-    assert 'Request manager activation' in client.get('/my/manager').text
+    assert 'Request captain activation' in client.get('/my/manager').text
     assert 'Player profile' in client.get('/my/player').text
-    assert 'Manager profile' in client.get('/my/manager').text
+    assert 'Captain profile' in client.get('/my/manager').text
 
 
 def test_role_request_review_and_cannot_self_approve(client):
@@ -58,7 +58,7 @@ def test_role_request_review_and_cannot_self_approve(client):
     assert account('newbie')['manager_active']==1
     logout(client)
     post(client,'/login',username='newbie',password='p4ssword!AB12')
-    assert 'Manager · Active' in re.sub(r'<[^>]+>', '', client.get('/my/manager').text)
+    assert 'Captain · Active' in re.sub(r'<[^>]+>', '', client.get('/my/manager').text)
     assert 'Mark available' in client.get('/my/manager').text
 
 
@@ -83,8 +83,8 @@ def test_invitation_requires_explicit_accept_and_decline(client):
     assert account('managerx')['manager_available']==0
     logout(client)
     login_admin(client)
-    assert 'Choose an available manager' in client.get('/admin').text
-    assert 'Choose an available manager' in post(client,f'/admin/teams/{team2}/manager',manager_id=str(manager_id)).text
+    assert 'Choose an available captain' in client.get('/admin').text
+    assert 'Choose an available captain' in post(client,f'/admin/teams/{team2}/manager',manager_id=str(manager_id)).text
     logout(client)
     post(client,'/login',username='managerx',password='p4ssword!AB12')
     post(client,'/my/manager/availability',available='1')
@@ -135,7 +135,7 @@ def test_manager_quits_role_becomes_transferable_player(client):
         assert db.execute('SELECT owner_team_id FROM players WHERE id=?',(pid,)).fetchone()[0] is None
         assert db.execute('SELECT manager_id FROM teams WHERE id=?',(tid,)).fetchone()[0] is None
     assert store.create_auction(pid,10,24)>0
-    assert 'Request manager activation' in client.get('/my/manager').text
+    assert 'Request captain activation' in client.get('/my/manager').text
     assert 'Last Managers' in client.get('/my/manager').text
 
 
@@ -173,7 +173,7 @@ def test_manager_kicks_only_owned_ordinary_player(client):
     logout(client)
     post(client,'/login',username='bobby',password='password123!')
     assert 'Type KICK' in post(client,f'/my/manager/players/{regular}/kick',confirmation='no').text
-    assert 'Managers cannot be kicked' in post(client,f'/my/manager/players/{protected}/kick',confirmation='KICK').text
+    assert 'Captains cannot be kicked' in post(client,f'/my/manager/players/{protected}/kick',confirmation='KICK').text
     assert 'not on your team' in post(client,f'/my/manager/players/{other}/kick',confirmation='KICK').text
     auction=store.create_auction(regular,10,24)
     assert 'active auction' in post(client,f'/my/manager/players/{regular}/kick',confirmation='KICK').text
@@ -270,7 +270,7 @@ def test_player_cannot_bypass_no_self_resignation_rule_using_role_change(client)
     team=store.create_team('Locked Roster')
     with store.transaction() as db:
         db.execute('UPDATE players SET owner_team_id=? WHERE id=?',(team,pid))
-    assert 'team manager must remove you' in post(client,'/my/roles/player/quit').text
+    assert 'team captain must remove you' in post(client,'/my/roles/player/quit').text
     assert account('playx')['player_active']==1
     with store.read_db() as db:
         assert db.execute('SELECT owner_team_id FROM players WHERE id=?',(pid,)).fetchone()[0]==team

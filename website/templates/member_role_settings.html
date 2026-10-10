@@ -7,12 +7,12 @@
       {% elif request_rows|selectattr('role','equalto','player')|list %}<span class="pill pill-muted">Activation pending</span>
       {% else %}<form method="post" action="/my/roles/player/request"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn btn-primary">Request player activation</button></form>{% endif %}
     </div>
-    <div><h3>Manager access</h3>
+    <div><h3>Captain access</h3>
       {% if member.manager_active %}
-      <p>Leaving your manager role also ends any current appointment; returning requires administrator approval. Your player role will not change.</p>
-      <form method="post" action="/my/roles/manager/quit" data-confirm="Leave the manager role and end your current appointment? This cannot be undone."><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn btn-quiet">Quit manager role</button></form>
+      <p>Leaving your captain role also ends any current appointment; returning requires administrator approval. Your player role will not change.</p>
+      <form method="post" action="/my/roles/manager/quit" data-confirm="Leave the captain role and end your current appointment? This cannot be undone."><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn btn-quiet">Quit captain role</button></form>
       {% elif request_rows|selectattr('role','equalto','manager')|list %}<span class="pill pill-muted">Activation pending</span>
-      {% else %}<form method="post" action="/my/roles/manager/request"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn btn-primary">Request manager activation</button></form>{% endif %}
+      {% else %}<form method="post" action="/my/roles/manager/request"><input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn btn-primary">Request captain activation</button></form>{% endif %}
     </div>
     <div><h3>Password &amp; security</h3>
       <p>Protect your account by changing your password. You will need your current password.</p>

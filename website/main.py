@@ -200,7 +200,24 @@ def expected_form_fields(path):
     return next((allowed for pattern, allowed in patterns if re.fullmatch(pattern, path)), ())
 
 
+INTERFACE_COPY = json.loads((BASE_DIR / 'static' / 'pt-PT.json').read_text())
+
+
+def captain_copy(text):
+    # Only known interface copy is renamed; account names and stored history stay literal.
+    if text not in INTERFACE_COPY:
+        return text
+    replacements = {'manager':'captain','managers':'captains','Manager':'Captain',
+                    'Managers':'Captains','MANAGER':'CAPTAIN','MANAGERS':'CAPTAINS'}
+    return re.sub(r'\b(?:manager|managers|Manager|Managers|MANAGER|MANAGERS)\b',
+                  lambda match: replacements[match[0]], text)
+
+
 def flash(request, message, kind="info", *, key=None, values=None):
+    message = captain_copy(message)
+    key = captain_copy(key) if key else None
+    if values and 'role' in values:
+        values = {**values, 'role': captain_copy(values['role'])}
     request.session['flash'] = {'message': message, 'kind': kind,
                                 'key': key or message, 'values': values or {}}
 
@@ -241,7 +258,7 @@ def view(request, name, **context):
 def render_http_error(request, status, detail, recovery_url):
     response = view(request, 'error.html', status_code=status,
                     title='Refresh and try again' if status == 403 else 'Unable to open this page',
-                    message=detail, recovery_url=recovery_url,
+                    message=captain_copy(detail), recovery_url=recovery_url,
                     login_url='/login?next=' + quote(safe_return_path(recovery_url), safe=''))
     response.status_code = status
     return response
@@ -908,10 +925,8 @@ def team_directory(request: Request, q: str = '', manager: str = 'all',
     order_options = {
         'name':'team_name COLLATE NOCASE ASC',
         'name_desc':'team_name COLLATE NOCASE DESC',
-        'players_desc':'player_count DESC,team_name COLLATE NOCASE ASC',
         'points_desc':'fantasy_points DESC,team_name COLLATE NOCASE ASC',
         'budget_desc':'budget DESC,team_name COLLATE NOCASE ASC',
-        'newest':'created_at DESC,team_name COLLATE NOCASE ASC',
     }
     if sort not in order_options:
         sort='name'
@@ -1011,7 +1026,7 @@ def team_detail(request: Request, team_id: int, season: str | None = None):
     return view(request,'team_detail.html',team=team,current=current,season_honours=honours,
                 season=season,seasons=seasons,season_options=season_options,season_name=season_name,membership=membership,
                 management=management,transfers=transfers,team_games=team_games,history_complete=history_complete,
-                current_score=sum(p['points'] for p in current),season_scores=season_scores)
+                current_score=sum(p['points'] for p in current),season_scores=season_scores,season_end=end)
 
 
 

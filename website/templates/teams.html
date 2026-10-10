@@ -5,11 +5,11 @@
 <section class="section container">
   <div class="section-heading"><div><div class="eyebrow dark">TEAM DIRECTORY</div><h2>Club teams <span class="count-bubble">{{ teams|length }}</span></h2></div></div>
   <form method="get" action="/teams" class="directory-filters" aria-label="Search and filter teams">
-    <label class="filter-field filter-search"><span>Search teams</span><input name="q" type="search" value="{{ filters.q }}" maxlength="120" placeholder="Team or manager name"></label>
-    <label class="filter-field"><span>Manager status</span><select name="manager"><option value="all" {% if filters.manager=='all' %}selected{% endif %}>All teams</option><option value="assigned" {% if filters.manager=='assigned' %}selected{% endif %}>Has manager</option><option value="vacant" {% if filters.manager=='vacant' %}selected{% endif %}>No manager</option></select></label>
+    <label class="filter-field filter-search"><span>Search teams</span><input name="q" type="search" value="{{ filters.q }}" maxlength="120" placeholder="Team or captain name"></label>
+    <label class="filter-field"><span>Captain status</span><select name="manager"><option value="all" {% if filters.manager=='all' %}selected{% endif %}>All teams</option><option value="assigned" {% if filters.manager=='assigned' %}selected{% endif %}>Has captain</option><option value="vacant" {% if filters.manager=='vacant' %}selected{% endif %}>No captain</option></select></label>
     <label class="filter-field"><span>Minimum squad size</span><input name="min_players" type="number" step="1" min="0" max="999" value="{{ filters.min_players if filters.min_players is not none else '' }}" placeholder="Any"></label>
     <label class="filter-field"><span>Sort by</span><select name="sort">
-      {% for value,label in [('name','Team name A–Z'),('name_desc','Team name Z–A'),('players_desc','Largest squads'),('points_desc','Most fantasy points'),('budget_desc','Highest budget'),('newest','Newest teams')] %}
+      {% for value,label in [('name','Team name A–Z'),('name_desc','Team name Z–A'),('points_desc','Most fantasy points'),('budget_desc','Highest budget')] %}
       <option value="{{ value }}" {% if filters.sort==value %}selected{% endif %}>{{ label }}</option>{% endfor %}
     </select></label>
     <div class="filter-actions"><button class="btn btn-primary" type="submit">Apply filters</button><a class="text-link" href="/teams">Clear all</a></div>
@@ -19,7 +19,7 @@
   {% for t in teams %}
   <a class="team-directory-card" href="/teams/{{ t.id }}">
     <span class="team-emblem" aria-hidden="true">{% if t.photo_updated_at %}<img class="team-picture" src="/teams/{{ t.id }}/photo" alt="" loading="lazy">{% else %}♞{% endif %}</span>
-    <div class="team-directory-copy"><h3><span data-no-i18n>{{ t.name }}</span></h3><p>{% if t.manager_name %}<span data-i18n="Manager: {name}" data-i18n-vars="{{ {'name': t.manager_name}|tojson|forceescape }}">Manager: <span data-no-i18n>{{ t.manager_name }}</span></span>{% else %}<span data-i18n="Vacant — awaiting manager">Vacant — awaiting manager</span>{% endif %}</p><small data-i18n="Founded {date}" data-i18n-vars="{{ {'date': t.created_at|local_time}|tojson|forceescape }}">Founded <time datetime="{{ t.created_at }}" data-no-i18n>{{ t.created_at|local_time }}</time></small></div>
+    <div class="team-directory-copy"><h3><span data-no-i18n>{{ t.name }}</span></h3><p>{% if t.manager_name %}<span data-i18n="Captain: {name}" data-i18n-vars="{{ {'name': t.manager_name}|tojson|forceescape }}">Captain: <span data-no-i18n>{{ t.manager_name }}</span></span>{% else %}<span data-i18n="Vacant — awaiting captain">Vacant — awaiting captain</span>{% endif %}</p><small data-i18n="Founded {date}" data-i18n-vars="{{ {'date': t.created_at|local_time}|tojson|forceescape }}">Founded <time datetime="{{ t.created_at }}" data-no-i18n>{{ t.created_at|local_time }}</time></small></div>
     <div class="team-directory-stats"><span><strong>{{ t.player_count }}</strong> players</span><span><strong>{{ t.fantasy_points }}</strong> pts</span></div>
     <span class="team-directory-arrow" aria-hidden="true">↗</span>
   </a>
