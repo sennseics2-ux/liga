@@ -121,7 +121,7 @@ def website_request_limit(scope: Scope) -> int:
     forms and unknown endpoints never allocate the global upload allowance.
     """
     path = scope.get('path', '')
-    if path == '/my/player/photo':
+    if path == '/my/player/photo' or re.fullmatch(r'/teams/[0-9]+/photo', path):
         return 6 * 1024 * 1024
     if re.fullmatch(r'/admin/games/[0-9]+/(pgn|result)', path):
         return 384 * 1024

@@ -5,13 +5,15 @@ foreign keys before committing, and creates a consistent pre-upgrade backup.
 """
 LEDGER_VERSION = 'v24_reliability_ledger'
 ATTRIBUTION_VERSION = 'v24_historical_attribution'
-SCHEMA_VERSION = 'v25_accounts_seasons'
+ACCOUNTS_VERSION = 'v25_accounts_seasons'
+SCHEMA_VERSION = 'v30_team_photos'
 
 
 def apply(db, applied_at):
     _apply_ledger(db, applied_at)
     _apply_attribution(db, applied_at)
     _apply_v25(db, applied_at)
+    _apply_team_photos(db, applied_at)
 
 
 def _apply_ledger(db, applied_at):
@@ -98,7 +100,7 @@ def _apply_attribution(db, applied_at):
 
 
 def _apply_v25(db, applied_at):
-    if db.execute('SELECT 1 FROM schema_migrations WHERE version=?', (SCHEMA_VERSION,)).fetchone():
+    if db.execute('SELECT 1 FROM schema_migrations WHERE version=?', (ACCOUNTS_VERSION,)).fetchone():
         return
     columns = {row['name'] for row in db.execute('PRAGMA table_info(users)')}
     additions = {'email': 'TEXT', 'name': "TEXT NOT NULL DEFAULT ''", 'country': "TEXT NOT NULL DEFAULT ''",
@@ -152,4 +154,13 @@ def _apply_v25(db, applied_at):
         if not db.execute('SELECT 1 FROM players WHERE user_id=?', (user['id'],)).fetchone():
             db.execute("INSERT INTO players(name,user_id,is_manager_player,created_at) VALUES(?,?,1,?)",
                        (user['name'],user['id'],applied_at))
+    db.execute('INSERT INTO schema_migrations(version,applied_at) VALUES(?,?)', (ACCOUNTS_VERSION,applied_at))
+
+
+def _apply_team_photos(db, applied_at):
+    if db.execute('SELECT 1 FROM schema_migrations WHERE version=?', (SCHEMA_VERSION,)).fetchone():
+        return
+    db.execute('''CREATE TABLE team_photos (
+        team_id INTEGER PRIMARY KEY REFERENCES teams(id) ON DELETE CASCADE,
+        photo_data BLOB NOT NULL, updated_at TEXT NOT NULL)''')
     db.execute('INSERT INTO schema_migrations(version,applied_at) VALUES(?,?)', (SCHEMA_VERSION,applied_at))

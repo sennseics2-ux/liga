@@ -1352,5 +1352,12 @@
   "fantasy pts": "pontos fantasia",
   "remaining": "restantes",
   "Won": "Vitória",
-  "Lost": "Derrota"
+  "Lost": "Derrota",
+  "Team profile picture": "Imagem de perfil da equipa",
+  "Upload a JPG, PNG or WebP image up to 5 MB. It will be cropped to a square.": "Carrega uma imagem JPG, PNG ou WebP até 5 MB. Será recortada para um quadrado.",
+  "Remove the team profile picture?": "Remover a imagem de perfil da equipa?",
+  "The team profile picture has been updated.": "A imagem de perfil da equipa foi atualizada.",
+  "The team profile picture was removed.": "A imagem de perfil da equipa foi removida.",
+  "Only the current team manager can update the team profile picture.": "Só o gestor atual da equipa pode alterar a imagem de perfil da equipa.",
+  "Replace photo": "Substituir fotografia"
 }

@@ -145,7 +145,7 @@ def csrf_token(request):
 
 async def form_data(request):
     path = request.url.path
-    files = ('photo',) if path == '/my/player/photo' else (
+    files = ('photo',) if path == '/my/player/photo' or re.fullmatch(r'/teams/\d+/photo', path) else (
         ('pgn',) if re.fullmatch(r'/admin/games/\d+/(pgn|result)', path) else ())
     return await parse_secure_form(request, csrf_token, allowed_files=files,
                                    allowed_fields=expected_form_fields(path))
@@ -537,6 +537,60 @@ async def remove_member_photo(request: Request):
     return redirect(f"/users/{quote(user['username'], safe='')}")
 
 
+@app.get('/teams/{team_id}/photo')
+def team_photo(team_id: int):
+    with store.read_db() as db:
+        photo = db.execute('SELECT photo_data FROM team_photos WHERE team_id=?', (team_id,)).fetchone()
+    if not photo:
+        raise HTTPException(404, 'No photo uploaded')
+    return Response(content=photo['photo_data'], media_type='image/jpeg',
+                    headers={'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff'})
+
+
+def team_photo_authorization(request, team_id):
+    user = auth(request, 'manager')
+    with store.read_db() as db:
+        try:
+            store.check_team_photo_manager(db, team_id, user['id'])
+        except PermissionError as exc:
+            raise HTTPException(403, str(exc)) from exc
+    return user
+
+
+@app.post('/teams/{team_id}/photo')
+async def upload_team_photo(request: Request, team_id: int):
+    user = await run_in_threadpool(team_photo_authorization, request, team_id)
+    data = await form_data(request)
+    uploaded = data.get('photo')
+    if not isinstance(uploaded, UploadFile) or not uploaded.filename:
+        flash(request, 'Choose a JPG, PNG or WebP file.', 'error')
+        return redirect(f'/teams/{team_id}')
+    try:
+        contents = await uploaded.read(MAX_PHOTO_BYTES + 1)
+        photo = await run_in_threadpool(normalize_photo, contents)
+        await run_in_threadpool(store.save_team_photo, team_id, user['id'], photo)
+        flash(request, 'The team profile picture has been updated.', 'success')
+    except PermissionError as exc:
+        raise HTTPException(403, str(exc)) from exc
+    except ValueError as exc:
+        flash(request, str(exc), 'error')
+    finally:
+        await uploaded.close()
+    return redirect(f'/teams/{team_id}')
+
+
+@app.post('/teams/{team_id}/photo/remove')
+async def remove_team_photo(request: Request, team_id: int):
+    user = await run_in_threadpool(team_photo_authorization, request, team_id)
+    await form_data(request)
+    try:
+        await run_in_threadpool(store.remove_team_photo, team_id, user['id'])
+    except PermissionError as exc:
+        raise HTTPException(403, str(exc)) from exc
+    flash(request, 'The team profile picture was removed.', 'success')
+    return redirect(f'/teams/{team_id}')
+
+
 @app.get('/users/{username}/player', response_class=HTMLResponse)
 def member_player_redirect(request: Request, username: str):
     with store.read_db() as db:
@@ -872,9 +926,9 @@ def team_directory(request: Request, q: str = '', manager: str = 'all',
     elif manager == 'vacant':
         conditions.append('t.manager_id IS NULL')
     with store.read_db() as db:
-        query="""SELECT t.*,t.name AS team_name,u.username AS manager_name,
+        query="""SELECT t.*,photo.updated_at AS photo_updated_at,t.name AS team_name,u.username AS manager_name,
             COUNT(p.id) AS player_count,COALESCE(SUM(p.points),0) AS fantasy_points
-            FROM teams t LEFT JOIN users u ON u.id=t.manager_id
+            FROM teams t LEFT JOIN team_photos photo ON photo.team_id=t.id LEFT JOIN users u ON u.id=t.manager_id
             LEFT JOIN players p ON p.owner_team_id=t.id """
         if conditions:
             query += ' WHERE '+' AND '.join(conditions)
@@ -895,8 +949,8 @@ def team_detail(request: Request, team_id: int, season: str | None = None):
     year_now=store.now_utc().year
     with store.read_db() as db:
         honours=season_honours(db,team_id)
-        team=db.execute("""SELECT t.*,u.username AS manager_name
-            FROM teams t LEFT JOIN users u ON u.id=t.manager_id WHERE t.id=?""",(team_id,)).fetchone()
+        team=db.execute("""SELECT t.*,photo.updated_at AS photo_updated_at,u.username AS manager_name
+            FROM teams t LEFT JOIN team_photos photo ON photo.team_id=t.id LEFT JOIN users u ON u.id=t.manager_id WHERE t.id=?""",(team_id,)).fetchone()
         if not team:
             raise HTTPException(404,'Team not found')
         oldest_year=max(1900,min(int(team['created_at'][:4]),year_now))
@@ -1159,9 +1213,9 @@ async def admin_remove_game_pgn(request: Request, game_id: int):
 def standings(request: Request):
     with store.read_db() as db:
         rows = db.execute("""
-            SELECT t.*, u.username, COUNT(p.id) AS player_count,
+            SELECT t.*, photo.updated_at AS photo_updated_at, u.username, COUNT(p.id) AS player_count,
               COALESCE(SUM(p.points),0) AS score
-            FROM teams t LEFT JOIN users u ON u.id=t.manager_id
+            FROM teams t LEFT JOIN team_photos photo ON photo.team_id=t.id LEFT JOIN users u ON u.id=t.manager_id
             LEFT JOIN players p ON p.owner_team_id=t.id
             GROUP BY t.id ORDER BY score DESC, t.budget DESC, t.name
         """).fetchall()

@@ -1,6 +1,13 @@
-# Liga SX-AAC — Chess Fantasy League V29
+# Liga SX-AAC — Chess Fantasy League V30
 
 FastAPI, Jinja templates, SQLite, and an offline PGN replay viewer for a club fantasy chess league. This release adds account recovery and editable identities, season scheduling, and four-player team matches while preserving existing accounts and league data.
+
+## New in v30
+
+- Teams have a profile picture. The currently assigned, active manager can upload, replace or remove it on the team's profile. Former managers, other users and administrators cannot override the current manager's picture permissions.
+- JPG, PNG and WebP uploads up to 5 MB are validated, cropped to a 512-pixel square and re-encoded as JPEG without metadata. SVG and oversized uploads are rejected. CSRF protection and transactional appointment checks protect changes.
+- Pictures appear on team profiles, the team directory, standings, season fixtures and match scoreboards. Teams without pictures retain their existing emblem.
+- Images live in SQLite and are covered by existing backups. Startup automatically applies the additive `v30_team_photos` migration; existing accounts, teams, appointments and seasons are preserved. Assets use `v=30`.
 
 ## New in v29
 

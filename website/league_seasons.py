@@ -130,9 +130,11 @@ def publish_season(season_id, actor_id):
 def match_rows(db, season_id=None):
     rows = [dict(row) for row in db.execute('''SELECT m.*,r.number AS round_number,r.season_id,s.name AS season_name,s.status AS season_status,
         ht.name AS home_name,at.name AS away_name,
+        hp.updated_at AS home_photo_updated_at,ap.updated_at AS away_photo_updated_at,
         (SELECT COUNT(*) FROM match_lineups l WHERE l.match_id=m.id) AS lineup_count
         FROM team_matches m JOIN season_rounds r ON r.id=m.round_id JOIN seasons s ON s.id=r.season_id
         JOIN teams ht ON ht.id=m.home_team_id JOIN teams at ON at.id=m.away_team_id
+        LEFT JOIN team_photos hp ON hp.team_id=ht.id LEFT JOIN team_photos ap ON ap.team_id=at.id
         WHERE (? IS NULL OR s.id=?) ORDER BY s.start_year DESC,r.number,m.scheduled_at,m.id''',(season_id,season_id))]
     # Match scores use chess board points (1 / 0.5 / 0), not fantasy awards.
     scores = {row['match_id']: dict(row) for row in db.execute('''

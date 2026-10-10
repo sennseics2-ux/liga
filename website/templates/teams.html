@@ -18,7 +18,7 @@
   {% if teams %}<div class="team-directory">
   {% for t in teams %}
   <a class="team-directory-card" href="/teams/{{ t.id }}">
-    <span class="team-emblem" aria-hidden="true">♞</span>
+    <span class="team-emblem" aria-hidden="true">{% if t.photo_updated_at %}<img class="team-picture" src="/teams/{{ t.id }}/photo" alt="" loading="lazy">{% else %}♞{% endif %}</span>
     <div class="team-directory-copy"><h3><span data-no-i18n>{{ t.name }}</span></h3><p>{% if t.manager_name %}<span data-i18n="Manager: {name}" data-i18n-vars="{{ {'name': t.manager_name}|tojson|forceescape }}">Manager: <span data-no-i18n>{{ t.manager_name }}</span></span>{% else %}<span data-i18n="Vacant — awaiting manager">Vacant — awaiting manager</span>{% endif %}</p><small data-i18n="Founded {date}" data-i18n-vars="{{ {'date': t.created_at|local_time}|tojson|forceescape }}">Founded <time datetime="{{ t.created_at }}" data-no-i18n>{{ t.created_at|local_time }}</time></small></div>
     <div class="team-directory-stats"><span><strong>{{ t.player_count }}</strong> players</span><span><strong>{{ t.fantasy_points }}</strong> pts</span></div>
     <span class="team-directory-arrow" aria-hidden="true">↗</span>

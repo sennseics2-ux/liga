@@ -37,7 +37,7 @@
       <a class="fixture-card" href="/matches/{{ match.id }}">
         <div class="fixture-top"><time data-no-i18n>{{ match.scheduled_at|local_time }}</time><span class="result-status{% if match.finished_boards==4 %} result-complete{% endif %}" data-i18n="{{ match.result_status }}">{{ match.result_status }}</span></div>
         <div class="fixture-teams">
-          {% for side in ['home','away'] %}<div class="fixture-team"><span class="team-emblem{% if side=='away' %} team-emblem-light{% endif %}" aria-hidden="true" data-no-i18n>{{ match[side+'_name'][:2]|upper }}</span><strong data-no-i18n>{{ match[side+'_name'] }}</strong><span class="fixture-score" data-no-i18n>{{ match[side+'_score'] }}</span></div>{% endfor %}
+          {% for side in ['home','away'] %}<div class="fixture-team"><span class="team-emblem{% if side=='away' %} team-emblem-light{% endif %}" aria-hidden="true" data-no-i18n>{% if match[side+'_photo_updated_at'] %}<img class="team-picture" src="/teams/{{ match[side+'_team_id'] }}/photo" alt="" loading="lazy">{% else %}{{ match[side+'_name'][:2]|upper }}{% endif %}</span><strong data-no-i18n>{{ match[side+'_name'] }}</strong><span class="fixture-score" data-no-i18n>{{ match[side+'_score'] }}</span></div>{% endfor %}
         </div>
         <div class="fixture-bottom"><span class="fixture-location" data-no-i18n>{{ match.location }}</span><span class="fixture-cta"><span data-i18n="View match">View match</span> <span aria-hidden="true">↗</span></span></div>
         {% if match.finished_boards %}<div class="fixture-progress"><span data-no-i18n>{{ match.finished_boards }}/4</span> <span data-i18n="boards completed">boards completed</span></div>{% endif %}

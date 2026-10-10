@@ -231,7 +231,13 @@ def init_db():
             if not upgraded and not backup_file.exists():
                 with sqlite3.connect(backup_file) as backup_db:
                     db.backup(backup_db)
-        for suffix in ('.pre-v2.bak', '.pre-v3.bak', '.pre-v4.bak', '.pre-v9.bak', '.pre-v25.bak'):
+        if legacy and not upgraded:
+            # Keep a fresh pre-V30 snapshot even when a pre-V25 backup exists.
+            backup_file = DB_PATH.with_name(DB_PATH.name + '.pre-v30.bak')
+            if not backup_file.exists():
+                with sqlite3.connect(backup_file) as backup_db:
+                    db.backup(backup_db)
+        for suffix in ('.pre-v2.bak', '.pre-v3.bak', '.pre-v4.bak', '.pre-v9.bak', '.pre-v25.bak', '.pre-v30.bak'):
             backup_file = DB_PATH.with_name(DB_PATH.name + suffix)
             if backup_file.exists():
                 backup_file.chmod(0o600)
@@ -377,6 +383,32 @@ def remove_profile_photo(user_id):
             WHERE id=? AND role!='admin'""", (user_id,))
         if result.rowcount != 1:
             raise ValueError('Member account not found.')
+
+
+def check_team_photo_manager(db, team_id, manager_id):
+    """Check the live appointment, including inside the upload transaction."""
+    if not db.execute('''SELECT 1 FROM teams t JOIN users u ON u.id=t.manager_id
+            WHERE t.id=? AND t.manager_id=? AND u.account_active=1
+              AND u.manager_active=1 AND u.role!='admin' ''', (team_id, manager_id)).fetchone():
+        raise PermissionError('Only the current team manager can update the team profile picture.')
+
+
+def save_team_photo(team_id, manager_id, jpeg_bytes):
+    if not jpeg_bytes or len(jpeg_bytes) > 600_000:
+        raise ValueError('Photo could not be saved.')
+    with transaction() as db:
+        check_team_photo_manager(db, team_id, manager_id)
+        db.execute('''INSERT INTO team_photos(team_id,photo_data,updated_at) VALUES(?,?,?)
+            ON CONFLICT(team_id) DO UPDATE SET photo_data=excluded.photo_data, updated_at=excluded.updated_at''',
+            (team_id, jpeg_bytes, iso(now_utc())))
+        _audit(db, 'team_photo_updated', 'team', team_id, manager_id)
+
+
+def remove_team_photo(team_id, manager_id):
+    with transaction() as db:
+        check_team_photo_manager(db, team_id, manager_id)
+        db.execute('DELETE FROM team_photos WHERE team_id=?', (team_id,))
+        _audit(db, 'team_photo_removed', 'team', team_id, manager_id)
 
 
 def _roster_tracking_ready(db):
