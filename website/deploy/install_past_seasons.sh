@@ -3,8 +3,14 @@
 # different league directory. All database users are stopped until installation.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/.."
-if [[ ! -f .env || ! -f data/league.sqlite3 ]]; then
-  echo 'Run this script from the installed website on the VM with its existing .env and database.' >&2
+# The deployment's data directory is mode 700 and owned by container UID 10001.
+# Check with the same privileges used by Docker, not the SSH account's access.
+if ! sudo test -f .env; then
+  echo "Missing .env in $(pwd). Run this script from the installed website on the VM." >&2
+  exit 1
+fi
+if ! sudo test -f data/league.sqlite3; then
+  echo "Missing database at $(pwd)/data/league.sqlite3. Installation has not started." >&2
   exit 1
 fi
 STAMP="past-seasons-$(date -u +%Y%m%dT%H%M%SZ)"
