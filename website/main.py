@@ -1097,7 +1097,7 @@ async def admin_create_game(request: Request):
         return redirect(f'/games/{game_id}')
     except ValueError as exc:
         flash(request,str(exc),'error')
-        return redirect('/admin#games')
+        return redirect('/admin/games')
 
 
 async def upload_pgn_field(file):
@@ -1199,10 +1199,21 @@ def admin(request: Request):
         invitations=db.execute("""SELECT i.*,u.username,t.name AS team_name FROM manager_invitations i
             JOIN users u ON u.id=i.manager_id JOIN teams t ON t.id=i.team_id
             WHERE i.status='pending' ORDER BY i.id DESC""").fetchall()
-    return view(request, "admin.html", admin_section=request.url.path.rsplit("/",1)[-1], players=players, teams=teams, managers=managers,
+        game_total=db.execute('SELECT COUNT(*) FROM games').fetchone()[0]
+        season_total=db.execute('SELECT COUNT(*) FROM seasons').fetchone()[0]
+        account_total=db.execute("SELECT COUNT(*) FROM users WHERE role!='admin'").fetchone()[0]
+        draft_seasons=db.execute("SELECT COUNT(*) FROM seasons WHERE status='draft'").fetchone()[0]
+        awaiting_results=db.execute("SELECT COUNT(*) FROM games WHERE result='*' AND scheduled_at<?",(store.iso(store.now_utc()),)).fetchone()[0]
+    pending_teams={invitation['team_id'] for invitation in invitations}
+    unassigned_teams=sum(team['manager_id'] is None and team['id'] not in pending_teams for team in teams)
+    attention_total=len(requests)+len(player_accounts)+unassigned_teams+len(recovery_auctions)+awaiting_results+draft_seasons
+    template='admin_dashboard.html' if request.url.path=='/admin' else 'admin.html'
+    return view(request, template, admin_section=request.url.path.rsplit("/",1)[-1], players=players, teams=teams, managers=managers,
                 player_accounts=player_accounts, auctions=open_auctions, recent_games=recent_games,
                 role_requests=requests,
-                invitations=invitations,recovery_auctions=recovery_auctions,audit_entries=audit_entries)
+                invitations=invitations,recovery_auctions=recovery_auctions,audit_entries=audit_entries,
+                game_total=game_total,season_total=season_total,account_total=account_total,
+                draft_seasons=draft_seasons,awaiting_results=awaiting_results,unassigned_teams=unassigned_teams,attention_total=attention_total)
 
 
 @app.post("/admin/teams")
@@ -1214,7 +1225,7 @@ async def admin_create_team(request: Request):
         flash(request, "Team created. You can appoint a manager at any time.", "success")
     except ValueError as exc:
         flash(request, str(exc), "error")
-    return redirect("/admin#teams")
+    return redirect("/admin/teams")
 
 
 @app.post("/admin/teams/{team_id}/manager")
@@ -1227,7 +1238,7 @@ async def admin_assign_manager(request: Request, team_id: int):
         flash(request,'Manager invitation sent. The manager must accept before the team is assigned.','success')
     except (TypeError,ValueError) as exc:
         flash(request,str(exc),'error')
-    return redirect('/admin#teams')
+    return redirect('/admin/teams')
 
 
 @app.post('/admin/teams/{team_id}/remove-manager')
@@ -1236,13 +1247,13 @@ async def admin_remove_manager(request: Request,team_id: int):
     data=await form_data(request)
     if data.get('confirmation')!='REMOVE':
         flash(request,'Confirm removal by typing REMOVE.','error')
-        return redirect('/admin#teams')
+        return redirect('/admin/teams')
     try:
         await run_in_threadpool(store.assign_manager, team_id, None)
         flash(request,'Manager removed; history retained.','success')
     except ValueError as exc:
         flash(request,str(exc),'error')
-    return redirect('/admin#teams')
+    return redirect('/admin/teams')
 
 
 @app.post('/admin/invitations/{invitation_id}/cancel')
@@ -1254,7 +1265,7 @@ async def admin_cancel_invitation(request: Request, invitation_id: int):
         flash(request,'Pending invitation cancelled.','success')
     except ValueError as exc:
         flash(request,str(exc),'error')
-    return redirect('/admin#teams')
+    return redirect('/admin/teams')
 
 
 @app.post('/admin/role-requests/{request_id}/review')
@@ -1268,7 +1279,7 @@ async def admin_review_role(request: Request, request_id: int):
         flash(request,'Role request reviewed.','success')
     except ValueError as exc:
         flash(request,str(exc),'error')
-    return redirect('/admin#role-requests')
+    return redirect('/admin/roles#role-requests')
 
 
 @app.post("/admin/players")
@@ -1292,7 +1303,7 @@ async def admin_add_player(request: Request):
               key='Activated {name} in the player pool.', values={'name':name})
     except (ValueError, OverflowError) as exc:
         flash(request, str(exc), "error")
-    return redirect("/admin")
+    return redirect("/admin/players")
 
 
 @app.post("/admin/auctions")
@@ -1304,7 +1315,7 @@ async def admin_start_auction(request: Request):
         flash(request, "Transfer auction created! Managers can now bid.", "success")
     except (ValueError, TypeError, sqlite3.IntegrityError) as exc:
         flash(request, str(exc), "error")
-    return redirect("/admin")
+    return redirect("/admin/players")
 
 
 @app.post("/admin/auctions/{auction_id}/close")
@@ -1319,7 +1330,7 @@ async def admin_close_auction(request: Request, auction_id: int):
             flash(request, "Auction closed; winning player transferred automatically.", "success")
     except ValueError as exc:
         flash(request, str(exc), 'error')
-    return redirect("/admin")
+    return redirect("/admin/players")
 
 
 @app.post('/admin/auctions/{auction_id}/cancel')
@@ -1331,7 +1342,7 @@ async def admin_cancel_auction(request: Request, auction_id: int):
         flash(request, 'Auction cancelled. Reserved credits have been released.', 'success')
     except ValueError as exc:
         flash(request, str(exc), 'error')
-    return redirect('/admin#auction-recovery')
+    return redirect('/admin/players#auction-recovery')
 
 
 @app.post('/admin/auctions/{auction_id}/retry')
@@ -1344,7 +1355,7 @@ async def admin_retry_auction(request: Request, auction_id: int):
               'Auction still needs attention. Review the failure reason.', 'success' if completed else 'error')
     except ValueError as exc:
         flash(request, str(exc), 'error')
-    return redirect('/admin#auction-recovery')
+    return redirect('/admin/players#auction-recovery')
 
 
 @app.post("/admin/players/{player_id}/points")
@@ -1357,7 +1368,7 @@ async def admin_update_points(request: Request, player_id: int):
         flash(request, 'Point adjustment recorded with an audit trail.', 'success')
     except (TypeError, ValueError) as exc:
         flash(request, str(exc), "error")
-    return redirect("/admin#player-list")
+    return redirect("/admin/players#player-list")
 
 
 

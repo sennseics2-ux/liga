@@ -1,6 +1,13 @@
-# Liga SX-AAC — Chess Fantasy League V28
+# Liga SX-AAC — Chess Fantasy League V29
 
 FastAPI, Jinja templates, SQLite, and an offline PGN replay viewer for a club fantasy chess league. This release adds account recovery and editable identities, season scheduling, and four-player team matches while preserving existing accounts and league data.
+
+## New in v29
+
+- `/admin` is now an overview dashboard with summary cards, six management workspaces, an actionable attention panel, recent games/activity and manager availability. Existing tools live on the dedicated team, role, player/transfer, game, season and account pages. Actions return to their relevant workspace.
+- Transfer amounts display **♔** throughout auctions, bids, budgets, standings and historical manager/transfer records. The symbol has an accessible credits label. Amounts and bidding rules remain unchanged; live auction refresh preserves the symbol.
+- Player-profile results show **green wins**, **red losses**, and **grey draws/upcoming fixtures**, with explicit labels as well as colour. Outcomes follow the profile's player, including when they played Black, while retaining the recorded game score.
+- Portuguese/English translations and mobile layouts cover the new dashboard and result badges. Assets use `v=29`; existing databases remain compatible and require no regeneration.
 
 ## New in v28
 

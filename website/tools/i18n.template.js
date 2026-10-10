@@ -24,7 +24,6 @@
     [/^\/ AUCTION #(\d+)$/,m=>t('/ AUCTION #{number}',{number:m[1]})],
     [/^(\d+) most recent high bids$/,m=>t('{count} most recent high bids',{count:m[1]})],
     [/^for (\d+) credits(\.)?$/,m=>t('for {credits} credits',{credits:m[1]})+(m[2]||'')],
-    [/^(-?\d+) fantasy pts · (\d+) CR remaining$/,m=>`${m[1]} ponto${m[1]==='1'?'':'s'} fantasia · ${m[2]} CR restantes`],
     [/^No confirmed player membership records are available for (\d{4})\. Older roster details may not have been recorded before this feature was introduced\.$/,m=>t('No confirmed player membership records are available for {year}. Older roster details may not have been recorded before this feature was introduced.',{year:m[1]})],
     [/^The minimum bid is (\d+) credits\.$/,m=>t('The minimum bid is {minimum} credits.',{minimum:m[1]})],
     [/^You have (\d+) credits available for this auction \(other leading bids reserve credits\)\.$/,m=>t('You have {available} credits available for this auction (other leading bids reserve credits).',{available:m[1]})],

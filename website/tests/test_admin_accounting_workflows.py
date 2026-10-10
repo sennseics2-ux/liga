@@ -54,7 +54,7 @@ def test_admin_can_select_an_active_linked_player_for_an_auction(client):
     uid=store.create_account('linked_member','LinkedMember123!','player')
     player=store.create_player('Linked Club Player',user_id=uid)
     seed_admin();login_admin(client)
-    html=client.get('/admin').text
+    html=client.get('/admin/players').text
     select=re.search(r'<select[^>]*name="player_id"[^>]*>(.*?)</select>',html,re.S).group(1)
     assert f'value="{player}"' in select and 'Linked Club Player' in select
     assert post(client,'/admin/auctions',player_id=str(player),starting_price='10',duration_hours='1').status_code==200

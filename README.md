@@ -1,10 +1,10 @@
 # Liga SX-AAC
 
-This repository contains the **v28 league website** and the **1.1.0 mobile apps** for https://liga.sx-aac.com.
+This repository contains the **v29 league website** and the **1.1.0 mobile apps** for https://liga.sx-aac.com.
 
-## Website — v28
+## Website — v29
 
-The website source is in [`website/`](website/). V28 adds gold, silver and bronze team-profile medals engraved with the season year. Completed seasons use 3/1/0 team-match points and head-to-head tiebreaks. V27 opens Seasons on the current season even before publication, adds a season dropdown, and redesigns round results and match scoreboards for desktop and mobile. V26 requires both username and email for password recovery, improves the recovery page, explains deactivated-account login failures, and renders Criar conta on Portuguese registration. A private VM generator adds two completed six-round demonstration seasons using current teams and rosters while retaining accounts. Account settings, automatic FIDE standard ratings, season scheduling, lineups, auctions, scoring, backups and login-only PGN replay remain available. Keep SMTP credentials private on the VM; the default public FIDE lookup needs no API key. See the hosting guide for upgrades and database generation.
+The website source is in [`website/`](website/). V29 adds a redesigned administration dashboard with dedicated management workspaces, the ♔ transfer-currency symbol, and green/red/grey results on player profiles. V28 adds gold, silver and bronze team-profile medals engraved with the season year. Completed seasons use 3/1/0 team-match points and head-to-head tiebreaks. V27 opens Seasons on the current season even before publication, adds a season dropdown, and redesigns round results and match scoreboards for desktop and mobile. V26 requires both username and email for password recovery, improves the recovery page, explains deactivated-account login failures, and renders Criar conta on Portuguese registration. A private VM generator adds two completed six-round demonstration seasons using current teams and rosters while retaining accounts. Account settings, automatic FIDE standard ratings, season scheduling, lineups, auctions, scoring, backups and login-only PGN replay remain available. Keep SMTP credentials private on the VM; the default public FIDE lookup needs no API key. See the hosting guide for upgrades and database generation.
 
 **PGN replay and PGN downloads require a signed-in account.** Fixtures and results remain public. Login returns members to the selected game.
 

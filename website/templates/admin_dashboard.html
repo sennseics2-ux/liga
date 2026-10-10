@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}Admin dashboard{% endblock %}
+{% block content %}
+<section class="admin-hero"><div class="container admin-hero-inner"><div><p class="competition-eyebrow" data-i18n="LEAGUE CONTROL ROOM">LEAGUE CONTROL ROOM</p><h1><span data-i18n="Commissioner's desk.">Commissioner's desk.</span></h1><p data-i18n="Your league at a glance. Review requests, manage teams and keep the competition moving.">Your league at a glance. Review requests, manage teams and keep the competition moving.</p></div><a class="btn btn-outline" href="/seasons"><span data-i18n="View competition">View competition</span><span aria-hidden="true">→</span></a></div></section>
+<section class="container admin-dashboard-content">
+  {% include 'admin_nav.html' %}
+  <div class="admin-summary-grid">
+    {% for count,label,path in [(teams|length,'Teams','/admin/teams'),(players|length,'Chess players','/admin/players'),(auctions|length,'Open auctions','/admin/players'),(role_requests|length,'Pending role requests','/admin/roles')] %}
+    <a class="admin-summary-card" href="{{ path }}"><span data-i18n="{{ label }}">{{ label }}</span><strong data-no-i18n>{{ count }}</strong><span class="admin-summary-arrow" aria-hidden="true">→</span></a>
+    {% endfor %}
+  </div>
+  <div class="admin-dashboard-grid">
+    <div>
+      <div class="competition-section-heading"><div><p class="competition-eyebrow" data-i18n="Daily operations">Daily operations</p><h2 data-i18n="Manage your league">Manage your league</h2></div></div>
+      <div class="admin-workspace-grid">
+        {% for icon,label,description,path,count,count_label in [
+          ('♜','Team management','Create teams, choose an available manager and track invitations.','/admin/teams',teams|length,'Teams'),
+          ('♙','Role activation requests','Review requests to activate player and manager roles.','/admin/roles',role_requests|length,'Pending role requests'),
+          ('♞','Players & transfers','Activate players, run auctions and manage fantasy points.','/admin/players',players|length,'Chess players'),
+          ('♟','Chess games & results','Schedule a match, record results and manage PGN files.','/admin/games',game_total,'Games'),
+          ('▦','Season setup','Set season dates, arrange rounds and publish the schedule.','/admin/seasons',season_total,'Seasons'),
+          ('♚','Member accounts','Edit member profiles, manage FIDE IDs and account access.','/admin/accounts',account_total,'Accounts')
+        ] %}
+        <a class="admin-workspace-card" href="{{ path }}"><div class="admin-workspace-card-top"><span class="admin-workspace-icon" aria-hidden="true">{{ icon }}</span><span class="admin-workspace-count"><span data-no-i18n>{{ count }}</span> <span data-i18n="{{ count_label }}">{{ count_label }}</span></span></div><h3 data-i18n="{{ label }}">{{ label }}</h3><p data-i18n="{{ description }}">{{ description }}</p><span class="admin-workspace-link"><span data-i18n="Open workspace">Open workspace</span><span aria-hidden="true">→</span></span></a>
+        {% endfor %}
+      </div>
+      <section class="admin-panel admin-recent-games"><div class="admin-panel-heading"><h2 data-i18n="Recent games">Recent games</h2><a href="/admin/games" class="text-link" data-i18n="Manage results">Manage results</a></div>
+        {% if recent_games %}<ul class="admin-game-list">{% for game in recent_games[:5] %}<li><a href="/games/{{ game.id }}"><div><time data-no-i18n>{{ game.scheduled_at|local_time }}</time><strong><span data-no-i18n>{{ game.white_name }}</span> <span aria-hidden="true">—</span> <span data-no-i18n>{{ game.black_name }}</span></strong></div><span class="result-status">{% if game.result=='*' %}<span data-i18n="Upcoming">Upcoming</span>{% else %}<span data-no-i18n>{{ game.result }}</span>{% endif %}</span></a></li>{% endfor %}</ul>{% else %}<div class="admin-panel-empty"><span aria-hidden="true">♟</span><p data-i18n="No games scheduled yet.">No games scheduled yet.</p><a class="btn btn-quiet" href="/admin/games" data-i18n="Schedule a match">Schedule a match</a></div>{% endif %}
+      </section>
+      <section class="admin-panel admin-activity"><div class="admin-panel-heading"><h2 data-i18n="Recent activity">Recent activity</h2><a href="/admin/players#league-audit" class="text-link" data-i18n="League audit trail">League audit trail</a></div>
+        {% if audit_entries %}<ol class="admin-activity-list">{% for entry in audit_entries[:6] %}<li><span class="admin-activity-dot" aria-hidden="true"></span><div><strong data-no-i18n>{{ entry.reason }}</strong><p>{% if entry.actor_name %}<span data-no-i18n>{{ entry.actor_name }}</span>{% else %}<span data-i18n="System">System</span>{% endif %}<span aria-hidden="true"> · </span><time data-no-i18n>{{ entry.created_at|local_time }}</time></p></div></li>{% endfor %}</ol>{% else %}<p class="admin-panel-empty" data-i18n="League activity will appear here as you manage the competition.">League activity will appear here as you manage the competition.</p>{% endif %}
+      </section>
+    </div>
+    <aside class="admin-dashboard-sidebar">
+      <section class="admin-panel admin-attention"><div class="admin-panel-heading"><h2 data-i18n="Needs attention">Needs attention</h2><span class="admin-attention-total" data-no-i18n>{{ attention_total }}</span></div>
+        <ul class="admin-task-list">
+          {% for count,label,path in [(role_requests|length,'Role activation requests','/admin/roles'),(player_accounts|length,'Unlinked player registrations','/admin/players'),(unassigned_teams,'Teams without a manager','/admin/teams'),(recovery_auctions|length,'Auctions needing attention','/admin/players#auction-recovery'),(awaiting_results,'Games awaiting results','/admin/games'),(draft_seasons,'Unpublished seasons','/admin/seasons')] %}
+          {% if count %}<li><a href="{{ path }}"><span data-i18n="{{ label }}">{{ label }}</span><strong data-no-i18n>{{ count }}</strong><span aria-hidden="true">→</span></a></li>{% endif %}
+          {% endfor %}
+        </ul>
+        {% if not attention_total %}<div class="admin-all-clear"><span aria-hidden="true">✓</span><strong data-i18n="All caught up">All caught up</strong><p data-i18n="No pending tasks need your attention.">No pending tasks need your attention.</p></div>{% endif %}
+      </section>
+      {% if role_requests or player_accounts %}<section class="admin-panel"><div class="admin-panel-heading"><h2 data-i18n="Pending members">Pending members</h2></div><ul class="admin-member-list">{% for member in role_requests[:4] %}<li><span class="admin-member-initial" aria-hidden="true" data-no-i18n>{{ member.username[:1]|upper }}</span><a href="/users/{{ member.username|urlencode }}" data-no-i18n>{{ member.username }}</a><span class="result-status" data-i18n="{{ member.role|title }}">{{ member.role|title }}</span></li>{% endfor %}{% for member in player_accounts[:4] %}<li><span class="admin-member-initial" aria-hidden="true" data-no-i18n>{{ member.username[:1]|upper }}</span><a href="/users/{{ member.username|urlencode }}" data-no-i18n>{{ member.username }}</a><span class="result-status" data-i18n="Player">Player</span></li>{% endfor %}</ul></section>{% endif %}
+      {% if managers %}<section class="admin-panel"><div class="admin-panel-heading"><h2 data-i18n="Manager availability">Manager availability</h2></div><ul class="admin-member-list">{% for manager in managers[:5] %}<li><span class="admin-member-initial" aria-hidden="true" data-no-i18n>{{ manager.username[:1]|upper }}</span><div><a href="/users/{{ manager.username|urlencode }}/manager" data-no-i18n>{{ manager.username }}</a><small>{% if manager.team_name %}<span data-no-i18n>{{ manager.team_name }}</span>{% else %}<span data-i18n="{{ 'Available' if manager.manager_available else 'Unavailable' }}">{{ 'Available' if manager.manager_available else 'Unavailable' }}</span>{% endif %}</small></div></li>{% endfor %}</ul><a class="admin-panel-footer" href="/admin/teams" data-i18n="Choose an available manager">Choose an available manager</a></section>{% endif %}
+      <a class="admin-season-shortcut" href="/admin/seasons"><span aria-hidden="true">▦</span><strong data-i18n="Plan the next round">Plan the next round</strong><p data-i18n="Set pairings, dates and locations before publishing the schedule.">Set pairings, dates and locations before publishing the schedule.</p><span class="admin-workspace-link"><span data-i18n="Season setup">Season setup</span><span aria-hidden="true">→</span></span></a>
+    </aside>
+  </div>
+</section>
+{% endblock %}
