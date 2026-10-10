@@ -76,7 +76,8 @@ def test_past_team_visible_to_visitors_and_private_invitations(client):
     assert 'Old Rooks' in past
     assert 'resigned' in past
     assert 'Management history' in past
-    assert 'fantasy pts' in past
+    assert 'fantasy pts' not in past
+    assert 'BALANCE AT DEPARTURE' in past
     assert 'never managed a team' not in past
 
     logout(client)

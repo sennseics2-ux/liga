@@ -11,7 +11,7 @@
 {% if team %}
   <div class="section-heading"><div><div class="eyebrow dark">CURRENT APPOINTMENT</div><h2><a href="/teams/{{ team.id }}"><span data-no-i18n>{{ team.name }}</span></a></h2><p data-i18n="Current captain: {name}" data-i18n-vars="{{ {'name': member.username}|tojson|forceescape }}">Current captain: <span data-no-i18n>{{ member.username }}</span></p></div></div>
   <div class="metric-grid">
-    <div class="metric-card"><span>FANTASY POINTS</span><strong>{{ score }}</strong><small>Current squad score</small></div>
+    <div class="metric-card"><span>LEAGUE POINTS</span><strong>{{ score }}</strong><small>Current season</small></div>
     <div class="metric-card"><span>TRANSFER BALANCE</span><strong>{{ team.budget }} <small>{% include 'currency.html' %}</small></strong></div>
     <div class="metric-card"><span>SQUAD SIZE</span><strong>{{ roster|length }}</strong></div>
     {% if owner %}<div class="metric-card"><span data-i18n="COMMITTED BIDS">COMMITTED BIDS</span><strong>{{ reserved }} <small>{% include 'currency.html' %}</small></strong><small>Reserved for leading bids</small></div><div class="metric-card"><span data-i18n="AVAILABLE TO BID">AVAILABLE TO BID</span><strong><span data-live-total-available data-no-i18n>{{ available }}</span> <small>{% include 'currency.html' %}</small></strong><small data-i18n="Uncommitted credits">Uncommitted credits</small></div>{% endif %}
@@ -33,10 +33,10 @@
 {% endif %}
 <div class="section-heading history-heading"><div><div class="eyebrow dark">MANAGEMENT RECORD</div><h2>Management history</h2></div></div>
 {% if history %}
-  <div class="table-scroll"><table class="data-table mobile-cards"><thead><tr><th>TEAM</th><th>START</th><th>END</th><th>RESULT AT DEPARTURE</th><th>STATUS</th></tr></thead><tbody>
-    {% for t in history %}<tr><td data-label="TEAM"><strong><span data-no-i18n>{{ t.team_name }}</span></strong></td><td data-label="START"><time datetime="{{ t.started_at }}" data-no-i18n>{{ t.started_at|local_time }}</time></td><td data-label="END">{% if t.ended_at %}<time datetime="{{ t.ended_at }}" data-no-i18n>{{ t.ended_at|local_time }}</time>{% else %}Present{% endif %}</td><td data-label="RESULT AT DEPARTURE">{% if t.ended_at %}<span data-no-i18n>{{ t.final_fantasy_points }}</span> <span data-i18n="fantasy pts">fantasy pts</span> · <span data-no-i18n>{{ t.final_budget }}</span> {% include 'currency.html' %} <span data-i18n="remaining">remaining</span>{% else %}In progress{% endif %}</td><td data-label="STATUS">{% if t.end_reason %}<span data-no-i18n>{{ t.end_reason }}</span>{% else %}<span data-i18n="Current">Current</span>{% endif %}</td></tr>{% endfor %}
+  <div class="table-scroll"><table class="data-table mobile-cards"><thead><tr><th>TEAM</th><th>START</th><th>END</th><th>BALANCE AT DEPARTURE</th><th>STATUS</th></tr></thead><tbody>
+    {% for t in history %}<tr><td data-label="TEAM"><strong><span data-no-i18n>{{ t.team_name }}</span></strong></td><td data-label="START"><time datetime="{{ t.started_at }}" data-no-i18n>{{ t.started_at|local_time }}</time></td><td data-label="END">{% if t.ended_at %}<time datetime="{{ t.ended_at }}" data-no-i18n>{{ t.ended_at|local_time }}</time>{% else %}Present{% endif %}</td><td data-label="BALANCE AT DEPARTURE">{% if t.ended_at %}<span data-no-i18n>{{ t.final_budget }}</span> {% include 'currency.html' %} <span data-i18n="remaining">remaining</span>{% else %}In progress{% endif %}</td><td data-label="STATUS">{% if t.end_reason %}<span data-no-i18n>{{ t.end_reason }}</span>{% else %}<span data-i18n="Current">Current</span>{% endif %}</td></tr>{% endfor %}
   </tbody></table></div>
-  <p class="muted spacious">Historical terms record fantasy-point snapshots. Chess game results are visible on player and team pages; legacy appointment dates may be approximate.</p>
+  <p class="muted spacious">Appointment history records captain assignments and departure balances. Chess results appear on player and team pages; legacy appointment dates may be approximate.</p>
 {% else %}
   <div class="empty-state"><h3>{% if owner %}You have never managed a team{% else %}<span data-i18n="{name} has never managed a team" data-i18n-vars="{{ {'name': member.username}|tojson|forceescape }}"><span data-no-i18n>{{ member.username }}</span> has never managed a team</span>{% endif %}</h3><p>Any future appointments and results will appear here.</p></div>
 {% endif %}

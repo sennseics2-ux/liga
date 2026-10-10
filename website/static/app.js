@@ -170,5 +170,8 @@ if (window.location.pathname === '/reset-password') {
 
 // Season changes submit immediately; noscript season links provide the fallback.
 document.querySelectorAll('[data-season-selector]').forEach(select => {
-  select.addEventListener('change', () => select.form.requestSubmit());
+  select.addEventListener('change', () => {
+    if(select.name==='season'){const round=select.form.querySelector('[name=round]');if(round)round.value='all';}
+    select.form.requestSubmit();
+  });
 });

@@ -16,7 +16,7 @@
         {% for icon,label,description,path,count,count_label in [
           ('♜','Team management','Create teams, choose an available captain and track invitations.','/admin/teams',teams|length,'Teams'),
           ('♙','Role activation requests','Review requests to activate player and captain roles.','/admin/roles',role_requests|length,'Pending role requests'),
-          ('♞','Players & transfers','Activate players, run auctions and manage fantasy points.','/admin/players',players|length,'Chess players'),
+          ('♞','Players & transfers','Activate players and manage transfer auctions.','/admin/players',players|length,'Chess players'),
           ('♟','Chess games & results','Schedule a match, record results and manage PGN files.','/admin/games',game_total,'Games'),
           ('▦','Season setup','Set season dates, arrange rounds and publish the schedule.','/admin/seasons',season_total,'Seasons'),
           ('♚','Member accounts','Edit member profiles, manage FIDE IDs and account access.','/admin/accounts',account_total,'Accounts')

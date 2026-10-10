@@ -43,7 +43,7 @@ def test_only_final_match_results_get_winner_or_draw_and_completed_round(client)
     page=client.get('/seasons',params={'season':season}).text
     assert page.count('fixture-team-winner')==1 and 'season-metrics' not in page
     assert 'data-i18n="View season"' not in page
-    assert 'schedule-round-complete' in page and 'href="#round-1"' in page
+    assert 'schedule-round-complete' in page and 'round=1#round-1' in page
     # Alternating board colours: two white wins and two black wins score 4–0.
     store.update_game_result(games[2],'1-0',actor_id=admin,reason='Correct board result')
     store.update_game_result(games[3],'0-1',actor_id=admin,reason='Correct board result')

@@ -14,7 +14,7 @@ from urllib.parse import quote
 from urllib.parse import urlencode
 from zoneinfo import ZoneInfo
 
-from fastapi import FastAPI, Request, HTTPException, BackgroundTasks
+from fastapi import FastAPI, Request, HTTPException, BackgroundTasks, Query
 from starlette.datastructures import UploadFile
 from PIL import Image, ImageOps, UnidentifiedImageError
 from fastapi.responses import HTMLResponse, RedirectResponse, Response, PlainTextResponse, JSONResponse
@@ -34,6 +34,7 @@ import account_service as accounts
 import league_seasons as seasons
 from league_honours import season_honours
 from player_statistics import player_totals, team_season_scores
+from league_standings import season_table, current_table
 
 BASE_DIR = Path(__file__).resolve().parent
 MAX_PHOTO_BYTES = 5 * 1024 * 1024
@@ -643,9 +644,9 @@ def member_profile(request: Request, username: str):
             JOIN teams t ON t.id=h.team_id WHERE h.manager_id=? ORDER BY h.started_at DESC,h.id DESC""",
             (member_id,)).fetchall()
         team=db.execute('SELECT * FROM teams WHERE manager_id=?',(member_id,)).fetchone()
-        roster = db.execute('SELECT * FROM players WHERE owner_team_id=? ORDER BY is_manager_player DESC,points DESC,name',
+        roster = db.execute('SELECT * FROM players WHERE owner_team_id=? ORDER BY is_manager_player DESC,rating DESC,name',
                             (team['id'],)).fetchall() if team else []
-        score=sum(p['points'] for p in roster)
+        score=next((row['points'] for row in current_table(db) if row['id']==team['id']),0) if team else 0
         past_teams=db.execute('''SELECT term.*,t.name AS team_name
             FROM player_team_terms term JOIN teams t ON t.id=term.team_id
             WHERE term.player_id=? ORDER BY term.started_at DESC,term.id DESC''',
@@ -870,18 +871,16 @@ async def bid(request: Request, auction_id: int):
 
 @app.get("/players", response_class=HTMLResponse)
 def players(request: Request, q: str = '', team: str = 'all', status: str = 'all',
-            club: str = 'all', min_rating: str | None = None, sort: str = 'points_desc'):
+            club: str = 'all', min_rating: str | None = None, sort: str = 'rating_desc'):
     """Search, filter and sort the public player pool with SQL allowlisted ordering."""
     order_options = {
-        'points_desc': 'p.points DESC, p.name COLLATE NOCASE ASC',
-        'points_asc': 'p.points ASC, p.name COLLATE NOCASE ASC',
         'rating_desc': 'p.rating IS NULL, p.rating DESC, p.name COLLATE NOCASE ASC',
         'rating_asc': 'p.rating IS NULL, p.rating ASC, p.name COLLATE NOCASE ASC',
         'name_asc': 'p.name COLLATE NOCASE ASC',
         'name_desc': 'p.name COLLATE NOCASE DESC',
     }
     if sort not in order_options:
-        sort = 'points_desc'
+        sort = 'rating_desc'
     if status not in ('all','free','owned','market','nontransferable'):
         status = 'all'
     min_rating_value = parse_optional_int(min_rating, minimum=0, maximum=3500)
@@ -935,7 +934,7 @@ def team_directory(request: Request, q: str = '', manager: str = 'all',
     order_options = {
         'name':'team_name COLLATE NOCASE ASC',
         'name_desc':'team_name COLLATE NOCASE DESC',
-        'points_desc':'fantasy_points DESC,team_name COLLATE NOCASE ASC',
+        'points_desc':'team_name COLLATE NOCASE ASC',
         'budget_desc':'budget DESC,team_name COLLATE NOCASE ASC',
     }
     if sort not in order_options:
@@ -955,7 +954,7 @@ def team_directory(request: Request, q: str = '', manager: str = 'all',
         conditions.append('t.manager_id IS NULL')
     with store.read_db() as db:
         query="""SELECT t.*,photo.updated_at AS photo_updated_at,t.name AS team_name,u.username AS manager_name,
-            COUNT(p.id) AS player_count,COALESCE(SUM(p.points),0) AS fantasy_points
+            COUNT(p.id) AS player_count
             FROM teams t LEFT JOIN team_photos photo ON photo.team_id=t.id LEFT JOIN users u ON u.id=t.manager_id
             LEFT JOIN players p ON p.owner_team_id=t.id """
         if conditions:
@@ -965,7 +964,10 @@ def team_directory(request: Request, q: str = '', manager: str = 'all',
             query += ' HAVING COUNT(p.id)>=?'
             params.append(min_players_value)
         query += ' ORDER BY '+order_options[sort]
-        teams=db.execute(query,params).fetchall()
+        teams=[dict(row) for row in db.execute(query,params)]
+        league_points={row['id']:row['points'] for row in current_table(db)}
+        for row in teams:row['league_points']=league_points.get(row['id'],0)
+        if sort=='points_desc':teams.sort(key=lambda row:row['league_points'],reverse=True)
     return view(request,'teams.html',teams=teams,
                 filters={'q':q,'manager':manager,'min_players':min_players_value,'sort':sort})
 
@@ -1004,8 +1006,9 @@ def team_detail(request: Request, team_id: int, season: str | None = None):
         season_scores=team_season_scores(db,team_id,start,end,
             int(season[1:]) if str(season).startswith('s') else None,visible,visibility_values)
         seasons=[option['value'] for option in season_options]
+        current_score=next((row['points'] for row in current_table(db) if row['id']==team_id),0)
         current=db.execute("""SELECT p.*,u.username,u.photo_updated_at FROM players p LEFT JOIN users u ON u.id=p.user_id
-            WHERE p.owner_team_id=? ORDER BY CASE WHEN p.user_id=? THEN 0 ELSE 1 END,p.points DESC,p.name COLLATE NOCASE""",
+            WHERE p.owner_team_id=? ORDER BY CASE WHEN p.user_id=? THEN 0 ELSE 1 END,p.rating DESC,p.name COLLATE NOCASE""",
             (team_id,team['manager_id'])).fetchall()
         membership=db.execute("""SELECT r.*,p.name,p.club,p.rating,p.user_id,u.username,u.photo_updated_at,
                 p.owner_team_id AS present_owner
@@ -1036,7 +1039,7 @@ def team_detail(request: Request, team_id: int, season: str | None = None):
     return view(request,'team_detail.html',team=team,current=current,season_honours=honours,
                 season=season,seasons=seasons,season_options=season_options,season_name=season_name,membership=membership,
                 management=management,transfers=transfers,team_games=team_games,history_complete=history_complete,
-                current_score=sum(p['points'] for p in current),season_scores=season_scores,season_end=end)
+                current_score=current_score,season_scores=season_scores,season_end=end)
 
 
 
@@ -1219,7 +1222,7 @@ async def admin_game_result(request: Request, game_id: int):
     try:
         pgn = await upload_pgn_field(data.get('pgn'))
         await run_in_threadpool(store.update_game_result, game_id, str(data.get('result','')), pgn, actor_id=administrator['id'], reason=str(data.get('reason','')).strip() or 'Official result recorded or corrected')
-        flash(request,'Result saved and fantasy points updated.','success')
+        flash(request,'Chess result saved.','success')
     except ValueError as exc:
         flash(request,str(exc),'error')
     return redirect(f'/games/{game_id}')
@@ -1253,16 +1256,13 @@ async def admin_remove_game_pgn(request: Request, game_id: int):
 
 
 @app.get("/standings", response_class=HTMLResponse)
-def standings(request: Request):
+def standings(request: Request, season: str='current'):
     with store.read_db() as db:
-        rows = db.execute("""
-            SELECT t.*, photo.updated_at AS photo_updated_at, u.username, COUNT(p.id) AS player_count,
-              COALESCE(SUM(p.points),0) AS score
-            FROM teams t LEFT JOIN team_photos photo ON photo.team_id=t.id LEFT JOIN users u ON u.id=t.manager_id
-            LEFT JOIN players p ON p.owner_team_id=t.id
-            GROUP BY t.id ORDER BY score DESC, t.budget DESC, t.name
-        """).fetchall()
-    return view(request, "standings.html", standings=rows)
+        context=seasons.calendar_view(db,season)
+        if context is None:
+            raise HTTPException(404,'Season not found.')
+        rows=season_table(db,context['season']['id'],context['season']['start_year']==context['current_year'])
+    return view(request,'standings.html',standings=rows,**context)
 
 
 @app.get('/admin/teams', response_class=HTMLResponse)
@@ -1633,13 +1633,17 @@ async def admin_save_match(request: Request,season_id: int | None=None,match_id:
 
 
 @app.get('/seasons', response_class=HTMLResponse)
-def season_calendar(request: Request, season: str='current'):
+def season_calendar(request: Request, season: str='current', round_number: str=Query('all',alias='round')):
     viewer=session_user(request)
     with store.read_db() as db:
         context=seasons.calendar_view(db,season,bool(viewer and viewer['role']=='admin'))
     if context is None:
         raise HTTPException(404,'Season not found.')
-    return view(request,'seasons.html',**context)
+    if round_number!='all':
+        if not round_number.isascii() or not round_number.isdigit() or not 1<=int(round_number)<=(context['season']['round_count'] or 0):
+            raise HTTPException(400,'Invalid round.')
+        context['rounds']=[rnd for rnd in context['rounds'] if rnd['number']==int(round_number)]
+    return view(request,'seasons.html',round_selection=round_number,**context)
 
 
 @app.get('/matches/{match_id}', response_class=HTMLResponse)

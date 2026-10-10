@@ -570,7 +570,7 @@ All seasons	Todas as épocas
 Reset	Repor
 Club game	Partida do clube
 Not played	Não disputada
-vs	contra
+vs	vs
 Replay ↗	Reproduzir ↗
 Details ↗	Detalhes ↗
 No matches found	Nenhuma partida encontrada
@@ -1486,3 +1486,28 @@ Season schedule	Calendário da época
 Select a round to see its matches.	Seleciona uma ronda para veres os seus encontros.
 Date to be announced	Data a anunciar
 Not completed	Por concluir
+Choose a round	Escolhe uma ronda
+All rounds	Todas as rondas
+LEAGUE POINTS	PONTOS DA LIGA
+Most league points	Mais pontos na liga
+Match wins earn 3 points, draws 1, and losses 0.	Cada vitória num encontro vale 3 pontos, um empate vale 1 e uma derrota vale 0.
+Season standings	Classificação da época
+PLAYED	JOGADOS
+WINS	VITÓRIAS
+DRAWS	EMPATES
+LOSSES	DERROTAS
+BOARD POINTS	PONTOS DE TABULEIRO
+Only completed four-board team matches count. Ties use head-to-head match wins, then head-to-head board points, then total season board points. Exact ties share a rank.	Só contam os encontros de quatro tabuleiros concluídos. Os desempates usam as vitórias nos confrontos diretos, depois os pontos de tabuleiro nesses confrontos e, por fim, o total de pontos de tabuleiro da época. Empates exatos partilham a posição.
+The season table will appear when its schedule is published.	A classificação da época ficará disponível quando o calendário for publicado.
+Track your FIDE Rating, results and past teams	Consulta o teu Elo FIDE, resultados e equipas anteriores
+Activate players and manage transfer auctions.	Ativa jogadores e gere leilões de transferências.
+Registered players	Jogadores registados
+Review player identities, ratings and current teams.	Consulta a identidade, o Elo e a equipa atual dos jogadores.
+Chess result saved.	Resultado de xadrez guardado.
+Create teams, invite captains, approve roles and run auctions.	Cria equipas, convida capitães, aprova funções e gere leilões.
+Schedule games for registered chess players. Attach a PGN and confirm the chess result.	Agenda partidas para jogadores de xadrez registados. Anexa um PGN e confirma o resultado.
+Appointment history records captain assignments and departure balances. Chess results appear on player and team pages; legacy appointment dates may be approximate.	O histórico de nomeações regista os capitães e os saldos à saída. Os resultados de xadrez aparecem nas páginas dos jogadores e das equipas; as datas de nomeações antigas podem ser aproximadas.
+BALANCE AT DEPARTURE	SALDO À SAÍDA
+Win team matches to climb the season table: 3 points for a win, 1 for a draw and 0 for a loss.	Vence encontros de equipas para subir na classificação da época: 3 pontos por vitória, 1 por empate e 0 por derrota.
+See your chess results and current team in the club league.	Consulta os teus resultados de xadrez e a tua equipa atual na liga do clube.
+Invalid round.	Ronda inválida.

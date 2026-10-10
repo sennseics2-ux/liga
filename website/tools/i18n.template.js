@@ -17,6 +17,7 @@
   const observedAttributes = [...attrs,...keyAttrs,'data-i18n','data-i18n-vars','data-i18n-translated-vars','data-no-i18n'];
   const allowedAttributes = new Set(attrs);
   const phrases = [
+    [/^Round (\d+)$/,m=>`Ronda ${m[1]}`],
     [/^Photo of (.+)$/,m=>t('Photo of {name}',{name:m[1]})],
     [/^Profiles for (.+)$/,m=>t('Profiles for {name}',{name:m[1]})],
     [/^Invite captain for (.+)$/,m=>t('Invite captain for {name}',{name:m[1]})],

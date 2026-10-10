@@ -108,7 +108,7 @@ def test_manager_resignation_keeps_history_and_snapshot(client):
     assert 'Type RESIGN' in post(client,'/my/manager/resign',confirmation='no').text
     assert 'resigned from the team' in post(client,'/my/manager/resign',confirmation='RESIGN').text
     assert 'Resignation Rooks' in client.get('/my/manager').text
-    assert '23 fantasy pts' in re.sub(r'<[^>]+>', '', client.get('/my/manager').text)
+    assert 'fantasy pts' not in re.sub(r'<[^>]+>', '', client.get('/my/manager').text)
     with store.read_db() as db:
         term=db.execute('SELECT * FROM manager_terms WHERE manager_id=?',(uid,)).fetchone()
         assert term['ended_at'] and term['final_fantasy_points']==23

@@ -33,7 +33,7 @@ def test_current_season_dropdown_and_completed_match(chromium,league_server,widt
         expect(page.locator('.competition-empty h3')).to_have_text('Calendário em breve')
         assert_fits_phone(page)
         page.locator('#season-select').select_option(str(season))
-        page.wait_for_url(league.base+f'/seasons?season={season}')
+        page.wait_for_url(league.base+f'/seasons?season={season}&round=all')
         expect(page.locator('h1')).to_have_text('2025-2026')
         expect(page.locator('.fixture-score').first).to_have_text('2½')
         expect(page.locator('.fixture-score').last).to_have_text('1½')
