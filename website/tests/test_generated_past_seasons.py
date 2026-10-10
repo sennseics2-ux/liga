@@ -93,3 +93,68 @@ def test_existing_conflicting_history_fails_without_touching_source(client,tmp_p
     with pytest.raises(ValueError,match='conflicts'):generate(store.DB_PATH,output)
     assert not output.exists()
     with store.read_db() as db:assert db.execute('SELECT COUNT(*) FROM seasons').fetchone()[0]==0
+
+
+def test_past_lineups_do_not_require_current_team_rosters(client,tmp_path):
+    seed_four_teams()
+    with store.transaction() as db:
+        db.execute('DELETE FROM player_team_terms WHERE player_id IN (SELECT id FROM players WHERE is_manager_player=0)')
+        db.execute('UPDATE players SET owner_team_id=NULL WHERE is_manager_player=0')
+        db.execute("INSERT INTO seasons(name,start_year,start_date,end_date,round_count,created_at) VALUES('2026-2027',2026,'2026-09-01','2027-06-30',6,?)",(store.iso(store.now_utc()),))
+        owners=[tuple(row) for row in db.execute('SELECT id,owner_team_id FROM players ORDER BY id')]
+        current_terms=[tuple(row) for row in db.execute('SELECT * FROM player_team_terms WHERE ended_at IS NULL ORDER BY id')]
+    output=tmp_path/'past-only.sqlite3'
+    assert generate(store.DB_PATH,output)['board_games']==96
+    with sqlite3.connect(output) as db:
+        assert list(db.execute('SELECT id,owner_team_id FROM players ORDER BY id'))==owners
+        assert list(db.execute('SELECT * FROM player_team_terms WHERE ended_at IS NULL ORDER BY id'))==current_terms
+        assert db.execute("SELECT COUNT(*) FROM games WHERE scheduled_at>='2026-07-01'").fetchone()[0]==0
+        assert db.execute('''SELECT COUNT(*) FROM season_rounds r JOIN seasons s ON s.id=r.season_id
+            WHERE s.start_year=2026''').fetchone()[0]==0
+        for team_id, in db.execute('SELECT id FROM teams'):
+            assert db.execute('SELECT COUNT(*) FROM players WHERE owner_team_id=?',(team_id,)).fetchone()[0]==1
+        assert db.execute('SELECT COUNT(DISTINCT player_id) FROM lineup_players').fetchone()[0]==20
+
+
+def test_current_games_are_never_deleted_to_make_room_for_archive(client,tmp_path):
+    seed_four_teams()
+    with store.read_db() as db:
+        players=[row[0] for row in db.execute('SELECT id FROM players ORDER BY id LIMIT 2')]
+    game=store.create_game(*players,'2026-11-01T12:00:00+00:00')
+    output=tmp_path/'current-conflict.sqlite3'
+    with pytest.raises(ValueError,match='Current/future games already exist'):
+        generate(store.DB_PATH,output)
+    assert not output.exists()
+    with store.read_db() as db:
+        assert db.execute('SELECT id FROM games').fetchone()[0]==game
+        assert db.execute('SELECT COUNT(*) FROM seasons').fetchone()[0]==0
+
+
+def test_only_managers_need_no_current_roster_and_guests_have_no_accounts(client,tmp_path):
+    seed_admin()
+    for n in range(4):
+        manager=store.create_account(f'manager{n}',PASSWORD,'manager')
+        team=store.create_team(f'Current Team {n}')
+        store.assign_manager(team,manager)
+    source=store.DB_PATH
+    with sqlite3.connect(source) as db:
+        before=snapshot(db)
+        owners=list(db.execute('SELECT id,owner_team_id FROM players ORDER BY id'))
+    with pytest.raises(ValueError,match='at least 16'):
+        generate(source,tmp_path/'existing-only.sqlite3')
+    output=tmp_path/'guest-history.sqlite3'
+    result=generate(source,output,allow_historical_guests=True)
+    assert result['historical_guests_created']==12
+    assert result['current_season_games']==result['current_season_matches']==0
+    with sqlite3.connect(output) as db:
+        assert snapshot(db)==before
+        assert list(db.execute('SELECT id,owner_team_id FROM players WHERE user_id IS NOT NULL ORDER BY id'))==owners
+        assert db.execute('SELECT COUNT(*) FROM users').fetchone()[0]==5
+        assert db.execute('SELECT COUNT(*) FROM players WHERE user_id IS NULL AND owner_team_id IS NULL').fetchone()[0]==12
+        assert db.execute('SELECT COUNT(*) FROM players WHERE owner_team_id IS NOT NULL').fetchone()[0]==4
+        assert db.execute("SELECT COUNT(*) FROM games WHERE scheduled_at>='2026-07-01'").fetchone()[0]==0
+        assert db.execute('SELECT COUNT(*) FROM games').fetchone()[0]==96
+        assert db.execute('SELECT COUNT(DISTINCT player_id) FROM lineup_players').fetchone()[0]==16
+    with sqlite3.connect(source) as db:
+        assert list(db.execute('SELECT id,owner_team_id FROM players ORDER BY id'))==owners
+        assert snapshot(db)==before

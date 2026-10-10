@@ -350,22 +350,29 @@ The generator uses your **private current VM database**, not a downloadable
 fictional replacement. It preserves account IDs, password hashes, recovery emails,
 profile settings, current ownership, current manager appointments, budgets,
 auctions and existing scoring adjustments. Generated results add their normal
-awards to cumulative fantasy points. Unassigned free agents remain unassigned.
+awards to cumulative fantasy points. Historical lineups use existing players
+regardless of current team assignment. Current ownership remains unchanged.
+The installer adds explicitly named historical guests only if fewer than sixteen
+chess profiles exist; guests have no login accounts or current team assignments.
 
 It adds 2024-2025 and 2025-2026, each September 1–June 30, with six completed rounds.
 Every team meets each other team twice, once home and once away. There are 12 team
 matches and 48 board games per season (96 games altogether), submitted four-player
 lineups, managers playing, historical roster/manager terms, scored results and
-legal sample PGNs. All eligible current roster players rotate through games in
-both seasons. Games, PGNs and audit records explicitly identify the history as
+legal sample PGNs. All selected players rotate through games in both past seasons.
+No current-season matches, games or lineups are generated. Existing current/future
+games or matches cause a safe failure rather than being silently deleted. Games, PGNs and audit records explicitly identify the history as
 **generated demonstration data, not actual past results or actual game moves**.
 
-Requirements: exactly four teams, each with an active playing manager on its
-roster and 4–24 eligible players. With six rounds and four boards, more than 24
-players cannot all play. Activate or assign missing players/managers before
-running. Existing seasons/games in these dates or conflicting historical
-appointments cause a safe failure rather than replacement. It can run only once
-against a given database; a repeat attempt refuses duplicate seasons.
+Requirements: exactly four teams with assigned active managers and manager chess
+profiles. Current teams may have empty player rosters; they do not need 4–24 current
+players. Separate historical assignments fill the past-season lineups. More than
+96 existing players cannot all play across six rounds per season. Existing past
+seasons/games or conflicting dated appointments cause a safe failure. A repeat
+attempt refuses duplicate seasons. The installer rebuilds the web image before
+stopping services so it uses the updated Python generator. It opts into
+`--allow-historical-guests`; omit this flag when running the generator directly
+if you want existing players only.
 
 Copy a consistent recent backup off the VM before starting. Then run:
 

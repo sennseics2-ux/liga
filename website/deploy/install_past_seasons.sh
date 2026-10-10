@@ -22,13 +22,16 @@ if [[ "${CHESS_USE_OFFSITE_COMPOSE:-0}" == 1 ]]; then
   COMPOSE+=(-f compose.yaml -f compose.offsite.yaml)
 fi
 "${COMPOSE[@]}" config -q
+# Refresh the offline generator inside the image before stopping the website.
+# Downloading a newer .py/.sh alone does not update an already built image.
+"${COMPOSE[@]}" build web
 # Restart the existing deployment on failure; the generator never changes source.
 trap '"${COMPOSE[@]}" up -d' EXIT
 "${COMPOSE[@]}" down
 "${COMPOSE[@]}" run --rm --no-deps -T --entrypoint python web \
   -m deploy.backup_sqlite --output-dir "$BACKUP_DIR" --keep 0
 "${COMPOSE[@]}" run --rm --no-deps -T --entrypoint python web \
-  demo/generate_past_seasons.py --source /data/league.sqlite3 --output "$PREPARED"
+  demo/generate_past_seasons.py --source /data/league.sqlite3 --output "$PREPARED" --allow-historical-guests
 # Checkpoint any preserved WAL only after every database service is stopped.
 "${COMPOSE[@]}" run --rm --no-deps -T --entrypoint python web -c \
   'import sqlite3; from contextlib import closing; from pathlib import Path

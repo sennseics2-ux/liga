@@ -19,10 +19,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import database as store
 from game_logic import awards
-from league_seasons import eligible_players
 
 YEARS = (2024, 2025)
-REASON = 'Generated demonstration history using current roster; not an actual match record'
+REASON = 'Generated demonstration history with past-only assignments; not an actual match record'
 PAIRINGS = (((0, 3), (1, 2)), ((0, 2), (3, 1)), ((0, 1), (2, 3)))
 
 
@@ -77,7 +76,62 @@ def _pgn(white, black, when, result, season, round_number, board, location):
     return game.accept(chess.pgn.StringExporter(headers=True, variations=False, comments=True)) + '\n'
 
 
-def _populate(seed):
+def _historical_rosters(db, teams, allow_historical_guests=False):
+    """Plan past memberships without requiring or changing current ownership."""
+    managers={team['manager_id'] for team in teams}
+    profiles=[dict(p) for p in db.execute('''SELECT p.* FROM players p LEFT JOIN users u ON u.id=p.user_id
+        WHERE u.id IS NULL OR u.role!='admin' ORDER BY p.id''')]
+    rosters={}
+    for team in teams:
+        manager=db.execute('SELECT * FROM users WHERE id=?',(team['manager_id'],)).fetchone()
+        if not manager or not manager['account_active'] or not manager['manager_active']:
+            raise ValueError(f"Team {team['id']} needs an active assigned manager.")
+        profile=next((p for p in profiles if p['user_id']==team['manager_id']),None)
+        if profile is None:
+            raise ValueError(f"Team {team['id']} needs a chess profile for its manager.")
+        rosters[team['id']]=[profile]
+    pool=[]
+    for player in profiles:
+        if player['user_id'] in managers:
+            continue
+        preferred=rosters.get(player['owner_team_id'])
+        if preferred is not None and len(preferred)<24:
+            preferred.append(player)
+        else:
+            pool.append(player)
+    for player in pool:
+        target=min(rosters.values(),key=len)
+        if len(target)>=24:
+            raise ValueError('More than 96 players cannot all play in six four-board rounds.')
+        target.append(player)
+    guest_count=0
+    while allow_historical_guests and sum(map(len,rosters.values()))<16:
+        team_id=min(rosters,key=lambda key:len(rosters[key]))
+        guest_count+=1
+        pid=db.execute('''INSERT INTO players(name,created_at) VALUES(?,?)''',
+            (f'Historical guest — Team {team_id} — {guest_count}',stamp('2024-09-01'))).lastrowid
+        rosters[team_id].append(dict(db.execute('SELECT * FROM players WHERE id=?',(pid,)).fetchone()))
+    if sum(map(len,rosters.values()))<16:
+        raise ValueError('Past seasons need at least 16 existing chess profiles including the four managers; current team assignments are not required.')
+    while min(map(len,rosters.values()))<4:
+        smallest=min(rosters.values(),key=len)
+        largest=max(rosters.values(),key=len)
+        smallest.append(largest.pop())
+    return rosters,guest_count
+
+
+def _assert_no_current_records(db):
+    # The requested archive ends June 30, 2026. Never remove current data to
+    # satisfy this constraint: stop and leave the source unchanged instead.
+    if db.execute('SELECT 1 FROM games WHERE scheduled_at>=? LIMIT 1',(stamp('2026-07-01'),)).fetchone():
+        raise ValueError('Current/future games already exist. Nothing was removed; only empty current-season data is supported.')
+    if db.execute('''SELECT 1 FROM team_matches m JOIN season_rounds r ON r.id=m.round_id
+        JOIN seasons s ON s.id=r.season_id WHERE s.start_year>=2026 OR m.scheduled_at>=? LIMIT 1''',
+        (stamp('2026-07-01'),)).fetchone():
+        raise ValueError('Current/future team matches already exist. Nothing was removed; only empty current-season data is supported.')
+
+
+def _populate(seed,allow_historical_guests=False):
     rng = random.Random(seed)
     created = store.iso(store.now_utc())
     with store.transaction() as db:
@@ -88,17 +142,8 @@ def _populate(seed):
         if admin is None:
             raise ValueError('An active administrator account is required.')
         actor = admin['id']
-        rosters = {}
-        for team in teams:
-            manager = db.execute('SELECT * FROM users WHERE id=?', (team['manager_id'],)).fetchone()
-            if not manager or not manager['account_active'] or not manager['manager_active'] or not manager['player_active']:
-                raise ValueError(f"Team {team['id']} needs an active playing manager.")
-            roster = eligible_players(db, team['id'])
-            if not 4 <= len(roster) <= 24:
-                raise ValueError(f"Team {team['id']} needs 4–24 eligible players to let everyone play in six rounds.")
-            if not any(p['user_id'] == team['manager_id'] for p in roster):
-                raise ValueError(f"Team {team['id']} has no manager-player on its roster.")
-            rosters[team['id']] = sorted(roster, key=lambda p: (p['user_id'] != team['manager_id'], p['id']))
+        _assert_no_current_records(db)
+        rosters,guest_count = _historical_rosters(db,teams,allow_historical_guests)
         for year in YEARS:
             name = f'{year}-{year+1}'
             start, end = stamp(f'{year}-09-01'), stamp(f'{year+1}-07-01')
@@ -165,10 +210,11 @@ def _populate(seed):
             store._audit(db,'generated_historical_season','season',season,actor,REASON,after={'rounds':6,'teams':4,'games':48})
     return {'seasons': ['2024-2025', '2025-2026'], 'rounds': 12, 'team_matches': 24,
             'board_games': 96, 'players': sum(map(len, rosters.values())),
+            'historical_guests_created':guest_count,'current_season_games':0,'current_season_matches':0,
             'results': 'Generated demonstration; not real match records', 'seed': seed}
 
 
-def generate(source: Path, output: Path, seed=20261010):
+def generate(source: Path, output: Path, seed=20261010, *, allow_historical_guests=False):
     source, output = source.resolve(), output.resolve()
     if not source.is_file():
         raise FileNotFoundError('Source database does not exist.')
@@ -183,7 +229,7 @@ def generate(source: Path, output: Path, seed=20261010):
             src.backup(dst)
         store.DB_PATH = output
         store.init_db()  # Migration affects only this new private copy.
-        report = _populate(seed)
+        report = _populate(seed,allow_historical_guests)
         with store.read_db() as db:
             if db.execute('PRAGMA integrity_check').fetchone()[0] != 'ok' or db.execute('PRAGMA foreign_key_check').fetchall():
                 raise ValueError('Generated database integrity check failed.')
@@ -208,9 +254,11 @@ if __name__ == '__main__':
     parser.add_argument('--source', type=Path, required=True)
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--seed', type=int, default=20261010)
+    parser.add_argument('--allow-historical-guests',action='store_true',
+                        help='Fill missing past-season lineup slots with named guests without login accounts or current teams')
     args = parser.parse_args()
     try:
-        report = generate(args.source, args.output, args.seed)
+        report = generate(args.source, args.output, args.seed,allow_historical_guests=args.allow_historical_guests)
     except (ValueError, FileNotFoundError, FileExistsError) as exc:
         parser.exit(1, f'Not generated: {exc}\n')
     print(json.dumps(report, indent=2))
