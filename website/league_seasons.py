@@ -158,6 +158,10 @@ def match_rows(db, season_id=None):
             halves = score.get(side+'_half_points', 0)
             row[side+'_score'] = (str(halves//2) if halves%2 == 0 else (str(halves//2) if halves//2 else '')+'½') if row['finished_boards'] else '—'
         row['result_status'] = 'Completed' if row['finished_boards'] == 4 else ('Partial results' if row['finished_boards'] else 'Upcoming')
+        row['outcome'] = None
+        if row['finished_boards'] == 4:
+            home, away = score.get('home_half_points', 0), score.get('away_half_points', 0)
+            row['outcome'] = 'draw' if home == away else ('home' if home > away else 'away')
         if not row['finished_boards']:
             import database as store
             if _datetime(row['scheduled_at']) <= store.now_utc():
@@ -189,11 +193,20 @@ def calendar_view(db, selection, is_admin=False):
         if not rounds or rounds[-1]['number'] != match['round_number']:
             rounds.append({'number': match['round_number'], 'matches': []})
         rounds[-1]['matches'].append(match)
+    for rnd in rounds:
+        rnd['completed'] = all(match['finished_boards']==4 for match in rnd['matches'])
+    by_number = {rnd['number']:rnd for rnd in rounds}
+    schedule_rounds = []
+    for number in range(1, (selected['round_count'] or 0)+1):
+        rnd = by_number.get(number, {'number':number, 'matches':[], 'completed':False})
+        dates = sorted(match['scheduled_at'] for match in rnd['matches'])
+        schedule_rounds.append({**rnd, 'first_date':dates[0] if dates else None,
+                               'last_date':dates[-1] if dates else None})
     state = 'Schedule coming soon'
     if selected['start_date']:
         state = 'Not started' if today.isoformat() < selected['start_date'] else ('Season concluded' if today.isoformat() > selected['end_date'] else 'Season underway')
     return dict(season=selected, season_options=options, current_year=year, season_state=state,
-                rounds=rounds, matches=matches, completed_matches=sum(m['finished_boards']==4 for m in matches),
+                rounds=rounds, schedule_rounds=schedule_rounds, matches=matches, completed_matches=sum(m['finished_boards']==4 for m in matches),
                 participating_teams=len({m[side+'_team_id'] for m in matches for side in ('home','away')}))
 
 

@@ -55,6 +55,7 @@ def local_time(value):
 
 
 TEMPLATES.env.filters['local_time'] = local_time
+TEMPLATES.env.filters['local_date'] = lambda value: '.'.join(reversed(local_time(value)[:10].split('-'))) if value else '—'
 
 
 async def rating_loop():
@@ -649,6 +650,15 @@ def member_profile(request: Request, username: str):
             FROM player_team_terms term JOIN teams t ON t.id=term.team_id
             WHERE term.player_id=? ORDER BY term.started_at DESC,term.id DESC''',
             (profile['id'],)).fetchall() if profile else []
+        affiliation = None
+        if is_manager_tab and member['manager_active'] and team:
+            term = next((row for row in history if row['team_id']==team['id'] and not row['ended_at']), None)
+            affiliation = {'role':'Captain', 'team_id':team['id'], 'team_name':team['name'],
+                           'joined_at':term['started_at'] if term else None}
+        elif not is_manager_tab and member['player_active'] and profile and profile['owner_team_id']:
+            term = next((row for row in past_teams if row['team_id']==profile['owner_team_id'] and not row['ended_at']), None)
+            affiliation = {'role':'Player', 'team_id':profile['owner_team_id'], 'team_name':profile['team_name'],
+                           'joined_at':term['started_at'] if term else None}
         member_games=game_rows(db,where='g.white_player_id=? OR g.black_player_id=?',
                                values=(profile['id'],profile['id']), limit=8) if profile else []
         visible, visibility_values=public_game_visibility()
@@ -678,7 +688,7 @@ def member_profile(request: Request, username: str):
                 profile=profile,team=team,roster=roster,score=score,bids=bids,reserved=reserved,
                 available=team['budget']-reserved if team else 0,
                 history=history,invitations=invitations,request_rows=request_rows,member_games=member_games,
-                past_teams=past_teams,career=career)
+                past_teams=past_teams,career=career,affiliation=affiliation)
 
 
 @app.post('/my/roles/{role}/quit')

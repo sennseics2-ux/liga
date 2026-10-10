@@ -168,7 +168,7 @@ if (window.location.pathname === '/reset-password') {
   }
 }
 
-// Keep the native submit button usable when JavaScript is unavailable.
+// Season changes submit immediately; noscript season links provide the fallback.
 document.querySelectorAll('[data-season-selector]').forEach(select => {
   select.addEventListener('change', () => select.form.requestSubmit());
 });

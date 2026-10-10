@@ -101,7 +101,9 @@
 :root[data-theme="dark"] .metric-card>small{color:var(--theme-muted)}
 :root[data-theme="dark"] .admin-box .box-icon{color:var(--theme-muted)}
 :root[data-theme="dark"] .admin-box p{color:var(--theme-muted)}
+@media(max-width:780px){
 :root[data-theme="dark"] .nav-links{background:var(--theme-surface)}
+}
 :root[data-theme="dark"] .user-mini-list li span{color:var(--theme-muted)}
 :root[data-theme="dark"] .team-assign-form select{border:1px solid var(--theme-border);background:var(--theme-surface)}
 :root[data-theme="dark"] .team-assign-form .checkline{color:var(--theme-muted)}
@@ -286,9 +288,11 @@
 :root[data-theme="dark"] .auction-recovery-form input{border:1px solid var(--theme-border)}
 :root[data-theme="dark"] .replay-options button,:root[data-theme="dark"] .replay-options select{border:1px solid var(--theme-border);background:var(--theme-surface);color:var(--theme-text)}
 :root[data-theme="dark"] .replay-options label{color:var(--theme-muted)}
+@media(max-width:600px){
 :root[data-theme="dark"] .mobile-cards tr{background:var(--theme-surface)}
 :root[data-theme="dark"] .mobile-cards td{border-top:1px solid var(--theme-border)}
 :root[data-theme="dark"] .mobile-cards td::before{color:var(--theme-muted)}
+}
 :root[data-theme="dark"] .footer-logo{background:var(--theme-surface)}
 :root[data-theme="dark"] body.home-theme .market-card .card-bottom strong span{color:var(--theme-muted)}
 :root[data-theme="dark"] .team-fixture-card{border:1px solid var(--theme-border)}

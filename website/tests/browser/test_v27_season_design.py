@@ -5,6 +5,7 @@ import pytest
 from playwright.sync_api import expect
 from test_member_journey import chromium, league_server, assert_fits_phone
 from test_v25_seasons import setup
+from test_v32_dark_mode import CONTRAST
 import league_seasons as seasons
 
 pytestmark=pytest.mark.skipif(os.environ.get('RUN_BROWSER_TESTS')!='1',reason='Set RUN_BROWSER_TESTS=1 to require Chromium journeys.')
@@ -36,6 +37,11 @@ def test_current_season_dropdown_and_completed_match(chromium,league_server,widt
         expect(page.locator('h1')).to_have_text('2025-2026')
         expect(page.locator('.fixture-score').first).to_have_text('2½')
         expect(page.locator('.fixture-score').last).to_have_text('1½')
+        expect(page.locator('.fixture-team-winner')).to_have_count(1)
+        expect(page.locator('.season-picker button')).to_have_count(0)
+        expect(page.locator('.season-metrics')).to_have_count(0)
+        expect(page.locator('.schedule-round')).to_have_count(2)
+        expect(page.locator('.schedule-round-complete')).to_have_count(1)
         assert_fits_phone(page)
         directory=Path('/workspace/review-runtime/v27-screenshots')
         if directory.parent.exists():
@@ -54,12 +60,31 @@ def test_current_season_dropdown_and_completed_match(chromium,league_server,widt
         page.locator('.match-back').click()
         page.wait_for_url(league.base+f'/seasons?season={season}')
         expect(page.locator('h1')).to_have_text('2025-2026')
+        for game in games:
+            league.store.update_game_result(game,'1/2-1/2',actor_id=admin,reason='Draw highlight check')
+        page.reload()
+        expect(page.locator('.fixture-team-draw')).to_have_count(2)
+        expect(page.locator('.fixture-team-winner')).to_have_count(0)
+        page.locator('#theme-toggle').click()
+        expect(page.locator('html')).to_have_attribute('data-theme','dark')
+        page.evaluate("() => Promise.all(document.getAnimations().filter(a=>a.effect.getComputedTiming().iterations!==Infinity).map(a=>a.finished.catch(()=>{})))")
+        assert not page.evaluate(CONTRAST)
+        if width > 1020:
+            assert page.locator('.nav-links').evaluate('(el)=>getComputedStyle(el).backgroundColor')=='rgba(0, 0, 0, 0)'
+        else:
+            page.locator('.mobile-toggle').click()
+            expect(page.locator('.nav-links')).to_be_visible()
+            assert page.locator('.nav-links').evaluate('(el)=>getComputedStyle(el).backgroundColor')!='rgba(0, 0, 0, 0)'
+            page.locator('.mobile-toggle').click()
+        assert_fits_phone(page)
+        if directory.exists():
+            page.screenshot(path=str(directory/f'draw-dark-{width}.png'),full_page=True)
         assert not errors,errors
         # Native GET navigation remains available without JavaScript.
         plain=chromium.new_context(java_script_enabled=False,viewport={'width':width,'height':900})
         plain_page=plain.new_page();plain_page.goto(league.base+'/seasons')
         plain_page.locator('#season-select').select_option(str(season))
-        plain_page.locator('.season-picker button').click()
+        plain_page.locator(f'.season-fallback a[href="/seasons?season={season}"]').click()
         plain_page.wait_for_url(league.base+f'/seasons?season={season}')
         expect(plain_page.locator('h1')).to_have_text('2025-2026')
         plain.close()
