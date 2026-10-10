@@ -1,2 +1,52 @@
-{% extends 'base.html' %}{% block title %}Seasons & rounds{% endblock %}{% block content %}<section class="section container"><h1 data-i18n="Seasons & rounds">Seasons &amp; rounds</h1>{% if user and user.role=='admin' %}<p><a class="btn btn-primary" href="/admin/seasons" data-i18n="Season setup">Season setup</a></p>{% endif %}
-<div class="game-list">{% for match in matches %}<a class="team-fixture-card" href="/matches/{{ match.id }}"><span data-no-i18n>{{ match.season_name }}</span><span><span data-i18n="Round">Round</span> <span data-no-i18n>{{ match.round_number }}</span></span><strong data-no-i18n>{{ match.home_name }} — {{ match.away_name }}</strong><time data-no-i18n>{{ match.scheduled_at|local_time }}</time><span data-no-i18n>{{ match.location }}</span></a>{% else %}<p data-i18n="No season schedule has been published yet.">No season schedule has been published yet.</p>{% endfor %}</div></section>{% endblock %}
+{% extends 'base.html' %}
+{% block title %}{{ season.name }} · Seasons & rounds{% endblock %}
+{% block content %}
+<section class="season-hero">
+  <div class="container season-hero-inner">
+    <div>
+      <p class="competition-eyebrow" data-i18n="Seasons & rounds">Seasons &amp; rounds</p>
+      <h1 data-no-i18n>{{ season.name }}</h1>
+      <div class="season-description"><span class="competition-status" data-i18n="{{ season_state }}">{{ season_state }}</span>{% if season.start_year == current_year %}<span data-i18n="Current season">Current season</span>{% endif %}</div>
+      {% if season.start_date %}<p class="season-dates"><span data-i18n="Season dates">Season dates</span> <span data-no-i18n>{{ season.start_date }} — {{ season.end_date }}</span></p>{% endif %}
+    </div>
+    <div class="season-picker-panel">
+      <form method="get" action="/seasons" class="season-picker">
+        <label for="season-select" data-i18n="Choose a season">Choose a season</label>
+        <div><select id="season-select" name="season" data-season-selector>
+          {% for option in season_options %}<option value="{{ option.id if option.id else 'current' }}" {% if option.start_year==season.start_year %}selected{% endif %} data-no-i18n>{{ option.name }}</option>{% endfor %}
+        </select><button class="btn" type="submit" data-i18n="View season">View season</button></div>
+      </form>
+      {% if user and user.role=='admin' %}<a class="season-admin-link" href="/admin/seasons{% if season.id %}?season_id={{ season.id }}{% endif %}"><span data-i18n="Season setup">Season setup</span> <span aria-hidden="true">↗</span></a>{% endif %}
+    </div>
+  </div>
+</section>
+<section class="container competition-content">
+  <div class="season-metrics">
+    <div><strong data-no-i18n>{{ participating_teams if matches else '—' }}</strong><span data-i18n="Teams">Teams</span></div>
+    <div><strong data-no-i18n>{{ season.round_count if season.round_count else '—' }}</strong><span data-i18n="Rounds">Rounds</span></div>
+    <div><strong data-no-i18n>{{ completed_matches }}</strong><span data-i18n="Completed matches">Completed matches</span></div>
+    <div><strong data-no-i18n>{{ matches|length }}</strong><span data-i18n="Scheduled matches">Scheduled matches</span></div>
+  </div>
+  <div class="competition-section-heading"><div><p class="competition-eyebrow" data-i18n="The competition">The competition</p><h2 data-i18n="Fixtures & results">Fixtures &amp; results</h2></div><p data-i18n="Four boards. Two teams. Every point counts.">Four boards. Two teams. Every point counts.</p></div>
+  {% if season.status=='draft' and user and user.role=='admin' and matches %}<p class="competition-draft-note" data-i18n="Draft preview. Fixtures are visible to administrators until the schedule is published.">Draft preview. Fixtures are visible to administrators until the schedule is published.</p>{% endif %}
+  {% for round in rounds %}
+  <section class="round-section" aria-labelledby="round-{{ round.number }}">
+    <div class="round-heading"><h3 id="round-{{ round.number }}"><span class="round-number" data-no-i18n>{{ '%02d'|format(round.number) }}</span><span data-i18n="Round">Round</span> <span data-no-i18n>{{ round.number }}</span></h3><span><span data-no-i18n>{{ round.matches|length }}</span> <span data-i18n="Matches">Matches</span></span></div>
+    <div class="fixture-grid">
+      {% for match in round.matches %}
+      <a class="fixture-card" href="/matches/{{ match.id }}">
+        <div class="fixture-top"><time data-no-i18n>{{ match.scheduled_at|local_time }}</time><span class="result-status{% if match.finished_boards==4 %} result-complete{% endif %}" data-i18n="{{ match.result_status }}">{{ match.result_status }}</span></div>
+        <div class="fixture-teams">
+          {% for side in ['home','away'] %}<div class="fixture-team"><span class="team-emblem{% if side=='away' %} team-emblem-light{% endif %}" aria-hidden="true" data-no-i18n>{{ match[side+'_name'][:2]|upper }}</span><strong data-no-i18n>{{ match[side+'_name'] }}</strong><span class="fixture-score" data-no-i18n>{{ match[side+'_score'] }}</span></div>{% endfor %}
+        </div>
+        <div class="fixture-bottom"><span class="fixture-location" data-no-i18n>{{ match.location }}</span><span class="fixture-cta"><span data-i18n="View match">View match</span> <span aria-hidden="true">↗</span></span></div>
+        {% if match.finished_boards %}<div class="fixture-progress"><span data-no-i18n>{{ match.finished_boards }}/4</span> <span data-i18n="boards completed">boards completed</span></div>{% endif %}
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% else %}
+  <div class="competition-empty"><span class="empty-chess" aria-hidden="true">♞</span><h3 data-i18n="Schedule coming soon">Schedule coming soon</h3><p data-i18n="This season is here. Match dates, pairings and results will appear once the schedule is published.">This season is here. Match dates, pairings and results will appear once the schedule is published.</p><span class="empty-season" data-no-i18n>{{ season.name }}</span></div>
+  {% endfor %}
+</section>
+{% endblock %}

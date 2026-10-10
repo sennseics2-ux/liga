@@ -27,7 +27,7 @@ instructions, not evidence that this workspace has changed the live website.
    sudo docker compose down
    sudo rsync -a --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
      --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
-     ~/chess-fantasy-league-v26/ /opt/clubdraft/
+     ~/chess-fantasy-league-v27/ /opt/clubdraft/
    sudo mkdir -p data backups
    sudo chown -R 10001:10001 data backups
    sudo chmod 700 data backups
@@ -49,10 +49,11 @@ instructions, not evidence that this workspace has changed the live website.
    replay data. Sign in and verify replay and PGN download. Confirm Portuguese
    labels and unchanged team/player names. Monitor backups health separately.
 
-## V26 release extraction and configuration
+## V27 release extraction and configuration
 
-The standalone release ZIP has `chess-fantasy-league-v26/` at its root. GitHub's
-Download ZIP instead contains `liga-main/website/`. Copy the directory containing
+The standalone release ZIP has `chess-fantasy-league-v27/` at its root. GitHub's
+Download ZIP instead contains `liga-main/website/` (or `liga-COMMIT/website/`
+for a commit archive). Copy the directory containing
 `main.py`, `compose.yaml`, and `league_migrations.py`; copying `liga-main/` directly
 will put the application at the wrong nesting level and leave the old site running.
 
@@ -61,13 +62,18 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 ```bash
 (
   set -e
-  ZIP="$HOME/chess-fantasy-league-v26.zip"
-  RELEASE_DIR="$(mktemp -d "$HOME/liga-v26-release.XXXXXX")"
+  ZIP="$HOME/chess-fantasy-league-v27.zip"
+  RELEASE_DIR="$(mktemp -d "$HOME/liga-v27-release.XXXXXX")"
   unzip -q "$ZIP" -d "$RELEASE_DIR"
-  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v26"
+  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v27"
   if [ ! -f "$SOURCE_DIR/main.py" ]; then
-    SOURCE_DIR="$RELEASE_DIR/liga-main/website"
+    for CANDIDATE in "$RELEASE_DIR"/liga-*/website; do
+      if [ -f "$CANDIDATE/main.py" ]; then
+        SOURCE_DIR="$CANDIDATE"
+      fi
+    done
   fi
+  test -f "$SOURCE_DIR/main.py"
   test -f "$SOURCE_DIR/compose.yaml"
   test -f "$SOURCE_DIR/deploy/install_past_seasons.sh"
   grep -q 'v25_accounts_seasons' "$SOURCE_DIR/league_migrations.py"
@@ -95,7 +101,13 @@ creates a consistent snapshot before migrating. The additional `.pre-v25.bak`
 snapshot preserves the pre-migration database; keep a copy off the VM.
 
 After web is healthy, `/health` must report `"schema":"v25_accounts_seasons"`, and
-the homepage assets must use `v=26`. A browser hard refresh may be necessary.
+the homepage assets must use `v=27`. A browser hard refresh may be necessary.
+Open `/seasons`: it defaults to the current July–June season (2026-2027 in October
+2026), including before its schedule is published. Use the season dropdown to
+view 2024-2025 and 2025-2026; their results no longer appear on the initial page.
+Check a completed match for its team score and four board results. This upgrade
+does not regenerate or replace the database; do not rerun the historical installer
+if those seasons are already present.
 
 ### SMTP password recovery
 
@@ -342,9 +354,9 @@ Playwright is unavailable.
 
 ## Generate and install the two past seasons
 
-Install V26 application files first using the upgrade commands above. Keep the
+Install V27 application files first using the upgrade commands above. Keep the
 existing `.env`, accounts, and data. The database migration version remains
-`v25_accounts_seasons`; V26 changes application behavior and assets (`v=26`).
+`v25_accounts_seasons`; V27 changes application behavior and assets (`v=27`).
 
 The generator uses your **private current VM database**, not a downloadable
 fictional replacement. It preserves account IDs, password hashes, recovery emails,

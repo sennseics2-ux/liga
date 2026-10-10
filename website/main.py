@@ -1523,13 +1523,13 @@ async def admin_save_match(request: Request,season_id: int | None=None,match_id:
 
 
 @app.get('/seasons', response_class=HTMLResponse)
-def season_calendar(request: Request):
+def season_calendar(request: Request, season: str='current'):
     viewer=session_user(request)
     with store.read_db() as db:
-        matches=seasons.match_rows(db)
-        if not viewer or viewer['role']!='admin':
-            matches=[match for match in matches if match['season_status']=='published']
-    return view(request,'seasons.html',matches=matches)
+        context=seasons.calendar_view(db,season,bool(viewer and viewer['role']=='admin'))
+    if context is None:
+        raise HTTPException(404,'Season not found.')
+    return view(request,'seasons.html',**context)
 
 
 @app.get('/matches/{match_id}', response_class=HTMLResponse)
@@ -1544,7 +1544,7 @@ def team_match_detail(request: Request,match_id: int):
             raise HTTPException(404,'Match not found.')
         own_team=team if team and team['id'] in (match['home_team_id'],match['away_team_id']) else None
         eligible=seasons.eligible_players(db,own_team['id']) if own_team else []
-        lineups=[dict(row) for row in db.execute('''SELECT lp.*,p.name,t.name AS team_name FROM lineup_players lp
+        lineups=[dict(row) for row in db.execute('''SELECT lp.*,p.name,p.rating,t.name AS team_name FROM lineup_players lp
             JOIN players p ON p.id=lp.player_id JOIN teams t ON t.id=lp.team_id WHERE match_id=? ORDER BY team_id,board''',(match_id,))]
         selected={row['board']:row['player_id'] for row in lineups if own_team and row['team_id']==own_team['id']}
         games=[dict(row) for row in db.execute('''SELECT mg.board,g.id,g.result,wp.name AS white_name,bp.name AS black_name

@@ -1,6 +1,13 @@
-# Liga SX-AAC — Chess Fantasy League V26
+# Liga SX-AAC — Chess Fantasy League V27
 
 FastAPI, Jinja templates, SQLite, and an offline PGN replay viewer for a club fantasy chess league. This release adds account recovery and editable identities, season scheduling, and four-player team matches while preserving existing accounts and league data.
+
+## New in v27
+
+- Seasons opens on the current July–June season, even if no schedule has been configured or published. A dropdown selects other seasons without mixing their fixtures; the native submit button works without JavaScript.
+- Results are grouped into round cards with team scores, match status, date/time, location and board completion counts. Scores use standard chess board points, not fantasy points.
+- Match pages show a team scoreboard, individual white/black board results and submitted lineups. Managers have a dedicated four-player selection panel; recorded games and expired deadlines prevent editing.
+- Both layouts support Portuguese and English, keyboard navigation and narrow phones. Assets use `v=27`; the existing database and schema remain compatible.
 
 ## New in v26
 

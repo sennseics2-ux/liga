@@ -8,9 +8,9 @@
   <link rel="icon" href="/static/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="/static/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
-  <link rel="stylesheet" href="/static/style.css?v=26">
-  <script defer src="/static/i18n.js?v=26"></script>
-  <script defer src="/static/app.js?v=26"></script>
+  <link rel="stylesheet" href="/static/style.css?v=27">
+  <script defer src="/static/i18n.js?v=27"></script>
+  <script defer src="/static/app.js?v=27"></script>
 </head>
 <body{% if request.url.path == "/" %} class="home-theme"{% endif %}>
 <a class="skip-link" href="#main" data-i18n="Skip to content">Skip to content</a>
@@ -21,7 +21,7 @@
     <div class="nav-links" id="nav-links">
       <a href="/teams" {% if request.url.path == '/teams' or request.url.path.startswith('/teams/') %}class="active"{% endif %}>Teams</a>
       <a href="/players" {% if request.url.path == '/players' %}class="active"{% endif %}>Players</a>
-      <a href="/seasons" data-i18n="Seasons & rounds">Seasons &amp; rounds</a><a href="/games" {% if request.url.path == '/games' or request.url.path.startswith('/games/') %}class="active"{% endif %}>Games</a>
+      <a href="/seasons" {% if request.url.path == "/seasons" or request.url.path.startswith("/matches/") %}class="active"{% endif %} data-i18n="Seasons & rounds">Seasons &amp; rounds</a><a href="/games" {% if request.url.path == '/games' or request.url.path.startswith('/games/') %}class="active"{% endif %}>Games</a>
       <a href="/standings" {% if request.url.path == '/standings' %}class="active"{% endif %}>Standings</a>
       {% if user and user.role == 'admin' %}<a href="/admin" {% if request.url.path == '/admin' %}class="active"{% endif %}>Admin</a>{% endif %}
     </div>

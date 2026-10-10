@@ -167,3 +167,8 @@ if (window.location.pathname === '/reset-password') {
     window.history.replaceState(null, '', '/reset-password');
   }
 }
+
+// Keep the native submit button usable when JavaScript is unavailable.
+document.querySelectorAll('[data-season-selector]').forEach(select => {
+  select.addEventListener('change', () => select.form.requestSubmit());
+});

@@ -128,12 +128,71 @@ def publish_season(season_id, actor_id):
 
 
 def match_rows(db, season_id=None):
-    return [dict(row) for row in db.execute('''SELECT m.*,r.number AS round_number,r.season_id,s.name AS season_name,s.status AS season_status,
+    rows = [dict(row) for row in db.execute('''SELECT m.*,r.number AS round_number,r.season_id,s.name AS season_name,s.status AS season_status,
         ht.name AS home_name,at.name AS away_name,
         (SELECT COUNT(*) FROM match_lineups l WHERE l.match_id=m.id) AS lineup_count
         FROM team_matches m JOIN season_rounds r ON r.id=m.round_id JOIN seasons s ON s.id=r.season_id
         JOIN teams ht ON ht.id=m.home_team_id JOIN teams at ON at.id=m.away_team_id
         WHERE (? IS NULL OR s.id=?) ORDER BY s.start_year DESC,r.number,m.scheduled_at,m.id''',(season_id,season_id))]
+    # Match scores use chess board points (1 / 0.5 / 0), not fantasy awards.
+    scores = {row['match_id']: dict(row) for row in db.execute('''
+        SELECT mg.match_id, COUNT(*) AS board_count,
+        SUM(CASE WHEN g.result IN ('1-0','0-1','1/2-1/2') THEN 1 ELSE 0 END) AS finished_boards,
+        SUM(CASE WHEN g.result='1/2-1/2' THEN 1
+            WHEN (g.result='1-0' AND g.white_team_id=m.home_team_id)
+              OR (g.result='0-1' AND g.black_team_id=m.home_team_id) THEN 2 ELSE 0 END) AS home_half_points,
+        SUM(CASE WHEN g.result='1/2-1/2' THEN 1
+            WHEN (g.result='1-0' AND g.white_team_id=m.away_team_id)
+              OR (g.result='0-1' AND g.black_team_id=m.away_team_id) THEN 2 ELSE 0 END) AS away_half_points,
+        MAX(g.result!='*' OR g.pgn_text IS NOT NULL) AS lineup_locked
+        FROM match_games mg JOIN games g ON g.id=mg.game_id JOIN team_matches m ON m.id=mg.match_id
+        JOIN season_rounds r ON r.id=m.round_id WHERE (? IS NULL OR r.season_id=?) GROUP BY mg.match_id
+        ''', (season_id, season_id))}
+    for row in rows:
+        score = scores.get(row['id'], {})
+        row.update(board_count=score.get('board_count', 0), finished_boards=score.get('finished_boards', 0),
+                   lineup_locked=bool(score.get('lineup_locked')))
+        for side in ('home', 'away'):
+            halves = score.get(side+'_half_points', 0)
+            row[side+'_score'] = (str(halves//2) if halves%2 == 0 else (str(halves//2) if halves//2 else '')+'½') if row['finished_boards'] else '—'
+        row['result_status'] = 'Completed' if row['finished_boards'] == 4 else ('Partial results' if row['finished_boards'] else 'Upcoming')
+        if not row['finished_boards']:
+            import database as store
+            if _datetime(row['scheduled_at']) <= store.now_utc():
+                row['result_status'] = 'Awaiting results'
+    return rows
+
+
+def calendar_view(db, selection, is_admin=False):
+    """Read-only season selection, including an unconfigured current season."""
+    import database as store
+    today = store.now_utc().astimezone(ZoneInfo('Europe/Lisbon')).date()
+    year = today.year if today.month >= 7 else today.year-1
+    options = [dict(row) for row in db.execute('SELECT * FROM seasons ORDER BY start_year DESC')]
+    current = next((s for s in options if s['start_year'] == year), None)
+    if current is None:
+        current = {'id': None, 'name': f'{year}-{year+1}', 'start_year': year, 'start_date': None,
+                   'end_date': None, 'round_count': None, 'status': 'draft'}
+        options.append(current)
+        options.sort(key=lambda s: s['start_year'], reverse=True)
+    if selection == 'current':
+        selected = current
+    else:
+        selected = next((s for s in options if str(s['id']) == selection and s['id'] is not None), None)
+        if selected is None:
+            return None
+    matches = match_rows(db, selected['id']) if selected['id'] and (is_admin or selected['status']=='published') else []
+    rounds = []
+    for match in matches:
+        if not rounds or rounds[-1]['number'] != match['round_number']:
+            rounds.append({'number': match['round_number'], 'matches': []})
+        rounds[-1]['matches'].append(match)
+    state = 'Schedule coming soon'
+    if selected['start_date']:
+        state = 'Not started' if today.isoformat() < selected['start_date'] else ('Season concluded' if today.isoformat() > selected['end_date'] else 'Season underway')
+    return dict(season=selected, season_options=options, current_year=year, season_state=state,
+                rounds=rounds, matches=matches, completed_matches=sum(m['finished_boards']==4 for m in matches),
+                participating_teams=len({m[side+'_team_id'] for m in matches for side in ('home','away')}))
 
 
 def eligible_players(db, team_id):
