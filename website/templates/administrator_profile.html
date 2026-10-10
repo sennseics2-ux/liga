@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Administrator profile · Liga SX-AAC{% endblock %}
+{% block content %}
+<section class="section container admin-self-profile">
+  <div class="eyebrow">Administrator profile</div>
+  <h1><span data-no-i18n>{{ user.username }}</span></h1>
+  <p>This account has administrator access to Liga SX-AAC.</p>
+  <div class="admin-self-profile-actions">
+    <a class="btn btn-primary" href="/admin">Manage league</a>
+    <a class="btn btn-outline-dark" href="/account/security">Account Settings</a>
+  </div>
+</section>
+{% endblock %}

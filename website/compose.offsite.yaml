@@ -1,0 +1,22 @@
+# Opt-in encrypted off-server backups. Provision these two local secrets first;
+# then use BOTH compose files for build/up/exec/run/down commands.
+services:
+  backups:
+    build:
+      context: .
+      target: backup-offsite
+    environment:
+      RESTIC_REPOSITORY: ${RESTIC_REPOSITORY:?Set an off-server restic repository}
+      RESTIC_PASSWORD_FILE: /run/secrets/restic_password
+      CHESS_OFFSITE_ENV_FILE: /run/secrets/offsite_credentials
+      XDG_CACHE_HOME: /tmp
+      RESTIC_CACHE_DIR: /tmp/restic-cache
+    secrets:
+      - restic_password
+      - offsite_credentials
+
+secrets:
+  restic_password:
+    file: ./secrets/restic-password
+  offsite_credentials:
+    file: ./secrets/offsite-credentials

@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}Awaiting team assignment{% endblock %}
+{% block content %}
+<div class="page-banner"><div class="container"><div class="eyebrow">MANAGER ACCOUNT / <span data-no-i18n>{{ user.username|upper }}</span></div><h1>Your team is <em>on its way.</em></h1><p>Your manager account is ready. The league administrator will assign you to a team once one is available.</p></div></div>
+<section class="section container"><div class="empty-state"><div class="empty-icon">♞</div><h3>Awaiting administrator assignment</h3><p>You can explore players, standings and auctions. Bidding becomes available once the administrator appoints you to a team. You do not need another account if you also want to play chess.</p><a class="btn btn-primary" href="/auctions">View transfer market ↗</a></div></section>
+{% endblock %}

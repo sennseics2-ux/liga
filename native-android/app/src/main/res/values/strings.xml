@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Liga SX-AAC</string>
+    <string name="subtitle">Xadrez académico</string>
+    <string name="back">Voltar</string>
+    <string name="home">Início</string>
+    <string name="refresh">Atualizar</string>
+    <string name="stop">Parar</string>
+    <string name="share">Partilhar</string>
+    <string name="language_switch">Mudar os controlos da aplicação para inglês</string>
+    <string name="loading">A abrir a Liga…</string>
+    <string name="loading_body">Resultados, partidas e classificações.</string>
+    <string name="network_heading">Não foi possível ligar à Liga</string>
+    <string name="network_body">Verifica a ligação à Internet e tenta novamente. É necessária uma ligação para consultar a Liga.</string>
+    <string name="http_heading">Esta página está indisponível</string>
+    <string name="http_body">O site não conseguiu apresentar esta página. Tenta novamente ou regressa ao início.</string>
+    <string name="stopped_heading">Carregamento interrompido</string>
+    <string name="stopped_body">Podes tentar novamente quando quiseres.</string>
+    <string name="retry">Tentar novamente</string>
+    <string name="browser">Abrir no navegador</string>
+    <string name="link_heading">Não foi possível abrir o link</string>
+    <string name="link_body">Não foi encontrada uma aplicação para abrir este endereço.</string>
+    <string name="share_heading">Não foi possível partilhar</string>
+    <string name="share_body">Tenta partilhar esta página novamente.</string>
+    <string name="page_error">Erro HTTP %1$d</string>
+    <string name="select_file">Selecionar ficheiro</string>
+</resources>

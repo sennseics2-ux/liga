@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Liga SX-AAC</string>
+    <string name="subtitle">Academic chess</string>
+    <string name="back">Back</string>
+    <string name="home">Home</string>
+    <string name="refresh">Refresh</string>
+    <string name="stop">Stop</string>
+    <string name="share">Share</string>
+    <string name="language_switch">Switch the app controls to Portuguese</string>
+    <string name="loading">Opening the League…</string>
+    <string name="loading_body">Results, games and standings.</string>
+    <string name="network_heading">Unable to connect to the League</string>
+    <string name="network_body">Check your internet connection and try again. An internet connection is required to view the League.</string>
+    <string name="http_heading">This page is unavailable</string>
+    <string name="http_body">The website could not display this page. Try again or return home.</string>
+    <string name="stopped_heading">Loading stopped</string>
+    <string name="stopped_body">You can try again whenever you are ready.</string>
+    <string name="retry">Try again</string>
+    <string name="browser">Open in browser</string>
+    <string name="link_heading">Unable to open the link</string>
+    <string name="link_body">No application was found to open this address.</string>
+    <string name="share_heading">Unable to share</string>
+    <string name="share_body">Try sharing this page again.</string>
+    <string name="page_error">HTTP error %1$d</string>
+    <string name="select_file">Select file</string>
+</resources>

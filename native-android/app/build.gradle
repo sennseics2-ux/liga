@@ -1,0 +1,34 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.sxaac.liga'
+    compileSdk 36
+
+    defaultConfig {
+        applicationId 'com.sxaac.liga'
+        minSdk 24
+        targetSdk 36
+        versionCode 2
+        versionName '1.1.0'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    bundle {
+        language {
+            // Both languages must remain available for the native switcher.
+            enableSplit = false
+        }
+    }
+}

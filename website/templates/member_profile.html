@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}{{ member.username }} · Member profile{% endblock %}
+{% block content %}
+<div class="page-banner"><div class="container">
+  <div class="eyebrow">CLUB MEMBER / <span data-no-i18n>{{ member.username|upper }}</span></div>
+  <h1><span data-no-i18n>{{ member.username }}</span><span class="accent-dot">.</span></h1>
+  <p>{% if owner %}Your public member page, chess profile and management history.{% else %}<span data-i18n="Chess player information and management record for {name}." data-i18n-vars="{{ {'name': member.username}|tojson|forceescape }}">Chess player information and management record for <span data-no-i18n>{{ member.username }}</span>.</span>{% endif %}</p>
+</div></div>
+<section class="section container">
+  <div class="member-profile-identity">
+    {% if member.photo_updated_at %}<img src="/users/{{ member.username|urlencode }}/photo" class="member-photo" alt="Photo of {{ member.username }}" width="112" height="112">
+    {% else %}<div class="member-photo photo-placeholder" aria-hidden="true">♞</div>{% endif %}
+    <div class="identity-details"><h2><span data-no-i18n>{{ member.username }}</span></h2><p>Chess club member</p>
+      <div class="role-indicators" aria-label="Member role status">
+        <span class="role-indicator {{ 'role-active' if member.player_active else 'role-inactive' }}"><span class="role-dot" aria-hidden="true"></span><span data-i18n="Player">Player</span> · <span data-i18n="{{ 'Active' if member.player_active else 'Inactive' }}">{{ 'Active' if member.player_active else 'Inactive' }}</span></span>
+        <span class="role-indicator {{ 'role-active' if member.manager_active else 'role-inactive' }}"><span class="role-dot" aria-hidden="true"></span><span data-i18n="Manager">Manager</span> · <span data-i18n="{{ 'Active' if member.manager_active else 'Inactive' }}">{{ 'Active' if member.manager_active else 'Inactive' }}</span></span>
+      </div>
+    </div>
+  </div>
+  <div class="member-profile-header">
+    <a href="/players" class="text-link">← All players</a>
+    {% if owner %}<span class="pill pill-winner">Your profile</span>{% endif %}
+  </div>
+  <nav class="profile-tabs" aria-label="Profiles for {{ member.username }}">
+    <a href="/users/{{ member.username|urlencode }}" {% if selected_tab == 'player' %}class="selected" aria-current="page"{% endif %}>♟ Player profile</a>
+    <a href="/users/{{ member.username|urlencode }}/manager" {% if selected_tab == 'manager' %}class="selected" aria-current="page"{% endif %}>♞ Manager profile</a>
+  </nav>
+  {% if selected_tab == 'player' %}
+    {% include 'member_player_section.html' %}
+  {% else %}
+    {% include 'member_manager_section.html' %}
+  {% endif %}
+  {% if owner %}{% include 'member_role_settings.html' %}{% endif %}
+</section>
+{% endblock %}

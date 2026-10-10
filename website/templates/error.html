@@ -1,0 +1,8 @@
+{% extends 'base.html' %}
+{% block title %}{{ title }} · Liga SX-AAC{% endblock %}
+{% block content %}
+<section class="section container error-page">
+  <div class="form-card"><span class="form-kicker" data-no-i18n>{{ status_code }}</span><h1 data-i18n="{{ title }}">{{ title }}</h1><p class="form-intro" data-i18n="{{ message }}">{{ message }}</p>
+  <div class="action-row">{% if recovery_url %}<a class="btn btn-primary" href="{{ recovery_url }}" data-i18n="Try again">Try again</a>{% endif %}{% if login_url %}<a class="btn btn-outline-dark" href="{{ login_url }}" data-i18n="Sign in again">Sign in again</a>{% endif %}<a class="btn btn-outline-dark" href="/" data-i18n="Back to home">Back to home</a></div></div>
+</section>
+{% endblock %}

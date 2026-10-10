@@ -1,0 +1,19 @@
+# Point the A/AAAA DNS records of CHESS_DOMAIN at this server.
+# Caddy requests/renews certificates and proxies HTTP traffic to the app.
+{$CHESS_DOMAIN} {
+    encode zstd gzip
+    request_body {
+        max_size 8MiB
+    }
+    reverse_proxy web:8000
+    header {
+        -Server
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+    log {
+        output stdout
+        format console
+    }
+}

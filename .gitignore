@@ -1,0 +1,27 @@
+node_modules/
+.expo/
+dist/
+build/
+android/
+ios/
+*.log
+.DS_Store
+.gradle/
+local.properties
+.env*
+!.env.example
+
+# Private signing material and generated installation packages
+*.jks
+*.keystore
+*.pem
+*.key
+keystore-password.txt
+*.apk
+*.aab
+# Persistent data and private backup files
+*.db
+*.sqlite
+*.sqlite3-*
+*.sqlite-*
+*.db-*

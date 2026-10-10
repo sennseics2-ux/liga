@@ -1,0 +1,8 @@
+# Change these inputs deliberately, regenerate both locks, then run the full suite.
+fastapi==0.143.0
+uvicorn==0.54.0
+jinja2==3.1.6
+python-multipart==0.0.32
+itsdangerous==2.2.0
+pillow==12.3.0
+chess==1.11.2

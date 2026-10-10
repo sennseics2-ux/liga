@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "Liga SX-AAC",
+    "slug": "liga-sx-aac",
+    "scheme": "ligasxaac",
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#ffffff",
+    "icon": "./assets/icon.png",
+    "description": "A app oficial da Liga SX-AAC. Equipas, jogadores, partidas e classificação.",
+    "primaryColor": "#111111",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sxaac.liga",
+      "icon": "./assets/icon.png",
+      "infoPlist": {
+        "CFBundleDisplayName": "Liga SX-AAC"
+      }
+    },
+    "android": {
+      "package": "com.sxaac.liga",
+      "versionCode": 2,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.INTERNET"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.SYSTEM_ALERT_WINDOW"
+      ]
+    },
+    "extra": {
+      "websiteUrl": "https://liga.sx-aac.com"
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#ffffff",
+          "image": "./assets/icon.png",
+          "imageWidth": 160,
+          "resizeMode": "contain"
+        }
+      ]
+    ]
+  }
+}

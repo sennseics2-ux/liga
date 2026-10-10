@@ -1,0 +1,95 @@
+# Host only the Caddy ports. Never publish the web service's port 8000.
+services:
+  web:
+    build:
+      context: .
+      target: app
+    restart: unless-stopped
+    init: true
+    env_file: .env
+    environment:
+      CHESS_ENV: production
+      CHESS_DB_PATH: /data/league.sqlite3
+      CHESS_HTTPS_ONLY: "1"
+      CHESS_ALLOWED_HOSTS: ${CHESS_DOMAIN:?Set CHESS_DOMAIN in .env}
+      CHESS_SESSION_SECRET: ${CHESS_SESSION_SECRET:?Set CHESS_SESSION_SECRET in .env}
+    volumes:
+      - ./data:/data
+      - ./backups:/backups
+    expose:
+      - "8000"
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "python", "-m", "deploy.healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 4
+      start_period: 60s
+    networks:
+      - internal
+
+  backups:
+    build:
+      context: .
+      target: app
+    restart: unless-stopped
+    init: true
+    command: ["python", "-m", "deploy.backup_service"]
+    depends_on:
+      web:
+        condition: service_healthy
+    environment:
+      CHESS_DB_PATH: /data/league.sqlite3
+      CHESS_BACKUP_INTERVAL: ${CHESS_BACKUP_INTERVAL:-86400}
+    volumes:
+      # Online backups may need SQLite WAL sidecars; use the same writable data
+      # mount, but this service opens the database with SQLite mode=ro.
+      - ./data:/data
+      - ./backups:/backups
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test: ["CMD", "python", "-m", "deploy.backup_service", "--healthcheck"]
+      interval: 60s
+      timeout: 10s
+      retries: 2
+      start_period: 90s
+    networks:
+      - internal
+
+  proxy:
+    image: caddy:2.10.2@sha256:c3d7ee5d2b11f9dc54f947f68a734c84e9c9666c92c88a7f30b9cba5da182adb
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_healthy
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      CHESS_DOMAIN: ${CHESS_DOMAIN:?Set CHESS_DOMAIN in .env}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - internal
+
+networks:
+  internal:
+
+volumes:
+  caddy_data:
+  caddy_config:

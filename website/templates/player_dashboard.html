@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}My player profile{% endblock %}
+{% block content %}
+<div class="page-banner"><div class="container"><div class="eyebrow">CHESS PLAYER / <span data-no-i18n>{{ user.username|upper }}</span></div><h1>Your player <em>profile.</em></h1><p>See your fantasy status and points in the club league.</p></div></div>
+<section class="section container">
+{% if profile %}<div class="metric-grid"><div class="metric-card"><span>CHESS PLAYER</span><strong class="small-stat"><span data-no-i18n>{{ profile.name }}</span></strong><small>Approved by administrator</small></div><div class="metric-card"><span>FANTASY POINTS</span><strong>{{ profile.points }}</strong><small>Current total</small></div><div class="metric-card"><span>CURRENT TEAM</span><strong class="small-stat">{% if profile.team_name %}<span data-no-i18n>{{ profile.team_name }}</span>{% else %}<span data-i18n="Free agent">Free agent</span>{% endif %}</strong><small>Fantasy squad</small></div><div class="metric-card"><span>CHESS RATING</span><strong>{{ profile.rating or '—' }}</strong><small>Rating on file</small></div></div>
+{% else %}<div class="empty-state"><div class="empty-icon">♟</div><h3>Waiting for your chess profile</h3><p>Your account is registered. The administrator must add a chess player and link it to your username before you appear in the player directory and can enter transfer auctions.</p><a class="btn btn-primary" href="/players">Browse chess players ↗</a></div>{% endif %}
+</section>
+{% endblock %}

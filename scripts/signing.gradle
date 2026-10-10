@@ -1,0 +1,22 @@
+// Apply with Gradle --init-script. Signing material stays outside the source tree.
+def signingDir = System.getenv('LIGA_SIGNING_DIR')
+if (!signingDir) {
+    throw new GradleException('Set LIGA_SIGNING_DIR to the private signing directory.')
+}
+def signingKey = new File(signingDir, 'liga-release.jks')
+def passwordFile = new File(signingDir, 'keystore-password.txt')
+if (!signingKey.isFile() || !passwordFile.isFile()) {
+    throw new GradleException('Signing key or password file is missing; run scripts/build-apk.sh.')
+}
+gradle.beforeProject { project ->
+    project.pluginManager.withPlugin('com.android.application') {
+        project.extensions.getByName('androidComponents').finalizeDsl { android ->
+            def signing = android.signingConfigs.findByName('ligaRelease') ?: android.signingConfigs.create('ligaRelease')
+            signing.storeFile = signingKey
+            signing.storePassword = passwordFile.text.trim()
+            signing.keyAlias = 'liga-release'
+            signing.keyPassword = passwordFile.text.trim()
+            android.buildTypes.getByName('release').signingConfig = signing
+        }
+    }
+}
