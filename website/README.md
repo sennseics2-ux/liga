@@ -1,6 +1,14 @@
-# Liga SX-AAC — Chess Fantasy League V30
+# Liga SX-AAC — Chess Fantasy League V31
 
 FastAPI, Jinja templates, SQLite, and an offline PGN replay viewer for a club fantasy chess league. This release adds account recovery and editable identities, season scheduling, and four-player team matches while preserving existing accounts and league data.
+
+## New in v31
+
+- Team management uses a red person-with-X icon to remove a manager, with a translated accessible label and confirmation. Pending invitations show the invited manager and a **Cancel invitation** action directly in the team table; cancelled invitations cannot be accepted and can be replaced.
+- Admin removal ends the appointment and player membership while retaining the active manager role. The removed manager becomes available immediately and can accept a new invitation to the same team. Existing appointment history is retained; voluntary resignation still leaves availability off until the manager enables it.
+- Before kickoff, only active players on the current team and its assigned manager can see that team's selected lineup. Opponents, outsiders, anonymous visitors and administrators see a privacy notice and reveal time. Both lineups become public at the scheduled match time.
+- Associated board pairings are embargoed until kickoff across match pages, game listings/search/pagination, player profiles, team archives, admin recent games, direct game URLs and PGN downloads. Rescheduling uses the live match time. Standalone scheduled games remain available as before.
+- Portuguese/English labels and phone layouts are supported. Assets use `v=31`; no new database migration or past-season regeneration is needed (schema remains `v30_team_photos`).
 
 ## New in v30
 

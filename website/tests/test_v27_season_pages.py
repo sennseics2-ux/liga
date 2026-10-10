@@ -49,6 +49,8 @@ def test_match_scores_follow_teams_across_alternating_colours_and_draws(client):
     with store.transaction() as db:
         db.execute("UPDATE seasons SET status='published' WHERE id=?",(season,))
         games=[r[0] for r in db.execute('SELECT game_id FROM match_games WHERE match_id=? ORDER BY board',(match,))]
+        db.execute("UPDATE team_matches SET scheduled_at='2026-06-01T18:00:00+00:00' WHERE id=?",(match,))
+        db.execute("UPDATE games SET scheduled_at='2026-06-01T18:00:00+00:00' WHERE id IN (SELECT game_id FROM match_games WHERE match_id=?)",(match,))
     with store.read_db() as db:
         empty=seasons.match_rows(db,season)[0]
         assert (empty['home_score'],empty['away_score'],empty['finished_boards'])==('—','—',0)

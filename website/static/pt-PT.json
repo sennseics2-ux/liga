@@ -1359,5 +1359,10 @@
   "The team profile picture has been updated.": "A imagem de perfil da equipa foi atualizada.",
   "The team profile picture was removed.": "A imagem de perfil da equipa foi removida.",
   "Only the current team manager can update the team profile picture.": "Só o gestor atual da equipa pode alterar a imagem de perfil da equipa.",
-  "Replace photo": "Substituir fotografia"
+  "Replace photo": "Substituir fotografia",
+  "Cancel invitation": "Cancelar convite",
+  "Board pairings are revealed when the match starts.": "Os emparceiramentos são revelados quando o encontro começa.",
+  "Before the match starts, each team can only see its own lineup.": "Antes do início do encontro, cada equipa só pode ver a sua própria formação.",
+  "This lineup is private until the match starts.": "Esta formação é privada até ao início do encontro.",
+  "Public from": "Pública a partir de"
 }

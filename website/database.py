@@ -588,6 +588,10 @@ def _unassign_manager(db, team_id, reason):
     manager_id = team['manager_id']
     _end_manager_term(db, team_id, manager_id, reason)
     db.execute('UPDATE teams SET manager_id=NULL WHERE id=?', (team_id,))
+    # Ending an appointment does not deactivate the manager role. Admin removal
+    # makes the manager available again; resignation/role withdrawal override it.
+    db.execute('''UPDATE users SET manager_available=CASE
+        WHEN account_active=1 AND manager_active=1 THEN 1 ELSE 0 END WHERE id=?''', (manager_id,))
     profile = db.execute('SELECT id FROM players WHERE user_id=? AND is_manager_player=1', (manager_id,)).fetchone()
     if profile and _roster_tracking_ready(db):
         _stop_player_term(db, profile['id'], reason=reason)

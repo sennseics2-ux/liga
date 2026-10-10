@@ -19,6 +19,8 @@ def test_current_season_dropdown_and_completed_match(chromium,league_server,widt
     with league.store.transaction() as db:
         db.execute("UPDATE seasons SET name='2025-2026',start_year=2025,start_date='2025-09-01',end_date='2026-06-30',status='published' WHERE id=?",(season,))
         games=[r[0] for r in db.execute('SELECT game_id FROM match_games WHERE match_id=? ORDER BY board',(match,))]
+        db.execute("UPDATE team_matches SET scheduled_at='2026-06-01T18:00:00+00:00' WHERE id=?",(match,))
+        db.execute("UPDATE games SET scheduled_at='2026-06-01T18:00:00+00:00' WHERE id IN (SELECT game_id FROM match_games WHERE match_id=?)",(match,))
     for game,result in zip(games,['1-0','0-1','1/2-1/2','1-0']):
         league.store.update_game_result(game,result,actor_id=admin,reason='Synthetic browser fixture')
     context=chromium.new_context(viewport={'width':width,'height':900})

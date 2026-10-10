@@ -989,13 +989,8 @@ def team_detail(request: Request, team_id: int, season: str | None = None):
             WHERE mt.team_id=? AND mt.started_at < ?
              AND (mt.ended_at IS NULL OR mt.ended_at > ?)
             ORDER BY mt.started_at DESC""",(team_id,end,start)).fetchall()
-        team_games=db.execute("""SELECT g.id,g.scheduled_at,g.result,g.event_name,
-                wp.name AS white_name,bp.name AS black_name
-                FROM games g JOIN players wp ON wp.id=g.white_player_id
-                JOIN players bp ON bp.id=g.black_player_id
-                WHERE (g.white_team_id=? OR g.black_team_id=?)
-                  AND g.scheduled_at>=? AND g.scheduled_at<?
-                ORDER BY g.scheduled_at DESC LIMIT 50""",(team_id,team_id,start,end)).fetchall()
+        team_games=game_rows(db,where='(g.white_team_id=? OR g.black_team_id=?) AND g.scheduled_at>=? AND g.scheduled_at<?',
+                             values=(team_id,team_id,start,end),limit=50)
         history_complete=db.execute("SELECT 1 FROM player_team_terms WHERE team_id=? AND source IN ('imported current snapshot','legacy auction listing','legacy auction win') LIMIT 1",(team_id,)).fetchone() is None
         transfers=db.execute("""SELECT a.*,p.name AS player_name,
             seller.name AS seller_name,buyer.name AS buyer_name
@@ -1033,9 +1028,23 @@ def season_bounds(db, key):
     raise HTTPException(400,'Invalid season.')
 
 
+def public_game_visibility():
+    """Pairings expose both lineups, so embargo match games until kickoff.
+
+    Applies to every viewer, including admins, and every game surface. Standalone
+    games are unaffected. Use the match's live schedule rather than game copies.
+    """
+    return ('''NOT EXISTS (SELECT 1 FROM match_games private_board
+        JOIN team_matches private_match ON private_match.id=private_board.match_id
+        WHERE private_board.game_id=g.id AND
+          (julianday(private_match.scheduled_at) IS NULL OR
+           julianday(private_match.scheduled_at)>julianday(?)))''', (store.iso(store.now_utc()),))
+
+
 def game_rows(db, *, where='1=1', values=(), limit=200, offset=0, order='newest'):
     """Public game summary rows; where clause must be hardcoded by caller."""
     ordering = 'g.scheduled_at ASC, g.id ASC' if order == 'soonest' else 'g.scheduled_at DESC, g.id DESC'
+    visible, visibility_values = public_game_visibility()
     return db.execute(f"""SELECT g.id,g.white_player_id,g.black_player_id,g.scheduled_at,
         g.event_name,g.round_label,g.result,g.recorded_at,g.white_award,g.black_award,
         g.white_team_id,g.black_team_id,g.created_at,
@@ -1050,8 +1059,8 @@ def game_rows(db, *, where='1=1', values=(), limit=200, offset=0, order='newest'
         LEFT JOIN users bu ON bu.id=bp.user_id
         LEFT JOIN teams wt ON wt.id=g.white_team_id
         LEFT JOIN teams bt ON bt.id=g.black_team_id
-        WHERE {where} ORDER BY {ordering} LIMIT ? OFFSET ?
-    """, (*values, limit, offset)).fetchall()
+        WHERE ({where}) AND {visible} ORDER BY {ordering} LIMIT ? OFFSET ?
+    """, (*values, *visibility_values, limit, offset)).fetchall()
 
 
 @app.get('/games', response_class=HTMLResponse)
@@ -1066,7 +1075,8 @@ def games_directory(request: Request, q: str = '', status: str = 'all', season: 
     page_number = parse_optional_int(page, minimum=1, maximum=1000000) or 1
     page_size = 25
     with store.read_db() as db:
-        clauses, args = [], []
+        visible, visibility_values = public_game_visibility()
+        clauses, args = [visible], list(visibility_values)
         if q.strip():
             clauses.append('(wp.name LIKE ? OR bp.name LIKE ? OR g.event_name LIKE ?)')
             search = '%' + q.strip()[:100].replace('\\','\\\\').replace('%','\\%').replace('_','\\_') + '%'
@@ -1088,13 +1098,13 @@ def games_directory(request: Request, q: str = '', status: str = 'all', season: 
         page_number = min(page_number, total_pages)
         rows = game_rows(db, where=where, values=tuple(args), limit=page_size,
                          offset=(page_number-1)*page_size, order=sort)
-        years = [r[0] for r in db.execute('SELECT DISTINCT substr(scheduled_at,1,4) FROM games ORDER BY 1 DESC')]
+        years = [r[0] for r in db.execute(f'SELECT DISTINCT substr(g.scheduled_at,1,4) FROM games g WHERE {visible} ORDER BY 1 DESC', visibility_values)]
         configured=[dict(row) for row in db.execute('SELECT * FROM seasons ORDER BY start_year DESC')]
         season_options=[{'value':f"s{row['id']}",'label':row['name']} for row in configured]
         season_options += [{'value':year,'label':f'{year}-{int(year)+1}'} for year in years
                            if int(year) not in {row['start_year'] for row in configured}]
-        upcoming = db.execute("SELECT COUNT(*) FROM games WHERE result='*'").fetchone()[0]
-        finished = db.execute("SELECT COUNT(*) FROM games WHERE result!='*'").fetchone()[0]
+        upcoming = db.execute(f"SELECT COUNT(*) FROM games g WHERE g.result='*' AND {visible}", visibility_values).fetchone()[0]
+        finished = db.execute(f"SELECT COUNT(*) FROM games g WHERE g.result!='*' AND {visible}", visibility_values).fetchone()[0]
     filters = {'q':q,'status':status,'season':season,'sort':sort}
     page_url = lambda number: '/games?' + urlencode({**filters, 'page':number})
     return view(request,'games.html',games=rows,years=years,season_options=season_options, filters=filters,
@@ -1131,6 +1141,8 @@ def game_detail(request: Request, game_id: int):
 def download_game_pgn(request: Request, game_id: int):
     auth(request)
     with store.read_db() as db:
+        if not game_rows(db, where='g.id=?', values=(game_id,), limit=1):
+            raise HTTPException(404, 'Game not found.')
         row = db.execute('SELECT pgn_text FROM games WHERE id=?',(game_id,)).fetchone()
     if not row:
         raise HTTPException(404, 'Game not found.')
@@ -1607,18 +1619,29 @@ def team_match_detail(request: Request,match_id: int):
         if not match:
             raise HTTPException(404,'Match not found.')
         team=get_team(db,viewer) if viewer and viewer['manager_active'] else None
-        if match['season_status']!='published' and not (viewer and (viewer['role']=='admin' or (team and team['id'] in (match['home_team_id'],match['away_team_id'])))):
+        player_team=db.execute('SELECT owner_team_id FROM players WHERE user_id=?',(viewer['id'],)).fetchone() if viewer and viewer['player_active'] else None
+        player_team_id=player_team['owner_team_id'] if player_team else None
+        if match['season_status']!='published' and not (viewer and (viewer['role']=='admin' or player_team_id in (match['home_team_id'],match['away_team_id']) or (team and team['id'] in (match['home_team_id'],match['away_team_id'])))):
             raise HTTPException(404,'Match not found.')
         own_team=team if team and team['id'] in (match['home_team_id'],match['away_team_id']) else None
+        deadline_passed=seasons._datetime(match['scheduled_at'])<=store.now_utc()
+        visible_team_ids={match['home_team_id'],match['away_team_id']} if deadline_passed else set()
+        if own_team:
+            visible_team_ids.add(own_team['id'])
+        if player_team_id in (match['home_team_id'],match['away_team_id']):
+            visible_team_ids.add(player_team_id)
         eligible=seasons.eligible_players(db,own_team['id']) if own_team else []
         lineups=[dict(row) for row in db.execute('''SELECT lp.*,p.name,p.rating,t.name AS team_name FROM lineup_players lp
-            JOIN players p ON p.id=lp.player_id JOIN teams t ON t.id=lp.team_id WHERE match_id=? ORDER BY team_id,board''',(match_id,))]
+            JOIN players p ON p.id=lp.player_id JOIN teams t ON t.id=lp.team_id
+            WHERE match_id=? AND lp.team_id IN (?,?) ORDER BY team_id,board''',
+            (match_id,match['home_team_id'] if match['home_team_id'] in visible_team_ids else None,
+             match['away_team_id'] if match['away_team_id'] in visible_team_ids else None))]
         selected={row['board']:row['player_id'] for row in lineups if own_team and row['team_id']==own_team['id']}
         games=[dict(row) for row in db.execute('''SELECT mg.board,g.id,g.result,wp.name AS white_name,bp.name AS black_name
             FROM match_games mg JOIN games g ON g.id=mg.game_id JOIN players wp ON wp.id=g.white_player_id
-            JOIN players bp ON bp.id=g.black_player_id WHERE mg.match_id=? ORDER BY board''',(match_id,))]
+            JOIN players bp ON bp.id=g.black_player_id WHERE mg.match_id=? ORDER BY board''',(match_id,))] if deadline_passed else []
     return view(request,'team_match.html',match=match,own_team=own_team,eligible=eligible,lineups=lineups,
-                selected_players=selected,board_games=games,deadline_passed=seasons._datetime(match['scheduled_at'])<=store.now_utc())
+                selected_players=selected,board_games=games,deadline_passed=deadline_passed,visible_lineup_team_ids=visible_team_ids)
 
 
 @app.post('/matches/{match_id}/lineup')
