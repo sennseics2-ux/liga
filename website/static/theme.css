@@ -108,3 +108,5 @@ body .page-banner{height:240px;min-height:240px;padding:18px 0;display:flex;alig
 
 /* V39 original SVG artwork, without glyph styling. */
 body .replay-piece{display:block;width:90%;height:90%;object-fit:contain;filter:none;text-shadow:none;-webkit-text-stroke:0;pointer-events:none}.piece-credits{padding:8px 18px;font-size:11px;color:var(--muted)}.piece-credits a{text-decoration:underline}
+
+body .replay-controls .play-button{min-width:39px}

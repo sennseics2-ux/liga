@@ -1,3 +1,7 @@
+## v41 replay control
+
+The play/pause button shows only its icon, keeping translated accessible labels. Assets use v41; database schema remains v32.
+
 ## v40 public replay
 
 Visitors can replay and download PGNs for visible games without signing in. Unpublished matches and pre-match pairings retain their existing visibility restrictions. Assets use v40; database schema remains v32.

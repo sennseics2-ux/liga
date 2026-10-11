@@ -42,7 +42,7 @@
   }
   function updatePlayState() {
     const playing = timer !== null;
-    playButton.textContent = `${playing ? 'Ⅱ' : '▶'} ${t(playing ? 'Pause' : 'Play')}`;
+    playButton.textContent = playing ? 'Ⅱ' : '▶';
     playButton.setAttribute('aria-label', t(playing ? 'Pause' : 'Play'));
     playButton.setAttribute('aria-pressed', String(playing));
   }
