@@ -60,6 +60,21 @@ def test_replay_black_start_keyboard_flip_playback_and_localized_accessibility(c
         page.route('http://liga.test/**', local_application)
         page.goto(f'http://liga.test/games/{game_id}')
         replay = page.locator('[data-chess-replay]')
+        styles = page.locator('[data-piece-style]')
+        expect(styles).to_have_value('cardinal')
+        expect(styles.locator('option')).to_have_count(43)
+        expect(page.locator('[data-board] img.replay-piece')).to_have_count(32)
+        for style in styles.locator('option').evaluate_all('(options)=>options.map(option=>option.value)'):
+            styles.select_option(style)
+            try:
+                page.wait_for_function('''() => Array.from(document.querySelectorAll('[data-board] img')).every(img => img.complete && img.naturalWidth > 0)''', timeout=5000)
+            except Exception:
+                failures = page.locator('[data-board] img').evaluate_all('(images)=>images.filter(img=>!img.complete || !img.naturalWidth).map(img=>img.src)')
+                pytest.fail(f'{style} artwork did not load: {failures}')
+        styles.select_option('cburnett')
+        page.reload()
+        expect(page.locator('[data-piece-style]')).to_have_value('cburnett')
+        page.locator('[data-piece-style]').select_option('cardinal')
         expect(page.locator('[data-board] [role="row"]')).to_have_count(8)
         expect(page.locator('[data-board] [role="gridcell"]')).to_have_count(64)
         expect(page.locator('[data-board] [role="gridcell"]').first).to_have_attribute('data-square', 'a8')

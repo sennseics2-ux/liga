@@ -108,7 +108,7 @@ def test_deactivation_blocks_login_reset_and_reactivation_requires_admin(client)
     assert accounts.issue_reset('account_member','member@example.com') is None
     assert 'The account has been deactivated. Please contact the administrator to reactivate it.' in post(client,'/login',username='account_member',password=PASSWORD).text
     accounts.set_account_active(uid,True,actor_id=admin)
-    assert 'Welcome back' in post(client,'/login',username='account_member',password=PASSWORD).text
+    assert 'Welcome back' not in post(client,'/login',username='account_member',password=PASSWORD).text
     with pytest.raises(ValueError,match='last active administrator'):
         accounts.set_account_active(admin,False,actor_id=admin,password='adminpass123!')
 

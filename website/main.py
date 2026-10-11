@@ -396,8 +396,6 @@ async def login(request: Request):
     request.session.clear()
     request.session["user_id"] = user["id"]
     request.session["auth_version"] = user["auth_version"]
-    flash(request, f"Welcome back, {user['username']}!", "success",
-          key='Welcome back, {username}!', values={'username':user['username']})
     return redirect(next_path or ('/admin' if user['role'] == 'admin' else '/dashboard'))
 
 

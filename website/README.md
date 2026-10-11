@@ -1,3 +1,7 @@
+## v39 replay piece styles
+
+Login no longer displays a welcome flash. Replay uses all 43 locally bundled piece sets from Lichess lila, with Cardinal as the default. Style selection persists in this browser. Original artwork credits and licensing are retained in static/pieces/ATTRIBUTION.txt and LICENSE, linked from replay. Assets use v39; database schema remains v32.
+
 ## v38 compact headers and colour-specific game filters
 
 Menu-page banners reduce blank space while retaining type sizes. The home page removes two feature bullets. Games offers white-player and black-player selectors, applied together and preserved through pagination; options include players in visible games. Assets use v38; database schema remains v32.

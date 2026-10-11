@@ -16,13 +16,25 @@
   const playButton = root.querySelector('[data-action="play"]');
   const flipButton = root.querySelector('[data-action="flip"]');
   const speed = root.querySelector('[data-speed]');
-  const pieces = {K:'♚',Q:'♛',R:'♜',B:'♝',N:'♞',P:'♟',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+  const pieces = 'KQRBNPkqrbnp';
+  const pieceStyleSelect = root.querySelector('[data-piece-style]');
+  const availableStyles = new Map(Array.from(pieceStyleSelect.options, option => [option.value, option.dataset.pieceExtension]));
+  let pieceStyle = 'cardinal';
+  try { const saved = localStorage.getItem('clubdraft.pieceStyle'); if (availableStyles.has(saved)) pieceStyle = saved; } catch (_) {}
+  pieceStyleSelect.value = pieceStyle;
   const pieceNames = {k:'king',q:'queen',r:'rook',b:'bishop',n:'knight',p:'pawn'};
   const controlLabels = {first:'First position',prev:'Previous move',next:'Next move',last:'Last position'};
   let index = 0;
   let timer = null;
   let flipped = false;
   const moveButtons = [];
+
+  pieceStyleSelect.addEventListener('change', () => {
+    if (!availableStyles.has(pieceStyleSelect.value)) return;
+    pieceStyle = pieceStyleSelect.value;
+    try { localStorage.setItem('clubdraft.pieceStyle', pieceStyle); } catch (_) {}
+    render(index, false);
+  });
 
   function t(key, params = {}) {
     if (window.LigaI18n) return window.LigaI18n.t(key, params);
@@ -48,7 +60,7 @@
       for (const symbol of rank) {
         if (/^[1-8]$/.test(symbol)) {
           for (let n = 0; n < Number(symbol); n++) { cells.push(null); count++; }
-        } else if (pieces[symbol]) { cells.push(symbol); count++; }
+        } else if (pieces.includes(symbol)) { cells.push(symbol); count++; }
         else return [];
       }
       if (count !== 8) return [];
@@ -97,10 +109,12 @@
         if (squareName === from || squareName === to) cell.classList.add('last-move');
         if (piece) {
           occupiedSquares.push(label);
-          const glyph = document.createElement('span');
+          const glyph = document.createElement('img');
           glyph.className = `replay-piece ${piece === piece.toUpperCase() ? 'light-piece' : 'dark-piece'}`;
           glyph.setAttribute('aria-hidden', 'true');
-          glyph.textContent = pieces[piece];
+          glyph.alt = '';
+          glyph.draggable = false;
+          glyph.src = `/static/pieces/${pieceStyle}/${pieceStyle === 'mono' ? '' : (piece === piece.toUpperCase() ? 'w' : 'b')}${piece.toUpperCase()}${availableStyles.get(pieceStyle)}`;
           cell.appendChild(glyph);
         }
         row.appendChild(cell);

@@ -99,9 +99,12 @@
 
 /* V37 consistent menu headers, controls below Results, solid replay pieces. */
 body .page-banner{height:240px;min-height:240px;padding:18px 0;display:flex;align-items:center;box-sizing:border-box}body .page-banner h1{font-size:clamp(40px,5vw,62px);letter-spacing:-2px}body .page-banner :is(.eyebrow,.competition-eyebrow){margin:0 0 14px}body .admin-hero-inner{padding-top:0;padding-bottom:0}body .admin-hero-inner>div>p:not(.competition-eyebrow){margin-top:14px}body .season-hero .season-description{margin-top:14px}.results-controls{padding-top:24px}.results-controls .season-picker-panel{width:100%;max-width:none}.results-controls .season-picker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 20px}.results-controls .season-picker label{margin:0}.results-controls .season-picker label[for="season-select"]{grid-column:1;grid-row:1}.results-controls .season-picker label[for="round-select"]{grid-column:2;grid-row:1}.results-controls .season-picker>div{grid-row:2}.results-controls .season-admin-link{color:var(--muted)}.games-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
-body .replay-piece.light-piece{color:#fff;-webkit-text-stroke:1px #111;paint-order:stroke fill;text-shadow:0 1px 1px #0006}body .replay-piece.dark-piece{color:#111;-webkit-text-stroke:1px #ddd;paint-order:stroke fill}
+
 @media(max-width:640px){body .page-banner{height:260px;min-height:260px;padding:16px 0}body .admin-hero-inner{gap:14px}.results-controls .season-picker{display:block}.results-controls .season-picker label{display:block;margin:0 0 8px}.results-controls .season-picker label[for="round-select"]{margin-top:14px}}
 
 .results-controls .season-picker{background:#edf2f8;border-color:#c8d3e2}.games-summary>div:last-child{grid-column:auto}:root[data-theme="dark"] .results-controls .season-picker{background:#202c3b;border-color:#71849e}
 
 .admin-competition-shortcut{margin-bottom:20px}
+
+/* V39 original SVG artwork, without glyph styling. */
+body .replay-piece{display:block;width:90%;height:90%;object-fit:contain;filter:none;text-shadow:none;-webkit-text-stroke:0;pointer-events:none}.piece-credits{padding:8px 18px;font-size:11px;color:var(--muted)}.piece-credits a{text-decoration:underline}
