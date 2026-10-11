@@ -1,3 +1,7 @@
+## v42 replay layout
+
+Replay counts numbered moves rather than individual half-moves, including custom starting positions. Flip sits directly below the board; playback controls appear above the notation. Assets use v42; database schema remains v32.
+
 ## v41 replay control
 
 The play/pause button shows only its icon, keeping translated accessible labels. Assets use v41; database schema remains v32.

@@ -57,6 +57,9 @@ def test_replay_black_start_keyboard_flip_playback_and_localized_accessibility(c
         page.route('http://liga.test/**', local_application)
         page.goto(f'http://liga.test/games/{game_id}')
         replay = page.locator('[data-chess-replay]')
+        expect(page.locator('.replay-sidebar-header span')).to_have_text('4 moves')
+        assert page.locator('.board-playback').locator('[data-action=flip]').count() == 1
+        assert page.locator('.replay-sidebar').locator('[data-action=play]').count() == 1
         styles = page.locator('[data-piece-style]')
         expect(styles).to_have_value('cardinal')
         expect(styles.locator('option')).to_have_count(43)

@@ -110,3 +110,6 @@ body .page-banner{height:240px;min-height:240px;padding:18px 0;display:flex;alig
 body .replay-piece{display:block;width:90%;height:90%;object-fit:contain;filter:none;text-shadow:none;-webkit-text-stroke:0;pointer-events:none}.piece-credits{padding:8px 18px;font-size:11px;color:var(--muted)}.piece-credits a{text-decoration:underline}
 
 body .replay-controls .play-button{min-width:39px}
+
+/* V42 board controls stay with the board, before notation. */
+.replay-board-panel{min-width:0;width:100%;max-width:620px;justify-self:center}.board-playback{margin-top:12px;border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}.board-playback .replay-controls{padding:14px}.board-flip{display:flex;justify-content:center;padding:14px}.board-flip button{min-height:44px}.board-playback .replay-progress{border-top:1px solid var(--line)}:root[data-theme="dark"] .board-playback{background:var(--theme-surface);border-color:var(--theme-border)}
