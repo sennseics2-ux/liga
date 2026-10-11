@@ -109,7 +109,7 @@ def test_pairings_hidden_on_every_game_surface_including_direct_pgn(client,monke
         if viewer:login(client,viewer)
         for game in games:
             assert client.get(f'/games/{game}').status_code==404
-            assert client.get(f'/games/{game}/pgn').status_code==(404 if viewer else 401)
+            assert client.get(f'/games/{game}/pgn').status_code==404
         for path in ['/games','/games?q=home','/games?status=finished','/games?status=scheduled',
                      '/users/home_player_1','/users/away_player_1',f'/teams/{teams[0]}',f'/teams/{teams[1]}']:
             html=client.get(path).text

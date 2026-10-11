@@ -2,7 +2,7 @@
 
 The web application, HTTPS proxy and scheduled SQLite snapshots run with Docker
 Compose. The existing domain, accounts and data remain compatible. PGN replay
-and downloads require a signed-in account; fixture and result pages stay public.
+and downloads are public for visible games.
 
 ## Upgrade an existing server
 
@@ -27,7 +27,7 @@ instructions, not evidence that this workspace has changed the live website.
    sudo docker compose down
    sudo rsync -a --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
      --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
-     ~/chess-fantasy-league-v39/ /opt/clubdraft/
+     ~/chess-fantasy-league-v40/ /opt/clubdraft/
    sudo mkdir -p data backups
    sudo chown -R 10001:10001 data backups
    sudo chmod 700 data backups
@@ -45,13 +45,12 @@ instructions, not evidence that this workspace has changed the live website.
    with the service stopped rather than assuming old code understands new data.
 
 3. Verify /health, public teams/results, manager recruiting, and account login.
-   Open a PGN game while signed out: it should invite sign-in without providing
-   replay data. Sign in and verify replay and PGN download. Confirm Portuguese
+   Open a PGN game while signed out and verify replay and PGN download. Confirm Portuguese
    labels and unchanged team/player names. Monitor backups health separately.
 
 ## V35 release extraction and configuration
 
-The standalone release ZIP has `chess-fantasy-league-v39/` at its root. GitHub's
+The standalone release ZIP has `chess-fantasy-league-v40/` at its root. GitHub's
 Download ZIP instead contains `liga-main/website/` (or `liga-COMMIT/website/`
 for a commit archive). Copy the directory containing
 `main.py`, `compose.yaml`, and `league_migrations.py`; copying `liga-main/` directly
@@ -62,10 +61,10 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 ```bash
 (
   set -e
-  ZIP="$HOME/chess-fantasy-league-v39.zip"
-  RELEASE_DIR="$(mktemp -d "$HOME/liga-v39-release.XXXXXX")"
+  ZIP="$HOME/chess-fantasy-league-v40.zip"
+  RELEASE_DIR="$(mktemp -d "$HOME/liga-v40-release.XXXXXX")"
   unzip -q "$ZIP" -d "$RELEASE_DIR"
-  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v39"
+  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v40"
   if [ ! -f "$SOURCE_DIR/main.py" ]; then
     for CANDIDATE in "$RELEASE_DIR"/liga-*/website; do
       if [ -f "$CANDIDATE/main.py" ]; then
@@ -425,7 +424,7 @@ never add it to GitHub or send it publicly.
 
 Verify the homepage, login and recovery, `/seasons`, both past-season filters on
 `/games`, and each team's seasonal roster, manager and game archives. Signed-out
-visitors must still be unable to replay/download PGNs. Check:
+visitors can replay and download PGNs for visible games. Check:
 
 ```bash
 sudo docker compose ps

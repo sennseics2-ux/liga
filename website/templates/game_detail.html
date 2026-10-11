@@ -9,7 +9,7 @@
     <div class="game-result-panel"><span>FINAL RESULT</span><strong data-no-i18n>{{ game.result if game.result!='*' else '—' }}</strong><small {% if game.event_name %}data-no-i18n{% endif %}>{{ game.event_name or 'Club game' }}</small></div>
     <div class="game-side"><div class="game-piece-token black" aria-hidden="true">♚</div><span>BLACK</span><strong data-no-i18n>{% if game.black_user_id %}<a href="/users/{{ game.black_username|urlencode }}">{{ game.black_name }}</a>{% else %}{{ game.black_name }}{% endif %}</strong>{% if game.black_team_name %}<small><span>Team at match:</span> <span data-no-i18n>{{ game.black_team_name }}</span></small>{% endif %}</div>
   </div>
-  {% if replay and user %}
+  {% if replay %}
     <div class="section-heading history-heading"><div><div class="eyebrow dark" data-i18n="PGN ANALYSIS">PGN ANALYSIS</div><h2 data-i18n="Replay the game">Replay the game</h2><p data-i18n="Use the arrows, move list, keyboard or autoplay to follow each move.">Use the arrows, move list, keyboard or autoplay to follow each move.</p></div><a class="btn btn-quiet" href="/games/{{ game.id }}/pgn" data-i18n="Download PGN">Download PGN</a></div>
     <div class="replay-layout" data-chess-replay tabindex="0" role="region" aria-label="Chess replay">
       <div class="replay-board-shell"><div class="replay-board-grid-wrap"><div class="replay-ranks" data-rank-coords aria-hidden="true" data-no-i18n></div><div class="chess-board" data-board role="grid" aria-label="Chessboard showing game position" aria-readonly="true" aria-rowcount="8" aria-colcount="8" aria-describedby="replay-position-description" data-no-i18n></div><div aria-hidden="true"></div><div class="replay-coords" data-file-coords aria-hidden="true" data-no-i18n></div></div><p id="replay-position-description" class="sr-only" data-position-description data-no-i18n></p></div>
@@ -22,9 +22,7 @@
       </div>
     </div>
     <script type="application/json" id="replay-data">{{ replay|tojson }}</script>
-    <script defer src="/static/chess-replay.js?v=39"></script>
-  {% elif pgn_available and not user %}
-    <div class="replay-no-pgn"><h3 data-i18n="Log in to replay this game">Log in to replay this game</h3><p data-i18n="This game has a PGN recording. Sign in to view its moves or download the PGN.">This game has a PGN recording. Sign in to view its moves or download the PGN.</p><a class="btn btn-primary" href="/login?next=/games/{{ game.id }}" data-i18n="Log in">Log in</a></div>
+    <script defer src="/static/chess-replay.js?v=40"></script>
   {% elif pgn_available %}
     <div class="replay-no-pgn"><h3 data-i18n="Replay temporarily unavailable">Replay temporarily unavailable</h3><p data-i18n="The attached PGN needs an administrator to correct it.">The attached PGN needs an administrator to correct it.</p></div>
   {% else %}

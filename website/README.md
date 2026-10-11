@@ -1,3 +1,7 @@
+## v40 public replay
+
+Visitors can replay and download PGNs for visible games without signing in. Unpublished matches and pre-match pairings retain their existing visibility restrictions. Assets use v40; database schema remains v32.
+
 ## v39 replay piece styles
 
 Login no longer displays a welcome flash. Replay uses all 43 locally bundled piece sets from Lichess lila, with Cardinal as the default. Style selection persists in this browser. Original artwork credits and licensing are retained in static/pieces/ATTRIBUTION.txt and LICENSE, linked from replay. Assets use v39; database schema remains v32.
@@ -108,7 +112,7 @@ FastAPI, Jinja templates, SQLite, and an offline PGN replay viewer for a club fa
 
 ## What changed
 
-- **Replay requires login.** Fixtures and results remain public. Signed-in members can view a PGN replay and download its PGN. Anonymous responses contain no PGN text, move data, or FEN positions; the login link returns to the selected match. Uploading/removing PGNs and recording results remain administrator actions. Session-dependent responses are private and not cached.
+- **Public replay (v40).** Visitors can view and download PGNs for visible games without signing in. Uploading/removing PGNs and recording results remain administrator actions. Pre-match game visibility restrictions remain in effect.
 - **Recoverable auctions.** Manager appointments cannot conflict with active player auctions. Broken legacy auctions are isolated with a failure reason, allowing other auctions, bids, pages, and startup to continue. Administrators can cancel or retry with an audited reason. Recovery preserves bids and checks outstanding credit reservations.
 - **Audited scoring.** Administrators enter signed point adjustments rather than overwrite totals. An adjustment ledger and reversible game awards determine the total. Existing totals are preserved during migration. Result, PGN, adjustment, and auction-recovery changes record their actor and reason.
 - **Historical attribution.** Dated membership determines the team represented at a match. Future fixture attribution is confirmed when the first final result is recorded, then retained through corrections. Missing legacy history never substitutes today's owner.

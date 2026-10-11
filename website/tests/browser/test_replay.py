@@ -26,15 +26,12 @@ PGN = f'''[SetUp "1"]
 
 
 def test_replay_black_start_keyboard_flip_playback_and_localized_accessibility(client):
-    # A normal member can replay; the HTTP access tests separately verify the
-    # anonymous response contains no moves and denies direct PGN downloads.
+    # Visitors can replay without a login; hidden fixtures stay protected.
     white = store.create_player('Players')
     black = store.create_player('Teams')
     game_id = store.create_game(white, black, '2026-06-15T12:00:00+00:00', 'Players')
     with store.transaction() as db:
         db.execute('UPDATE games SET pgn_text=? WHERE id=?', (PGN, game_id))
-    store.create_account('replayviewer', 'browserpass123!', 'player')
-    post(client, '/login', username='replayviewer', password='browserpass123!')
 
     from playwright.sync_api import sync_playwright, expect
 

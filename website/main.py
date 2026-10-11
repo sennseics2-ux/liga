@@ -251,7 +251,7 @@ def view(request, name, **context):
         **context,
     }
     response = TEMPLATES.TemplateResponse(request, name, data)
-    # Session state and protected replays must not be reused by shared caches.
+    # Session-dependent responses must not be reused by shared caches.
     response.headers['Cache-Control'] = 'private, no-store'
     response.headers['Vary'] = 'Cookie'
     return response
@@ -1166,11 +1166,9 @@ def game_detail(request: Request, game_id: int):
         if not rows:
             raise HTTPException(404, 'Game not found.')
         game = dict(rows[0])
-        # Raw PGN data is fetched only after verifying a valid login session.
-        game['pgn_text'] = (db.execute('SELECT pgn_text FROM games WHERE id=?', (game_id,)).fetchone()[0]
-                            if user else None)
+        game['pgn_text'] = db.execute('SELECT pgn_text FROM games WHERE id=?', (game_id,)).fetchone()[0]
     replay = None
-    if user and game['pgn_text']:
+    if game['pgn_text']:
         try:
             replay = parse_pgn(game['pgn_text'])
         except ValueError:
@@ -1182,7 +1180,6 @@ def game_detail(request: Request, game_id: int):
 
 @app.get('/games/{game_id}/pgn')
 def download_game_pgn(request: Request, game_id: int):
-    auth(request)
     with store.read_db() as db:
         if not game_rows(db, where='g.id=?', values=(game_id,), limit=1):
             raise HTTPException(404, 'Game not found.')

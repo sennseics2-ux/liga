@@ -1,5 +1,4 @@
-"""PGN confidentiality, custom starting-position metadata and replay regression tests."""
-from unittest.mock import patch
+"""Public PGN access, custom starting-position metadata and replay regression tests."""
 
 import pytest
 
@@ -20,28 +19,18 @@ def recorded_game():
     return game_id
 
 
-def test_anonymous_game_summary_never_parses_or_embeds_recorded_moves(client):
+def test_anonymous_visitors_can_replay_and_download_pgn(client):
     game_id = recorded_game()
-    with patch('game_logic.parse_pgn', side_effect=AssertionError('Public requests must not parse PGN')):
-        response = client.get(f'/games/{game_id}')
+    response = client.get(f'/games/{game_id}')
     assert response.status_code == 200
-    assert 'Log in to replay this game' in response.text
-    assert f'/login?next=/games/{game_id}' in response.text
-    assert 'Players' in response.text and 'Teams' in response.text
-    assert 'replay-data' not in response.text
-    assert 'data-chess-replay' not in response.text
-    assert 'chess-replay.js' not in response.text
-    assert START not in response.text
-    assert '[Event "Replay"]' not in response.text
-    assert 'Download PGN' not in response.text
-
-
-def test_anonymous_user_cannot_download_pgn_even_with_known_game_id(client):
-    game_id = recorded_game()
-    response = client.get(f'/games/{game_id}/pgn', follow_redirects=False)
-    assert response.status_code in (303, 401)
-    assert response.text != SAMPLE
-    assert response.headers.get('cache-control', '').startswith('private')
+    assert 'replay-data' in response.text and 'data-chess-replay' in response.text
+    assert '"e2e4"' in response.text and START in response.text
+    assert 'Log in to replay' not in response.text
+    assert 'Download PGN' in response.text
+    assert 'data-piece-style' in response.text
+    download = client.get(f'/games/{game_id}/pgn')
+    assert download.status_code == 200 and download.text == SAMPLE
+    assert 'Replay' in client.get('/games').text
 
 
 def test_regular_authenticated_member_can_replay_and_download_pgn(client):
