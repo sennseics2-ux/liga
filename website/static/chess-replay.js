@@ -129,9 +129,10 @@
       else button.removeAttribute('aria-current');
     }
     const move = game.moves[index - 1];
-    const positionLabel = move ? t('Move {number}{suffix} {san} · {current} / {total} half-moves', {
+    const positionLabel = move ? t('Move {number}{suffix} {san} · {current} / {total} moves', {
       number:move.move_number, suffix:move.color === 'white' ? '.' : '…',
-      san:move.san, current:index, total:game.moves.length
+      san:move.san, current:new Set(game.moves.slice(0, index).map(move => move.move_number)).size,
+      total:new Set(game.moves.map(move => move.move_number)).size
     }) : t('Starting position');
     progress.textContent = positionLabel;
     const turn = t('{color} to move', {color:t(fen.split(' ')[1] === 'b' ? 'Black' : 'White')});

@@ -1,3 +1,7 @@
+## v44 replay progress
+
+Progress beneath playback controls counts numbered moves and uses moves/lances rather than half-moves. Assets use v44; database schema remains v32.
+
 ## v43 replay controls
 
 An accessible flip-board icon sits on the same row as playback controls. Assets use v43; database schema remains v32.

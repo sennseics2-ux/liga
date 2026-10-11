@@ -1518,5 +1518,6 @@
   "Piece style": "Estilo das peças",
   "Piece artwork and licenses": "Arte das peças e licenças",
   "Follow every club chess game, view results and replay recorded PGN games.": "Segue as partidas do clube, consulta os resultados e revê partidas com PGN.",
-  "{count} moves": "{count} lances"
+  "{count} moves": "{count} lances",
+  "Move {number}{suffix} {san} · {current} / {total} moves": "Lance {number}{suffix} {san} · {current} / {total} lances"
 }

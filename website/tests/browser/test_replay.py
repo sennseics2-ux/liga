@@ -107,7 +107,7 @@ def test_replay_black_start_keyboard_flip_playback_and_localized_accessibility(c
         expect(page.locator('[data-action="play"]')).to_have_attribute('aria-pressed', 'true')
         expect(page.locator('[data-action="play"]')).to_have_attribute('aria-label', 'Pause')
         expect(page.locator('[data-action="play"]')).to_have_attribute('aria-pressed', 'false', timeout=7000)
-        expect(page.locator('[data-progress]')).to_contain_text('7 / 7 half-moves')
+        expect(page.locator('[data-progress]')).to_contain_text('4 / 4 moves')
         expect(page.locator('[data-action="next"]')).to_be_disabled()
 
         page.evaluate("window.LigaI18n.setLanguage('pt-PT')")
