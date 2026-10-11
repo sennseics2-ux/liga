@@ -16,7 +16,7 @@
   const playButton = root.querySelector('[data-action="play"]');
   const flipButton = root.querySelector('[data-action="flip"]');
   const speed = root.querySelector('[data-speed]');
-  const pieces = {K:'♔',Q:'♕',R:'♖',B:'♗',N:'♘',P:'♙',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
+  const pieces = {K:'♚',Q:'♛',R:'♜',B:'♝',N:'♞',P:'♟',k:'♚',q:'♛',r:'♜',b:'♝',n:'♞',p:'♟'};
   const pieceNames = {k:'king',q:'queen',r:'rook',b:'bishop',n:'knight',p:'pawn'};
   const controlLabels = {first:'First position',prev:'Previous move',next:'Next move',last:'Last position'};
   let index = 0;

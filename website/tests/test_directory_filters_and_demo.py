@@ -21,7 +21,9 @@ def test_player_search_filters_and_safe_sort(client):
                 store._start_player_term(db,pid,team)
     directory=client.get('/players')
     assert directory.status_code==200 and 'Search players' in directory.text
-    assert 'Minimum FIDE Rating' in directory.text
+    assert 'Minimum FIDE Rating' not in directory.text
+    assert 'name="club"' not in directory.text
+    assert '<th>CLUB</th>' not in directory.text
     assert 'Ana Example' in directory.text
     assert 'Bea Example' in directory.text
     page=client.get('/players',params={'q':'ana','team':str(knights)})

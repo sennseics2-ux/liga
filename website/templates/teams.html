@@ -6,7 +6,6 @@
   <div class="section-heading"><div><div class="eyebrow dark">TEAM DIRECTORY</div><h2>Club teams <span class="count-bubble">{{ teams|length }}</span></h2></div></div>
   <form method="get" action="/teams" class="directory-filters" aria-label="Search and filter teams">
     <label class="filter-field filter-search"><span>Search teams</span><input name="q" type="search" value="{{ filters.q }}" maxlength="120" placeholder="Team or captain name"></label>
-    <label class="filter-field"><span>Captain status</span><select name="manager"><option value="all" {% if filters.manager=='all' %}selected{% endif %}>All teams</option><option value="assigned" {% if filters.manager=='assigned' %}selected{% endif %}>Has captain</option><option value="vacant" {% if filters.manager=='vacant' %}selected{% endif %}>No captain</option></select></label>
     <label class="filter-field"><span>Minimum squad size</span><input name="min_players" type="number" step="1" min="0" max="999" value="{{ filters.min_players if filters.min_players is not none else '' }}" placeholder="Any"></label>
     <label class="filter-field"><span>Sort by</span><select name="sort">
       {% for value,label in [('name','Team name A–Z'),('name_desc','Team name Z–A'),('points_desc','Most league points'),('budget_desc','Highest budget')] %}

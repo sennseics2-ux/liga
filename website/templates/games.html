@@ -6,7 +6,6 @@
   <div class="games-summary">
     <div><span>UPCOMING / UNCONFIRMED</span><strong>{{ upcoming }}</strong></div>
     <div><span>COMPLETED GAMES</span><strong>{{ finished }}</strong></div>
-    <div><span>FANTASY SCORING</span><strong>3 · 1 · 0</strong><small>Win · draw · loss</small></div>
   </div>
   <div class="section-heading"><div><div class="eyebrow dark">ALL GAMES</div><h2>Match calendar</h2><p>Search by player or event, then filter by status and season.</p></div>{% if user and user.role=='admin' %}<a href="/admin#games" class="btn btn-quiet">+ Schedule game</a>{% endif %}</div>
   <form method="get" class="directory-filters" action="/games" aria-label="Search chess games">

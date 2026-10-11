@@ -1,3 +1,7 @@
+## v37 navigation and replay appearance
+
+Menu pages share consistent banner heights, with Results selectors below its banner. Teams no longer shows Captain status; Players no longer shows the club/rating filters or club column. Games removes its fantasy scoring card. White replay pieces use solid silhouettes filled white with black outlines. Assets use v37; database schema remains v32.
+
 ## v36 appearance updates
 
 The team directory is titled League teams. Dark headers on Results, the admin dashboard and match pages share the site header palette. Player profile games played appears above wins, draws and losses. Assets use v36; database schema remains v32.
