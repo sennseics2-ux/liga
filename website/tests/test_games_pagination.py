@@ -73,11 +73,11 @@ def test_filter_counts_and_encoded_search_survive_next_and_previous_pages(client
     assert 'value="soonest" selected' in first.text
     next_url = pagination_link(first, 'next')
     assert parse_qs(urlsplit(next_url).query) == {
-        **{key:[value] for key, value in filters.items()}, 'page':['2']}
+        **{key:[value] for key, value in filters.items()}, 'page':['2'], 'white_player':['all'], 'black_player':['all']}
     second = client.get(next_url)
     assert cards(second) == game_ids[25:50]
     assert parse_qs(urlsplit(pagination_link(second, 'prev')).query) == {
-        **{key:[value] for key, value in filters.items()}, 'page':['1']}
+        **{key:[value] for key, value in filters.items()}, 'page':['1'], 'white_player':['all'], 'black_player':['all']}
     third = client.get(pagination_link(second, 'next'))
     assert cards(third) == game_ids[50:59]
     assert 'Showing 9 of 59 matching games' in third.text
@@ -144,3 +144,23 @@ def test_lisbon_display_handles_both_dst_transitions_and_keeps_utc_storage(clien
         assert display in detail.text
     with store.read_db() as db:
         assert [row[0] for row in db.execute('SELECT scheduled_at FROM games ORDER BY id')] == [date for date, _ in dates]
+
+
+def test_white_and_black_filters_match_the_correct_side_and_survive_pagination(client):
+    ids = insert_games([('2026-06-15T12:00:00+00:00', 'Club open', '*')] * 30)
+    with store.transaction() as db:
+        row = db.execute('SELECT white_player_id,black_player_id FROM games WHERE id=?',(ids[0],)).fetchone()
+        white, black = row
+        db.execute('UPDATE games SET white_player_id=?,black_player_id=? WHERE id=?',(black,white,ids[-1]))
+    response = client.get('/games',params={'white_player':white,'black_player':black})
+    assert len(cards(response)) == 25
+    assert ids[-1] not in cards(response)
+    assert 'name="q"' not in response.text
+    assert 'Player (white)' in response.text and 'Player (black)' in response.text
+    link = pagination_link(response,'next')
+    query = parse_qs(urlsplit(link).query)
+    assert query['white_player'] == [str(white)] and query['black_player'] == [str(black)]
+    assert len(cards(client.get(link))) == 4
+    assert cards(client.get('/games',params={'white_player':black})) == [ids[-1]]
+    assert cards(client.get('/games',params={'black_player':white})) == [ids[-1]]
+    assert cards(client.get('/games',params={'white_player':white,'black_player':white})) == []

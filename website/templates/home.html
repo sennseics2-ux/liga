@@ -13,7 +13,6 @@
       <ul class="role-benefits">
         <li>View results and replay recorded PGN games</li>
         <li>Track your FIDE Rating, results and past teams</li>
-        <li>Personalise your player profile with a photo</li>
       </ul>
       <div class="role-card-actions">
         <a class="btn btn-primary role-main-cta" href="{% if not user %}/login{% elif user.role == 'admin' %}/account/profile{% else %}/users/{{ user.username|urlencode }}{% endif %}">{% if user %}Go to your profile{% else %}Log in{% endif %} <span aria-hidden="true">↗</span></a>
@@ -28,7 +27,6 @@
       <h2>Lead your team.<br><em>Build your squad.</em></h2>
       <p class="role-card-description">Accept a team appointment, build your squad through transfer auctions and compete in the standings.</p>
       <ul class="role-benefits">
-        <li>Accept or decline invitations to manage a team</li>
         <li>Bid for players using your transfer budget</li>
         <li>Manage your squad and follow the league standings</li>
       </ul>

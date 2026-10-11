@@ -1,3 +1,7 @@
+## v38 compact headers and colour-specific game filters
+
+Menu-page banners reduce blank space while retaining type sizes. The home page removes two feature bullets. Games offers white-player and black-player selectors, applied together and preserved through pagination; options include players in visible games. Assets use v38; database schema remains v32.
+
 ## v37 navigation and replay appearance
 
 Menu pages share consistent banner heights, with Results selectors below its banner. Teams no longer shows Captain status; Players no longer shows the club/rating filters or club column. Games removes its fantasy scoring card. White replay pieces use solid silhouettes filled white with black outlines. Assets use v37; database schema remains v32.

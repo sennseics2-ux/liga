@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
 {% block title %}Admin dashboard{% endblock %}
 {% block content %}
-<section class="admin-hero page-banner"><div class="container admin-hero-inner"><div><p class="competition-eyebrow" data-i18n="LEAGUE CONTROL ROOM">LEAGUE CONTROL ROOM</p><h1><span data-i18n="Commissioner's desk.">Commissioner's desk.</span></h1><p data-i18n="Your league at a glance. Review requests, manage teams and keep the competition moving.">Your league at a glance. Review requests, manage teams and keep the competition moving.</p></div><a class="btn btn-outline" href="/seasons"><span data-i18n="View competition">View competition</span><span aria-hidden="true">→</span></a></div></section>
+<section class="admin-hero page-banner"><div class="container admin-hero-inner"><div><p class="competition-eyebrow" data-i18n="LEAGUE CONTROL ROOM">LEAGUE CONTROL ROOM</p><h1><span data-i18n="Commissioner's desk.">Commissioner's desk.</span></h1><p data-i18n="Your league at a glance. Review requests, manage teams and keep the competition moving.">Your league at a glance. Review requests, manage teams and keep the competition moving.</p></div></div></section>
 <section class="container admin-dashboard-content">
   {% include 'admin_nav.html' %}
+  <div class="admin-competition-shortcut"><a class="btn btn-outline-dark" href="/seasons"><span data-i18n="View competition">View competition</span><span aria-hidden="true">→</span></a></div>
   <div class="admin-summary-grid">
     {% for count,label,path in [(teams|length,'Teams','/admin/teams'),(players|length,'Chess players','/admin/players'),(auctions|length,'Open auctions','/admin/players'),(role_requests|length,'Pending role requests','/admin/roles')] %}
     <a class="admin-summary-card" href="{{ path }}"><span data-i18n="{{ label }}">{{ label }}</span><strong data-no-i18n>{{ count }}</strong><span class="admin-summary-arrow" aria-hidden="true">→</span></a>

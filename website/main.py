@@ -1099,7 +1099,7 @@ def game_rows(db, *, where='1=1', values=(), limit=200, offset=0, order='newest'
 
 @app.get('/games', response_class=HTMLResponse)
 def games_directory(request: Request, q: str = '', status: str = 'all', season: str = 'all',
-                    page: str = '1', sort: str = ''):
+                    page: str = '1', sort: str = '', white_player: str = 'all', black_player: str = 'all'):
     if status not in ('all', 'scheduled', 'finished'):
         status = 'all'
     q = q[:100]
@@ -1116,6 +1116,15 @@ def games_directory(request: Request, q: str = '', status: str = 'all', season: 
             search = '%' + q.strip()[:100].replace('\\','\\\\').replace('%','\\%').replace('_','\\_') + '%'
             clauses[-1] = clauses[-1].replace('LIKE ?', "LIKE ? ESCAPE '\\'")
             args.extend([search] * 3)
+        white_id = parse_optional_int(white_player[:20], minimum=1, maximum=9223372036854775807)
+        black_id = parse_optional_int(black_player[:20], minimum=1, maximum=9223372036854775807)
+        for column, player_id in (('white_player_id', white_id), ('black_player_id', black_id)):
+            if player_id is not None:
+                clauses.append(f'g.{column}=?')
+                args.append(player_id)
+        player_options = [dict(row) for row in db.execute(f'''SELECT DISTINCT p.id,p.name FROM players p
+            JOIN games g ON p.id=g.white_player_id OR p.id=g.black_player_id
+            WHERE {visible} ORDER BY p.name COLLATE NOCASE,p.id''', visibility_values)]
         if status == 'scheduled':
             clauses.append("g.result='*'")
         if status == 'finished':
@@ -1139,10 +1148,12 @@ def games_directory(request: Request, q: str = '', status: str = 'all', season: 
                            if int(year) not in {row['start_year'] for row in configured}]
         upcoming = db.execute(f"SELECT COUNT(*) FROM games g WHERE g.result='*' AND {visible}", visibility_values).fetchone()[0]
         finished = db.execute(f"SELECT COUNT(*) FROM games g WHERE g.result!='*' AND {visible}", visibility_values).fetchone()[0]
-    filters = {'q':q,'status':status,'season':season,'sort':sort}
+    filters = {'q':q,'status':status,'season':season,'sort':sort,
+               'white_player':str(white_id) if white_id else 'all',
+               'black_player':str(black_id) if black_id else 'all'}
     page_url = lambda number: '/games?' + urlencode({**filters, 'page':number})
     return view(request,'games.html',games=rows,years=years,season_options=season_options, filters=filters,
-                upcoming=upcoming,finished=finished,page=page_number,page_size=page_size,
+                upcoming=upcoming,finished=finished,player_options=player_options,page=page_number,page_size=page_size,
                 total_count=total_count,total_pages=total_pages,
                 has_previous=page_number>1,has_next=page_number<total_pages,
                 previous_url=page_url(page_number-1),next_url=page_url(page_number+1))

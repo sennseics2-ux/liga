@@ -21,7 +21,7 @@
       </div>
     </div>
     <script type="application/json" id="replay-data">{{ replay|tojson }}</script>
-    <script defer src="/static/chess-replay.js?v=37"></script>
+    <script defer src="/static/chess-replay.js?v=38"></script>
   {% elif pgn_available and not user %}
     <div class="replay-no-pgn"><h3 data-i18n="Log in to replay this game">Log in to replay this game</h3><p data-i18n="This game has a PGN recording. Sign in to view its moves or download the PGN.">This game has a PGN recording. Sign in to view its moves or download the PGN.</p><a class="btn btn-primary" href="/login?next=/games/{{ game.id }}" data-i18n="Log in">Log in</a></div>
   {% elif pgn_available %}
