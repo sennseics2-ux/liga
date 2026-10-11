@@ -91,3 +91,8 @@
 .season-picker label:not(:first-child){margin-top:14px}.fixture-kickoff{min-width:0;display:flex;flex-direction:column;gap:5px}.fixture-match-label{font-size:12px;color:#34445b;overflow-wrap:anywhere}.standings-toolbar{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:26px}.standings-toolbar .season-picker{background:#edf2f8;border:1px solid #c8d3e2;min-width:230px}.standings-table td,.standings-table th{padding:14px 12px}.standings-table .score{background:#e3edfb;color:#294c7e;border:1px solid #b7cbe6;display:inline-block;padding:6px 10px;border-radius:8px}
 :root[data-theme="dark"] .fixture-match-label{color:#dde8f7}:root[data-theme="dark"] .standings-toolbar .season-picker{background:#202c3b;border-color:#71849e}:root[data-theme="dark"] .standings-table .score{background:#365078;color:#edf4ff;border-color:#8fa8cc}
 @media(max-width:640px){.standings-toolbar{align-items:stretch;flex-direction:column;gap:18px}.standings-toolbar .season-picker{min-width:0}.standings-table.mobile-cards td{padding:10px 0}}
+
+/* V36 shared dark headers and career record hierarchy. */
+:root[data-theme="dark"] body :is(.season-hero,.admin-hero,.match-hero){background:#23344b;color:var(--theme-text);border-bottom:1px solid #71849e}
+:root[data-theme="dark"] body :is(.season-hero,.admin-hero,.match-hero) :is(.competition-eyebrow,.match-back,.match-heading p,.admin-hero-inner>div>p){color:#cbd8e9}
+.career-record-compact .career-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.career-games-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 2px 10px;font-size:12px;font-weight:700}.career-games-heading strong{font:800 24px Manrope,sans-serif;font-variant-numeric:tabular-nums}

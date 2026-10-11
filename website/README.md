@@ -1,3 +1,7 @@
+## v36 appearance updates
+
+The team directory is titled League teams. Dark headers on Results, the admin dashboard and match pages share the site header palette. Player profile games played appears above wins, draws and losses. Assets use v36; database schema remains v32.
+
 # Liga SX-AAC — Chess Fantasy League V35
 
 FastAPI, Jinja templates, SQLite, and an offline PGN replay viewer for a club fantasy chess league. This release adds account recovery and editable identities, season scheduling, and four-player team matches while preserving existing accounts and league data.
