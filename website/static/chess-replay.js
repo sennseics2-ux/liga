@@ -206,8 +206,12 @@
   speed.addEventListener('change', () => {
     if (timer !== null) { stop(); start(); }
   });
-  root.addEventListener('keydown', (event) => {
-    if (event.altKey || event.ctrlKey || event.metaKey || event.target.closest('input, select, textarea, [contenteditable="true"]')) return;
+  document.addEventListener('keydown', (event) => {
+    if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ||
+        event.target.isContentEditable || event.target.closest('input, select, textarea, [role="textbox"], [role="dialog"], [role="menu"]') ||
+        document.querySelector('#account-toggle[aria-expanded="true"], #language-toggle[aria-expanded="true"], .nav-links.open, dialog[open], [aria-modal="true"]')) return;
+    // Arrows work immediately on page load. Other shortcuts stay in the replay.
+    if (!['ArrowLeft', 'ArrowRight'].includes(event.key) && !root.contains(event.target)) return;
     const actions = {ArrowLeft:() => goto(index - 1), ArrowRight:() => goto(index + 1),
       Home:() => goto(0), End:() => goto(game.moves.length), f:flip, F:flip};
     // Space on a button retains its normal native activation.

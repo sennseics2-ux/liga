@@ -57,12 +57,24 @@ def test_replay_black_start_keyboard_flip_playback_and_localized_accessibility(c
         page.route('http://liga.test/**', local_application)
         page.goto(f'http://liga.test/games/{game_id}')
         replay = page.locator('[data-chess-replay]')
+        # Replay works as soon as the page opens, without clicking or focusing it.
+        page.keyboard.press('ArrowRight')
+        expect(page.locator('[data-progress]')).to_contain_text('Move 10… e5')
+        page.keyboard.press('ArrowLeft')
+        expect(page.locator('[data-progress]')).to_have_text('Starting position')
         expect(page.locator('.replay-sidebar-header span')).to_have_text('4 moves')
         assert page.locator('.replay-controls').locator('[data-action=flip]').count() == 1
         assert page.locator('.replay-sidebar').locator('[data-action=play]').count() == 1
         page.locator('#account-toggle').click()
         styles = page.locator('[data-piece-style]')
         expect(styles).to_have_value('cardinal')
+        page.keyboard.press('ArrowRight')
+        expect(page.locator('[data-progress]')).to_have_text('Starting position')
+        styles.focus()
+        page.keyboard.press('ArrowRight')
+        expect(page.locator('[data-progress]')).to_have_text('Starting position')
+        expect(styles).to_have_value('cburnett')
+        styles.select_option('cardinal')
         expect(styles.locator('option')).to_have_count(43)
         expect(page.locator('[data-board] img.replay-piece')).to_have_count(32)
         for style in styles.locator('option').evaluate_all('(options)=>options.map(option=>option.value)'):
@@ -106,6 +118,9 @@ def test_replay_black_start_keyboard_flip_playback_and_localized_accessibility(c
         expect(page.locator('[data-action="prev"]')).to_be_disabled()
 
         page.locator('.replay-more summary').click()
+        page.locator('[data-speed]').focus()
+        page.keyboard.press('ArrowRight')
+        expect(page.locator('[data-progress]')).to_have_text('Starting position')
         page.locator('[data-speed]').select_option('625')
         page.locator('.replay-more summary').click()
         page.locator('[data-action="play"]').click()

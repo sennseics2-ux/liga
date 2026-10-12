@@ -121,7 +121,7 @@ def test_pairings_hidden_on_every_game_surface_including_direct_pgn(client,monke
     assert client.get(f'/matches/{match}').text.count('class="lineup-private"')==2
     monkeypatch.setattr(store,'now_utc',lambda:start)
     page=client.get(f'/matches/{match}').text
-    assert page.count('class="lineup-board-number"')==8 and page.count('class="board-result-card"')==4
+    assert page.count('class="match-board-number"')==4 and page.count('class="board-result-card"')==4
     assert 'class="lineup-private"' not in page
     for game in games:assert client.get(f'/games/{game}').status_code==200
     assert 'e4 e5' in client.get(f'/games/{games[0]}/pgn').text

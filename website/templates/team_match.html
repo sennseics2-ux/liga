@@ -16,29 +16,49 @@
 </section>
 <section class="container competition-content">
   <div class="match-content-grid{% if not own_team %} match-content-public{% endif %}">
-    <div class="match-main">
-      <div class="competition-section-heading"><div><p class="competition-eyebrow" data-i18n="On the boards">On the boards</p><h2 data-i18n="Board games & results">Board games &amp; results</h2></div></div>
-      <div class="board-results-grid">
-      {% for game in board_games %}
-        <a class="board-result-card" href="/games/{{ game.id }}"><div class="board-result-heading"><span><span data-i18n="Board">Board</span> <span data-no-i18n>{{ game.board }}</span></span><span class="result-status" data-i18n="{{ 'Completed' if game.result!='*' else 'Awaiting results' }}">{{ 'Completed' if game.result!='*' else 'Awaiting results' }}</span></div>
-          <div class="board-player"><span class="piece-dot piece-white" aria-hidden="true"></span><div><small data-i18n="White">White</small><strong data-no-i18n>{{ game.white_name }}</strong></div><span class="board-player-score" data-no-i18n>{{ '1' if game.result=='1-0' else ('0' if game.result=='0-1' else ('½' if game.result=='1/2-1/2' else '—')) }}</span></div>
-          <div class="board-player"><span class="piece-dot piece-black" aria-hidden="true"></span><div><small data-i18n="Black">Black</small><strong data-no-i18n>{{ game.black_name }}</strong></div><span class="board-player-score" data-no-i18n>{{ '1' if game.result=='0-1' else ('0' if game.result=='1-0' else ('½' if game.result=='1/2-1/2' else '—')) }}</span></div>
-          <div class="board-result-link"><span data-i18n="View game">View game</span><span aria-hidden="true">↗</span></div>
-        </a>
-      {% else %}
-        <div class="competition-empty board-empty"><span class="empty-chess" aria-hidden="true">♟</span><h3 data-i18n="The boards are waiting">The boards are waiting</h3>{% if not deadline_passed %}<p data-i18n="Board pairings are revealed when the match starts.">Board pairings are revealed when the match starts.</p>{% else %}<p data-i18n="The four board pairings will appear when both captains submit their lineups.">The four board pairings will appear when both captains submit their lineups.</p>{% endif %}</div>
-      {% endfor %}
-      </div>
-      <div class="competition-section-heading lineup-section-heading"><div><p class="competition-eyebrow" data-i18n="The teams">The teams</p><h2 data-i18n="Submitted lineups">Submitted lineups</h2></div></div>
+    <section class="match-main match-boards" aria-labelledby="match-boards-title">
+      <div class="competition-section-heading"><div><p class="competition-eyebrow" data-i18n="On the boards">On the boards</p><h2 id="match-boards-title" data-i18n="Lineups & results">Lineups &amp; results</h2></div></div>
       {% if not deadline_passed %}<p class="lineup-reveal-note" data-i18n="Before the match starts, each team can only see its own lineup.">Before the match starts, each team can only see its own lineup.</p>{% endif %}
-      <div class="submitted-lineups-grid">
-      {% for team_id,team_name in [(match.home_team_id,match.home_name),(match.away_team_id,match.away_name)] %}
-        <article class="submitted-lineup"><div class="submitted-lineup-header"><span class="team-emblem{% if team_id==match.away_team_id %} team-emblem-light{% endif %}" aria-hidden="true" data-no-i18n>{% if (team_id==match.home_team_id and match.home_photo_updated_at) or (team_id==match.away_team_id and match.away_photo_updated_at) %}<img class="team-picture" src="/teams/{{ team_id }}/photo" alt="" loading="lazy">{% else %}{{ team_name[:2]|upper }}{% endif %}</span><h3 data-no-i18n>{{ team_name }}</h3></div>
-          {% if team_id in visible_lineup_team_ids %}<ol>{% for player in lineups if player.team_id==team_id %}<li><span class="lineup-board-number" data-no-i18n>{{ player.board }}</span><div><strong data-no-i18n>{{ player.name }}</strong><small><span data-i18n="FIDE Rating">FIDE Rating</span> <span data-no-i18n>{{ player.rating if player.rating else '—' }}</span></small></div></li>{% else %}<li class="lineup-pending"><span data-i18n="Lineup not submitted">Lineup not submitted</span></li>{% endfor %}</ol>{% else %}<div class="lineup-private"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><p data-i18n="This lineup is private until the match starts.">This lineup is private until the match starts.</p><p><span data-i18n="Public from">Public from</span> <time datetime="{{ match.scheduled_at }}" data-no-i18n>{{ match.scheduled_at|local_time }}</time></p></div>{% endif %}
+      <div class="match-board-table">
+        <div class="match-board-teams">
+          {% for team_id,team_name in [(match.home_team_id,match.home_name),(match.away_team_id,match.away_name)] %}
+          <a class="match-board-team" href="/teams/{{ team_id }}"><span class="team-emblem{% if team_id==match.away_team_id %} team-emblem-light{% endif %}" aria-hidden="true" data-no-i18n>{% if (team_id==match.home_team_id and match.home_photo_updated_at) or (team_id==match.away_team_id and match.away_photo_updated_at) %}<img class="team-picture" src="/teams/{{ team_id }}/photo" alt="" loading="lazy">{% else %}{{ team_name[:2]|upper }}{% endif %}</span><div><strong data-no-i18n>{{ team_name }}</strong><small data-i18n="{{ 'Home team' if team_id==match.home_team_id else 'Away team' }}">{{ 'Home team' if team_id==match.home_team_id else 'Away team' }}</small></div></a>
+          {% endfor %}
+        </div>
+        {% if not deadline_passed %}
+        <div class="match-lineup-notices">
+          {% for team_id in [match.home_team_id,match.away_team_id] %}
+          <div>{% if team_id not in visible_lineup_team_ids %}<div class="lineup-private"><p data-i18n="This lineup is private until the match starts.">This lineup is private until the match starts.</p><p><span data-i18n="Public from">Public from</span> <time datetime="{{ match.scheduled_at }}" data-no-i18n>{{ match.scheduled_at|local_time }}</time></p></div>{% endif %}</div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        {% for board in range(1,5) %}
+        {% set game=board_games|selectattr('board','equalto',board)|first %}
+        <article class="match-board-row">
+          <h3 class="match-board-number"><span data-i18n="Board">Board</span> <span data-no-i18n>{{ board }}</span></h3>
+          {% for team_id in [match.home_team_id,match.away_team_id] %}
+          {% set player=lineups|selectattr('team_id','equalto',team_id)|selectattr('board','equalto',board)|first %}
+          <div class="match-board-player{% if team_id==match.away_team_id %} match-board-away{% endif %}">
+            {% if player %}
+            {% if game %}<span class="piece-dot {{ 'piece-white' if game.white_team_id==team_id else 'piece-black' }}" role="img" aria-label="{{ 'White' if game.white_team_id==team_id else 'Black' }}" data-i18n-aria-label="{{ 'White' if game.white_team_id==team_id else 'Black' }}"></span>{% endif %}
+            <div><a href="/players/{{ player.player_id }}" class="match-lineup-player" data-no-i18n>{{ player.name }}</a><small><span data-i18n="FIDE Rating">FIDE Rating</span> <span data-no-i18n>{{ player.rating if player.rating else '—' }}</span></small></div>
+            {% elif team_id not in visible_lineup_team_ids %}<span class="match-player-pending" aria-label="This lineup is private until the match starts." data-i18n-aria-label="This lineup is private until the match starts." data-no-i18n>—</span>
+            {% else %}<span class="match-player-pending" data-i18n="Lineup not submitted">Lineup not submitted</span>{% endif %}
+          </div>
+          {% endfor %}
+          <div class="match-board-result">
+            {% if game %}
+            {% set white_score='1' if game.result=='1-0' else ('0' if game.result=='0-1' else ('½' if game.result=='1/2-1/2' else '—')) %}
+            {% set black_score='1' if game.result=='0-1' else ('0' if game.result=='1-0' else ('½' if game.result=='1/2-1/2' else '—')) %}
+            <a class="board-result-card" href="/games/{{ game.id }}"><strong class="match-board-score" data-no-i18n>{{ white_score if game.white_team_id==match.home_team_id else black_score }} <span>:</span> {{ black_score if game.white_team_id==match.home_team_id else white_score }}</strong><span class="match-board-game-link"><span data-i18n="View game">View game</span> <span aria-hidden="true">↗</span></span></a>
+            <span class="match-board-status" data-i18n="{{ 'Completed' if game.result!='*' else 'Awaiting results' }}">{{ 'Completed' if game.result!='*' else 'Awaiting results' }}</span>
+            {% else %}<strong class="match-board-score" data-no-i18n>— : —</strong>{% endif %}
+          </div>
         </article>
-      {% endfor %}
+        {% endfor %}
       </div>
-    </div>
+      {% if not board_games %}<p class="match-board-waiting">{% if not deadline_passed %}<span data-i18n="Board pairings are revealed when the match starts.">Board pairings are revealed when the match starts.</span>{% else %}<span data-i18n="The four board pairings will appear when both captains submit their lineups.">The four board pairings will appear when both captains submit their lineups.</span>{% endif %}</p>{% endif %}
+    </section>
     {% if own_team %}
     <aside class="manager-lineup-panel"><p class="competition-eyebrow" data-i18n="Captain's desk">Captain's desk</p><h2 data-i18n="Your four-player lineup">Your four-player lineup</h2><p class="manager-team-name" data-no-i18n>{{ own_team.name }}</p>
       {% if match.lineup_locked %}<p class="lineup-instructions" data-i18n="Lineups are locked once a game result or PGN has been recorded.">Lineups are locked once a game result or PGN has been recorded.</p>

@@ -1,3 +1,7 @@
+## v46 match boards and immediate replay controls
+
+Arrow keys navigate a replay immediately when a game opens, while menus and form fields retain their normal keyboard controls. Match pages combine both lineups, player ratings, piece colours and game results in one board-by-board section. Pre-match lineup privacy and captain submissions remain enforced. Assets use v46; database schema remains v32.
+
 ## v45 compact replay and appearance
 
 Game pages place player identities and score next to a viewport-sized board, with an independently scrolling notation panel. Piece Set and eight Board palettes are available from the top-right account/appearance menu and persist in this browser. Profile links highlight green; sign out highlights red. Assets use v45; database schema remains v32.

@@ -1678,7 +1678,7 @@ def team_match_detail(request: Request,match_id: int):
             (match_id,match['home_team_id'] if match['home_team_id'] in visible_team_ids else None,
              match['away_team_id'] if match['away_team_id'] in visible_team_ids else None))]
         selected={row['board']:row['player_id'] for row in lineups if own_team and row['team_id']==own_team['id']}
-        games=[dict(row) for row in db.execute('''SELECT mg.board,g.id,g.result,wp.name AS white_name,bp.name AS black_name
+        games=[dict(row) for row in db.execute('''SELECT mg.board,g.id,g.result,g.white_team_id,wp.name AS white_name,bp.name AS black_name
             FROM match_games mg JOIN games g ON g.id=mg.game_id JOIN players wp ON wp.id=g.white_player_id
             JOIN players bp ON bp.id=g.black_player_id WHERE mg.match_id=? ORDER BY board''',(match_id,))] if deadline_passed else []
     return view(request,'team_match.html',match=match,own_team=own_team,eligible=eligible,lineups=lineups,
