@@ -12,6 +12,7 @@ def test_compact_replay_and_appearance(chromium,league_server,width,height):
     league=league_server
     moves=' '.join(f'{i+1}. '+('Nf3 Nf6' if i%2==0 else 'Ng1 Ng8') for i in range(80))
     with league.store.transaction() as db:
+        db.execute('UPDATE games SET event_name="A long tournament title that must wrap completely on a small mobile screen" WHERE id=?',(league.game,))
         db.execute('UPDATE games SET pgn_text=? WHERE id=?',('[Result "*"]\n\n'+moves+' *',league.game))
     context=chromium.new_context(viewport={'width':width,'height':height},color_scheme='dark')
     context.route('**/*',lambda route:route.continue_() if route.request.url.startswith(league.base+'/') else route.abort())
@@ -20,6 +21,9 @@ def test_compact_replay_and_appearance(chromium,league_server,width,height):
         page.goto(f'{league.base}/games/{league.game}')
         expect(page.locator('[data-board] img')).to_have_count(32)
         assert_fits_phone(page)
+        if width<=900:
+            for selector in ['.replay-page-header strong','.replay-page-header>div>span']:
+                assert page.locator(selector).evaluate('(el)=>el.scrollWidth<=el.clientWidth && getComputedStyle(el).whiteSpace==="normal"')
         assert page.locator('.replay-page-header a[href$="/pgn"]').count()==0
         assert page.locator('.replay-utilities a[href$="/pgn"]').count()==1
         tools=page.locator('.replay-utilities').bounding_box()
@@ -43,8 +47,15 @@ def test_compact_replay_and_appearance(chromium,league_server,width,height):
         assert downloaded.value.suggested_filename.endswith('.pgn')
         assert downloaded.value.failure() is None
         page.screenshot(path=f'/workspace/review-runtime/v47-initial-{width}.png',full_page=True)
-        assert page.locator('.replay-layout').bounding_box()['y']+page.locator('.replay-layout').bounding_box()['height']<=height+2, page.evaluate("() => Object.fromEntries(['.site-header','.replay-page-header','.game-matchup','.replay-board-panel','.replay-board-shell','.replay-controls','.replay-progress','.replay-utilities','.replay-sidebar'].map(s=>{const b=document.querySelector(s).getBoundingClientRect();return [s,{y:b.y,height:b.height}]}))")
-        assert page.evaluate('document.documentElement.scrollHeight')<=height+2
+        if width>900:
+            assert page.locator('.replay-layout').bounding_box()['y']+page.locator('.replay-layout').bounding_box()['height']<=height+2, page.evaluate("() => Object.fromEntries(['.site-header','.replay-page-header','.game-matchup','.replay-board-panel','.replay-board-shell','.replay-controls','.replay-progress','.replay-utilities','.replay-sidebar'].map(s=>{const b=document.querySelector(s).getBoundingClientRect();return [s,{y:b.y,height:b.height}]}))")
+        if width>900:
+            assert page.evaluate('document.documentElement.scrollHeight')<=height+2
+        else:
+            moves_box=page.locator('[data-moves]').bounding_box()
+            visible=page.locator('.replay-move-number').evaluate_all('(els)=>{const box=els[0].parentElement.getBoundingClientRect();return els.filter(el=>{const row=el.getBoundingClientRect();return row.top>=box.top && row.bottom<=box.bottom}).length}')
+            assert visible>=5,visible
+            assert moves_box['height']>=196
         assert page.locator('[data-moves]').evaluate('(el)=>el.scrollHeight>el.clientHeight && getComputedStyle(el).overflowY==="scroll"')
         before=page.evaluate('window.scrollY')
         page.locator('[data-action=last]').click()

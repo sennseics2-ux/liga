@@ -237,3 +237,13 @@ body:is(.games-list-page,.match-page) .account-menu a:is(:hover,:focus-visible),
 /* V68: the completed match winner stands out in the banner. */
 .match-page .scoreboard-numbers .scoreboard-winner{background:#e6e6e6;color:#171717;border-radius:8px;padding:0 7px;box-shadow:0 0 0 1px #a6a6a6}
 :root[data-theme="dark"] .match-page .scoreboard-numbers .scoreboard-winner{background:#dedede;color:#171717;box-shadow:0 0 0 1px #aaa}
+
+/* V69: mobile headers wrap and notation always has room for five full moves. */
+@media(max-width:900px){
+ .game-page .replay-page-header{align-items:flex-start;min-height:0}
+ .game-page .replay-page-header strong,.game-page .replay-page-header>div>span{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
+ .game-page .replay-page-header>div>span{line-height:1.5}
+ .game-page .replay-layout{height:auto;min-height:0}
+ .game-page .replay-sidebar{flex:0 0 auto;height:auto;min-height:0;max-height:none}
+ .game-page .replay-moves{flex:none;height:196px;min-height:196px;grid-auto-rows:32px;row-gap:4px;padding:10px 12px}
+}
