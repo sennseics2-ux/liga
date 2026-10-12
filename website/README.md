@@ -1,3 +1,7 @@
+## v51 home and footer cleanup
+
+Removed the home-page How it works section and the fantasy-league tagline from the shared footer. Assets use v51; database schema remains v32.
+
 ## v50 transfer window outline
 
 The home-page Transfer Window has a rounded outline in dark mode, using the same border colour as the other panels and responsive padding. Assets use v50; database schema remains v32.
