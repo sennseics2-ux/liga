@@ -1,3 +1,7 @@
+## v55 cumulative standings by round
+
+Standings default to All rounds. Selecting round N includes completed team matches from rounds 1 through N, including cumulative board points and tie-break results. Teams scheduled for later rounds remain visible with zero points before playing. Season changes reset the round filter; native form submission works without JavaScript. Assets use v55; database schema remains v32.
+
 ## v54 clear current replay annotations
 
 A left-click anywhere on the board clears all circles and arrows for the current position, preserving marks on other positions. Assets use v54; database schema remains v32.

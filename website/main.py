@@ -1262,13 +1262,16 @@ async def admin_remove_game_pgn(request: Request, game_id: int):
 
 
 @app.get("/standings", response_class=HTMLResponse)
-def standings(request: Request, season: str='current'):
+def standings(request: Request, season: str='current', round_number: str=Query('all',alias='round')):
     with store.read_db() as db:
         context=seasons.calendar_view(db,season)
         if context is None:
             raise HTTPException(404,'Season not found.')
-        rows=season_table(db,context['season']['id'],context['season']['start_year']==context['current_year'])
-    return view(request,'standings.html',standings=rows,**context)
+        if round_number!='all' and round_number not in {str(rnd['number']) for rnd in context['schedule_rounds']}:
+            raise HTTPException(400,'Invalid round.')
+        rows=season_table(db,context['season']['id'],context['season']['start_year']==context['current_year'],
+                          through_round=None if round_number=='all' else int(round_number))
+    return view(request,'standings.html',standings=rows,round_selection=round_number,**context)
 
 
 @app.get('/admin/teams', response_class=HTMLResponse)

@@ -196,3 +196,8 @@ body .account-dropdown{position:static}body .account-menu{right:15px;top:calc(10
 
 /* V52: annotations are an SVG overlay, preserving board size and pointer targets. */
 .chess-board{position:relative}.replay-annotations{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2;color:#168b43;overflow:hidden}.replay-annotation-circle{fill:none;stroke:currentColor;stroke-width:.03;opacity:.9}.replay-annotation-arrow{fill:none;stroke:currentColor;stroke-width:.11;stroke-linecap:round;stroke-linejoin:round;opacity:.9}.replay-annotations [data-preview="true"]{opacity:.6}
+
+/* V55: cumulative round selection shares the season filter panel. */
+.standings-toolbar .standings-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;min-width:min(440px,100%)}.standings-filter-field{display:grid;gap:8px;min-width:0}.standings-filter-field label{margin:0}.standings-filter-field select{width:100%;min-width:0}.standings-filters noscript{grid-column:1/-1}.standings-round-note{font-size:13px;color:var(--muted);margin:0 0 16px}
+@media(max-width:640px){.standings-toolbar .standings-filters{min-width:0}}
+@media(max-width:440px){.standings-toolbar .standings-filters{grid-template-columns:minmax(0,1fr)}}

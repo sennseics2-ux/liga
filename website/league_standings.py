@@ -5,11 +5,11 @@ from player_statistics import chess_score
 from league_seasons import _datetime
 
 
-def season_table(db, season_id, include_all=False):
+def season_table(db, season_id, include_all=False, through_round=None):
     import database as store
     teams={row['id']:dict(row) for row in db.execute('''SELECT t.*,u.username,photo.updated_at AS photo_updated_at
         FROM teams t LEFT JOIN users u ON u.id=t.manager_id LEFT JOIN team_photos photo ON photo.team_id=t.id''')}
-    fixtures=[dict(row) for row in db.execute('''SELECT m.* FROM team_matches m
+    fixtures=[dict(row) for row in db.execute('''SELECT m.*,r.number AS round_number FROM team_matches m
         JOIN season_rounds r ON r.id=m.round_id JOIN seasons s ON s.id=r.season_id
         WHERE r.season_id=? AND s.status='published' ''',(season_id,))] if season_id else []
     participants=set(teams) if include_all else {m[side+'_team_id'] for m in fixtures for side in ('home','away')}
@@ -23,6 +23,7 @@ def season_table(db, season_id, include_all=False):
     records=[]
     now=store.now_utc()
     for match in fixtures:
+        if through_round is not None and match['round_number']>through_round:continue
         if _datetime(match['scheduled_at'])>now:continue
         home,away=match['home_team_id'],match['away_team_id'];games=boards[match['id']]
         if len(games)!=4 or {g['board'] for g in games}!={1,2,3,4}:continue

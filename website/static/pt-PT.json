@@ -1533,5 +1533,7 @@
   "Lineups & results": "Formações e resultados",
   "Team": "Equipa",
   "Mouse: right-click to circle a square; right-drag to draw an arrow. Repeat to remove. Marks belong to this move and clear when you leave the page.": "Rato: clica com o botão direito para marcar uma casa com um círculo; arrasta com o botão direito para desenhar uma seta. Repete para remover. As marcas pertencem a este lance e desaparecem ao sair da página.",
-  "Left-click anywhere on the board to clear this move's marks.": "Clica com o botão esquerdo em qualquer ponto do tabuleiro para apagar as marcas deste lance."
+  "Left-click anywhere on the board to clear this move's marks.": "Clica com o botão esquerdo em qualquer ponto do tabuleiro para apagar as marcas deste lance.",
+  "Round {number}": "Ronda {number}",
+  "Includes results from rounds 1–{round}.": "Inclui os resultados das rondas 1–{round}."
 }
