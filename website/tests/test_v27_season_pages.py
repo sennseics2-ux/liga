@@ -76,11 +76,12 @@ def test_match_scores_follow_teams_across_alternating_colours_and_draws(client):
     with store.read_db() as db:
         partial=seasons.match_rows(db,season)[0]
         assert (partial['home_score'],partial['away_score'],partial['result_status'])==('2½','½','Partial results')
+    assert 'class="scoreboard-winner"' not in client.get(f'/matches/{match}').text
     store.update_game_result(games[3],'1-0',actor_id=admin,reason='Final board result')
     page=client.get(f'/matches/{match}')
     assert page.status_code==200
     assert 'scoreboard-numbers' in page.text
-    assert '<span>2½</span>' in page.text and '<span>1½</span>' in page.text
+    assert '<span class="scoreboard-winner">2½</span>' in page.text and '<span>1½</span>' in page.text
     assert page.text.count('class="match-board-row board-result-card"')==4
     assert page.text.count('class="match-board-row board-result-card"')==4
     assert 'Lineups &amp; results' in page.text
@@ -110,3 +111,10 @@ def test_match_scores_follow_teams_across_alternating_colours_and_draws(client):
     locked=client.get(f'/matches/{match}')
     assert 'Lineups are locked once' in locked.text
     assert 'name="player_1"' not in locked.text
+    with store.transaction() as db:
+        db.execute("UPDATE games SET result=CASE WHEN white_team_id=? THEN '0-1' ELSE '1-0' END WHERE id IN (SELECT game_id FROM match_games WHERE match_id=?)",(teams[0],match))
+    away_wins=client.get(f'/matches/{match}').text
+    assert '<span>0</span><span class="scoreboard-dash">:</span><span class="scoreboard-winner">4</span>' in away_wins
+    with store.transaction() as db:
+        db.execute("UPDATE games SET result='1/2-1/2' WHERE id IN (SELECT game_id FROM match_games WHERE match_id=?)",(match,))
+    assert 'class="scoreboard-winner"' not in client.get(f'/matches/{match}').text

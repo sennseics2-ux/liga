@@ -1,3 +1,7 @@
+## v68 match banner winner
+
+Completed matches highlight the winning team’s total score in the banner using the neutral grey palette. Home and away wins are supported; draws and unfinished matches have no winner highlight. Assets use v68; database schema remains v32.
+
 ## v67 neutral game and match accents
 
 The Games directory and match-board content use black and grey accents for counters, controls, round links, pagination, hover/focus states and result emphasis. Wins remain stronger than draws using different grey backgrounds. Both themes retain readable contrast. Header and banner layouts stay unchanged. Assets use v67; database schema remains v32.

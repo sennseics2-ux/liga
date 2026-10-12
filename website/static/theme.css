@@ -233,3 +233,7 @@ body:is(.games-list-page,.match-page) .account-menu a:is(:hover,:focus-visible),
 :root[data-theme="dark"] body:is(.games-list-page,.match-page) .account-settings-toggle,:root[data-theme="dark"] body:is(.games-list-page,.match-page) .account-toggle:is(:hover,[aria-expanded="true"]){background:var(--neutral-control-bg);color:var(--neutral-control-text);border-color:var(--neutral-control-border)}
 :root[data-theme="dark"] body:is(.games-list-page,.match-page) .account-toggle:focus-visible{outline-color:var(--neutral-control-border)}
 :root[data-theme="dark"] body:is(.games-list-page,.match-page) .account-menu a:is(:hover,:focus-visible),:root[data-theme="dark"] body:is(.games-list-page,.match-page) .account-menu button:not([type="submit"]):is(:hover,:focus-visible),:root[data-theme="dark"] body:is(.games-list-page,.match-page) .account-menu .appearance-option[aria-selected="true"],:root[data-theme="dark"] body:is(.games-list-page,.match-page) .appearance-picker>summary:hover{background:var(--neutral-control-hover);color:var(--neutral-control-text)}
+
+/* V68: the completed match winner stands out in the banner. */
+.match-page .scoreboard-numbers .scoreboard-winner{background:#e6e6e6;color:#171717;border-radius:8px;padding:0 7px;box-shadow:0 0 0 1px #a6a6a6}
+:root[data-theme="dark"] .match-page .scoreboard-numbers .scoreboard-winner{background:#dedede;color:#171717;box-shadow:0 0 0 1px #aaa}
