@@ -1,3 +1,7 @@
+## v72 Seasons navigation and banner
+
+The /seasons navigation item, banner label and browser title now use Seasons. Portuguese navigation and banner labels use Épocas. Assets use v72; database schema remains v32.
+
 ## v71 neutral game-list results
 
 Player names, scores and outcome captions in the Games list no longer receive result-based highlighting. Match-board and banner score highlights remain. Assets use v71; database schema remains v32.

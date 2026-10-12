@@ -13,6 +13,8 @@ def test_current_placeholder_is_read_only_and_not_replaced_by_past_seasons(clien
         db.execute("UPDATE seasons SET name='2025-2026',start_year=2025,status='published' WHERE id=?",(current,))
     page=client.get('/seasons')
     assert page.status_code==200
+    assert 'data-i18n="Seasons">Seasons</a>' in page.text
+    assert '<p class="competition-eyebrow" data-i18n="Seasons">Seasons</p>' in page.text
     assert '<h1 data-no-i18n>2026-2027</h1>' in page.text
     assert 'Schedule coming soon' in page.text
     assert 'class="fixture-card"' not in page.text

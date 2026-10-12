@@ -8,13 +8,13 @@
   <link rel="icon" href="/static/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="/static/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
-  <script src="/static/theme.js?v=71"></script>
-  <link rel="stylesheet" href="/static/style.css?v=71">
-  <link rel="stylesheet" href="/static/dark.css?v=71">
-  <link rel="stylesheet" href="/static/theme.css?v=71">
-  <script defer src="/static/i18n.js?v=71"></script>
-  <script defer src="/static/app.js?v=71"></script>
-  <script defer src="/static/board-settings.js?v=71"></script>
+  <script src="/static/theme.js?v=72"></script>
+  <link rel="stylesheet" href="/static/style.css?v=72">
+  <link rel="stylesheet" href="/static/dark.css?v=72">
+  <link rel="stylesheet" href="/static/theme.css?v=72">
+  <script defer src="/static/i18n.js?v=72"></script>
+  <script defer src="/static/app.js?v=72"></script>
+  <script defer src="/static/board-settings.js?v=72"></script>
   {% block page_assets %}{% endblock %}
 </head>
 <body{% if request.url.path == "/" %} class="home-theme"{% elif request.url.path == "/games" %} class="games-list-page"{% elif request.url.path.startswith("/games/") %} class="game-page"{% elif request.url.path.startswith("/matches/") %} class="match-page"{% endif %}>
@@ -26,7 +26,7 @@
     <div class="nav-links" id="nav-links">
       <a href="/teams" {% if request.url.path == '/teams' or request.url.path.startswith('/teams/') %}class="active"{% endif %}>Teams</a>
       <a href="/players" {% if request.url.path == '/players' %}class="active"{% endif %}>Players</a>
-      <a href="/seasons" {% if request.url.path == "/seasons" or request.url.path.startswith("/matches/") %}class="active"{% endif %} data-i18n="Results">Results</a><a href="/games" {% if request.url.path == '/games' or request.url.path.startswith('/games/') %}class="active"{% endif %}>Games</a>
+      <a href="/seasons" {% if request.url.path == "/seasons" or request.url.path.startswith("/matches/") %}class="active"{% endif %} data-i18n="Seasons">Seasons</a><a href="/games" {% if request.url.path == '/games' or request.url.path.startswith('/games/') %}class="active"{% endif %}>Games</a>
       <a href="/standings" {% if request.url.path == '/standings' %}class="active"{% endif %}>Standings</a>
       {% if user and user.role == 'admin' %}<a href="/admin" {% if request.url.path == '/admin' or request.url.path.startswith('/admin/') %}class="active"{% endif %}>Admin</a>{% endif %}
       {% if not user and request.url.path.startswith('/games/') %}<a class="replay-mobile-auth" href="/login" data-i18n="Log in">Log in</a><a class="replay-mobile-auth" href="/register" data-i18n="Create account">Create account</a>{% endif %}
