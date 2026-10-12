@@ -62,7 +62,7 @@ def test_match_scores_follow_teams_across_alternating_colours_and_draws(client):
     assert directory.text.count('class="game-round-link"')==4
     assert 'Europe/Lisbon' not in directory.text
     detail=client.get(f'/games/{games[0]}')
-    assert f'class="replay-round-link" href="/matches/{match}"' in detail.text
+    assert f'class="replay-round-link" data-no-i18n href="/matches/{match}"' in detail.text
     assert client.get(f'/matches/{match}').status_code==200
     # Standalone games have no league match to link to.
     standalone=store.create_game(rosters[0][0],rosters[1][0],'2026-06-01T18:00',round_label='Friendly')

@@ -1,3 +1,7 @@
+## v64 full English game dates and review timestamps
+
+English list dates include the day (6 September 2026). Review headers display dd-mm-yyyy and local time followed by Lisbon/Lisboa, including localized accessibility labels and hover text. UTC storage and Lisbon daylight-saving conversion are preserved. Assets use v64; database schema remains v32.
+
 ## v63 localized game dates and simpler filters
 
 The Games list shows English month/year dates (September, 2026) or Portuguese full dates (6 de setembro de 2026), updating immediately when switching languages. Dates still use the Lisbon calendar day, with full dates available on hover. The Status selector is removed and the remaining filters use the available space. Assets use v63; database schema remains v32.

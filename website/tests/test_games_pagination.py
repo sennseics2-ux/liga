@@ -138,13 +138,16 @@ def test_lisbon_display_handles_both_dst_transitions_and_keeps_utc_storage(clien
     directory = client.get('/games')
     for game_id, (stored, display) in zip(ids, dates):
         from datetime import datetime
-        assert datetime.fromisoformat(display[:10]).strftime('%B, %Y') in directory.text
+        day=datetime.fromisoformat(display[:10])
+        assert f"{day.day} {day.strftime('%B %Y')}" in directory.text
         assert display[13:18] in directory.text
         assert display not in directory.text
         assert f'datetime="{stored}"' in directory.text
         detail = client.get(f'/games/{game_id}')
         assert detail.status_code == 200
-        assert display in detail.text
+        assert day.strftime('%d-%m-%Y')+display[10:18] in detail.text
+        assert 'data-i18n="Lisbon"' in detail.text
+        assert 'Europe/Lisbon' not in detail.text
     with store.read_db() as db:
         assert [row[0] for row in db.execute('SELECT scheduled_at FROM games ORDER BY id')] == [date for date, _ in dates]
 
