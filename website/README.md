@@ -1,3 +1,7 @@
+## v71 neutral game-list results
+
+Player names, scores and outcome captions in the Games list no longer receive result-based highlighting. Match-board and banner score highlights remain. Assets use v71; database schema remains v32.
+
 ## v70 match scores only
 
 Match-board player names use the same neutral styling regardless of result. Only winning/drawing board scores retain their highlights; the winning total in the banner stays highlighted. Assets use v70; database schema remains v32.

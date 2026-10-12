@@ -27,7 +27,7 @@ instructions, not evidence that this workspace has changed the live website.
    sudo docker compose down
    sudo rsync -a --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
      --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
-     ~/chess-fantasy-league-v70/ /opt/clubdraft/
+     ~/chess-fantasy-league-v71/ /opt/clubdraft/
    sudo mkdir -p data backups
    sudo chown -R 10001:10001 data backups
    sudo chmod 700 data backups
@@ -50,7 +50,7 @@ instructions, not evidence that this workspace has changed the live website.
 
 ## V35 release extraction and configuration
 
-The standalone release ZIP has `chess-fantasy-league-v70/` at its root. GitHub's
+The standalone release ZIP has `chess-fantasy-league-v71/` at its root. GitHub's
 Download ZIP instead contains `liga-main/website/` (or `liga-COMMIT/website/`
 for a commit archive). Copy the directory containing
 `main.py`, `compose.yaml`, and `league_migrations.py`; copying `liga-main/` directly
@@ -61,10 +61,10 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 ```bash
 (
   set -e
-  ZIP="$HOME/chess-fantasy-league-v70.zip"
-  RELEASE_DIR="$(mktemp -d "$HOME/liga-v70-release.XXXXXX")"
+  ZIP="$HOME/chess-fantasy-league-v71.zip"
+  RELEASE_DIR="$(mktemp -d "$HOME/liga-v71-release.XXXXXX")"
   unzip -q "$ZIP" -d "$RELEASE_DIR"
-  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v70"
+  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v71"
   if [ ! -f "$SOURCE_DIR/main.py" ]; then
     for CANDIDATE in "$RELEASE_DIR"/liga-*/website; do
       if [ -f "$CANDIDATE/main.py" ]; then

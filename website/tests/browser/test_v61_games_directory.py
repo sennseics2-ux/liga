@@ -37,6 +37,10 @@ def test_game_directory(chromium,client,width,theme):
     try:
         page.goto('http://liga.test/games')
         expect(page.locator('.game-list-card')).to_have_count(25)
+        for selector in ['.game-player-identity strong','.game-result-score>span:not(.game-score-divider)']:
+            styles=page.locator(selector).evaluate_all('(els)=>els.map(el=>({color:getComputedStyle(el).color,bg:getComputedStyle(el).backgroundColor}))')
+            assert len({style['color'] for style in styles})==1
+            assert all(style['bg']=='rgba(0, 0, 0, 0)' for style in styles)
         for prop in ['color','backgroundColor','borderTopColor']:
             colour=page.locator('#account-toggle').evaluate('(el,prop)=>getComputedStyle(el)[prop]',prop)
             rgb=[int(part) for part in colour.removeprefix('rgb(').removesuffix(')').split(',')]
