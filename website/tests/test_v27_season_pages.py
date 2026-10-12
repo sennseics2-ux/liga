@@ -93,6 +93,17 @@ def test_match_scores_follow_teams_across_alternating_colours_and_draws(client):
     scores=[re.search(r'<strong class="match-board-score" data-no-i18n>(.*?)</strong>',row,re.S).group(1) for row in rows]
     assert [re.sub(r'<[^>]+>','',score).strip() for score in scores]==['1 : 0','1 : 0','½ : ½','0 : 1']
     assert all(row.count('class="match-lineup-player"')==2 for row in rows)
+    for row,winning_side in zip(rows,['home','home',None,'away']):
+        values=re.findall(r'<span class="match-board-score-value([^"]*)">(.*?)</span>',row)
+        if winning_side is None:
+            assert values==[(' match-outcome-draw','½'),(' match-outcome-draw','½')]
+            assert len(re.findall(r'class="match-board-player match-outcome-draw',row))==2
+        else:
+            assert sum('match-outcome-win' in css for css,score in values)==1
+            assert all(score=='1' for css,score in values if 'match-outcome-win' in css)
+            winning_class='match-board-player match-outcome-win'+(' match-board-away' if winning_side=='away' else '')
+            assert f'class="{winning_class}"' in row
+
     assert f'/seasons?season={season}' in page.text
     assert 'Completed' in page.text
     post(client,'/login',username='manager_home',password=PASSWORD)

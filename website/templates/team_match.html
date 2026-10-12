@@ -38,7 +38,8 @@
           <h3 class="match-board-number"><span data-i18n="Board">Board</span> <span data-no-i18n>{{ board }}</span>{% if game %}<svg class="board-open-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>{% endif %}</h3>
           {% for team_id in [match.home_team_id,match.away_team_id] %}
           {% set player=lineups|selectattr('team_id','equalto',team_id)|selectattr('board','equalto',board)|first %}
-          <div class="match-board-player{% if team_id==match.away_team_id %} match-board-away{% endif %}">
+          {% set player_outcome = 'match-outcome-draw' if game and game.result=='1/2-1/2' else ('match-outcome-win' if game and ((game.result=='1-0' and game.white_team_id==team_id) or (game.result=='0-1' and game.white_team_id!=team_id)) else '') %}
+          <div class="match-board-player{% if player_outcome %} {{ player_outcome }}{% endif %}{% if team_id==match.away_team_id %} match-board-away{% endif %}">
             {% if player %}
             {% if game %}<span class="piece-dot {{ 'piece-white' if game.white_team_id==team_id else 'piece-black' }}" role="img" aria-label="{{ 'White' if game.white_team_id==team_id else 'Black' }}" data-i18n-aria-label="{{ 'White' if game.white_team_id==team_id else 'Black' }}"></span>{% endif %}
             <div>{% if game %}<strong class="match-lineup-player" data-no-i18n>{{ player.name }}</strong>{% else %}<a href="/players/{{ player.player_id }}" class="match-lineup-player" data-no-i18n>{{ player.name }}</a>{% endif %}<small><span data-i18n="FIDE Rating">FIDE Rating</span> <span data-no-i18n>{{ player.rating if player.rating else '—' }}</span></small></div>
@@ -50,7 +51,9 @@
             {% if game %}
             {% set white_score='1' if game.result=='1-0' else ('0' if game.result=='0-1' else ('½' if game.result=='1/2-1/2' else '—')) %}
             {% set black_score='1' if game.result=='0-1' else ('0' if game.result=='1-0' else ('½' if game.result=='1/2-1/2' else '—')) %}
-            <strong class="match-board-score" data-no-i18n>{{ white_score if game.white_team_id==match.home_team_id else black_score }} <span>:</span> {{ black_score if game.white_team_id==match.home_team_id else white_score }}</strong>
+            {% set home_score=white_score if game.white_team_id==match.home_team_id else black_score %}
+            {% set away_score=black_score if game.white_team_id==match.home_team_id else white_score %}
+            <strong class="match-board-score" data-no-i18n><span class="match-board-score-value{% if home_score=='1' %} match-outcome-win{% elif home_score=='½' %} match-outcome-draw{% endif %}">{{ home_score }}</span> <span>:</span> <span class="match-board-score-value{% if away_score=='1' %} match-outcome-win{% elif away_score=='½' %} match-outcome-draw{% endif %}">{{ away_score }}</span></strong>
             <span class="match-board-status" data-i18n="{{ 'Completed' if game.result!='*' else 'Awaiting results' }}">{{ 'Completed' if game.result!='*' else 'Awaiting results' }}</span>
             {% else %}<strong class="match-board-score" data-no-i18n>— : —</strong>{% endif %}
           </div>

@@ -68,6 +68,12 @@ def test_game_directory(chromium,client,width,theme):
         screenshots=Path('/workspace/review-runtime/v61-screenshots');screenshots.mkdir(parents=True,exist_ok=True)
         page.evaluate('window.scrollTo(0,0)');page.screenshot(path=str(screenshots/f'games-{width}-{theme}.png'))
         card.locator('.game-round-link').click();page.wait_for_url(f'**/matches/{match}')
+        expect(page.locator('.match-board-score-value.match-outcome-win')).to_have_count(2)
+        expect(page.locator('.match-board-player.match-outcome-win')).to_have_count(2)
+        expect(page.locator('.match-board-score-value.match-outcome-draw')).to_have_count(2)
+        expect(page.locator('.match-board-player.match-outcome-draw')).to_have_count(2)
+        assert_fits_phone(page)
+        bad=page.evaluate(CONTRAST);assert not bad,bad
         page.goto('http://liga.test/games');card=page.locator(f'.game-list-card[data-game-id="{games[0]}"]')
         card.locator('.game-card-link').click(position={'x':8,'y':8});page.wait_for_url(f'**/games/{games[0]}')
         page.goto('http://liga.test/games?status=finished&sort=soonest')

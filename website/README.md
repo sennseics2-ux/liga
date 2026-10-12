@@ -1,3 +1,7 @@
+## v65 match board result highlights
+
+Winning board scores and their players have green highlights. Drawn scores and both players have a lighter green tint. Highlights follow home/away results even on boards with reversed piece colours; unplayed boards stay neutral. Light and dark modes are supported. Assets use v65; database schema remains v32.
+
 ## v64 full English game dates and review timestamps
 
 English list dates include the day (6 September 2026). Review headers display dd-mm-yyyy and local time followed by Lisbon/Lisboa, including localized accessibility labels and hover text. UTC storage and Lisbon daylight-saving conversion are preserved. Assets use v64; database schema remains v32.

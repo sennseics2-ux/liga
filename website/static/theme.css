@@ -214,3 +214,12 @@ body .account-dropdown{position:static}body .account-menu{right:15px;top:calc(10
 .game-list-card .game-players{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:16px}.game-player-side{display:flex;align-items:center;gap:10px;min-width:0}.game-player-identity{display:grid;gap:4px;min-width:0}.game-player-identity strong{font-size:14px;line-height:1.35;overflow-wrap:anywhere}.game-player-identity small{font-size:12px;line-height:1.35;font-weight:500;color:var(--muted);overflow-wrap:anywhere}
 .replay-round-link{color:var(--ink);text-decoration:underline;text-underline-offset:3px}.replay-round-link:hover{color:var(--pine)}
 @media(max-width:600px){.game-list-card{grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:14px}.game-list-card .game-players{grid-column:1/-1;grid-row:2;gap:8px}.game-player-side{gap:6px}.game-player-identity strong{font-size:13px}.game-player-identity small{font-size:11px}.game-list-card .game-status{justify-self:end}}
+
+/* V65: board outcomes follow home/away players, irrespective of piece colour. */
+.match-boards{--board-win-text:#155b34;--board-win-bg:#d9efdf;--board-draw-text:#315b43;--board-draw-bg:#eff5f0}
+:root[data-theme="dark"] .match-boards{--board-win-text:#acf0c2;--board-win-bg:#1b422b;--board-draw-text:#c3ddcb;--board-draw-bg:#33483b}
+.match-board-score>.match-board-score-value{display:inline-block;color:var(--match-text);font:inherit;line-height:1.2;padding:2px 5px;border-radius:5px}
+.match-board-player.match-outcome-win .match-lineup-player,.match-board-score>.match-outcome-win{color:var(--board-win-text);background:var(--board-win-bg)}
+.match-board-player.match-outcome-draw .match-lineup-player,.match-board-score>.match-outcome-draw{color:var(--board-draw-text);background:var(--board-draw-bg)}
+.match-board-player:is(.match-outcome-win,.match-outcome-draw) .match-lineup-player{border-radius:5px;padding:2px 4px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+@media(max-width:640px){.match-board-score>.match-board-score-value{padding:2px 3px}}
