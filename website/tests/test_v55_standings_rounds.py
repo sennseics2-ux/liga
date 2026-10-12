@@ -65,7 +65,7 @@ def test_board_points_include_partial_matches_and_half_point_draws(client):
     assert rows[teams[0]]['played']==rows[teams[3]]['played']==0
     assert rows[teams[0]]['points']==rows[teams[3]]['points']==0
     page=client.get(f'/standings?season={season}&round=1').text
-    headers=re.findall(r'<th[^>]*>(.*?)</th>',page)
+    headers=re.findall(r'<th\b[^>]*>(.*?)</th>',page)
     assert headers==['RANK','TEAM','GAMES','WINS','DRAWS','LOSSES','POINTS','BOARD POINTS']
     assert 'data-label="CAPTAIN"' not in page
     assert 'data-label="GAMES"' in page
