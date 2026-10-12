@@ -201,3 +201,8 @@ body .account-dropdown{position:static}body .account-menu{right:15px;top:calc(10
 .standings-toolbar .standings-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;min-width:min(440px,100%)}.standings-filter-field{display:grid;gap:8px;min-width:0}.standings-filter-field label{margin:0}.standings-filter-field select{width:100%;min-width:0}.standings-filters noscript{grid-column:1/-1}.standings-round-note{font-size:13px;color:var(--muted);margin:0 0 16px}
 @media(max-width:640px){.standings-toolbar .standings-filters{min-width:0}}
 @media(max-width:440px){.standings-toolbar .standings-filters{grid-template-columns:minmax(0,1fr)}}
+
+/* V56: a mouse/keyboard resize grip, separate from playable board squares. */
+.replay-board-shell{position:relative}.board-resize-handle{display:none;position:absolute;right:0;bottom:0;width:28px;height:28px;padding:4px;border:0;border-radius:5px;background:#232323;color:#e8f0ec;cursor:nwse-resize;touch-action:none;z-index:3}.board-resize-handle:hover,.board-resize-handle:focus-visible{background:#315b43;color:#fff}.board-resize-active,.board-resize-active *{cursor:nwse-resize!important;user-select:none!important}
+@media(min-width:901px) and (hover:hover) and (pointer:fine){.board-resize-handle{display:grid;place-items:center}.game-page .replay-layout.replay-resized{grid-template-columns:var(--replay-board-size) minmax(280px,360px)}.game-page .replay-resized .replay-board-panel{max-width:none}}
+@media(min-width:901px) and (hover:hover) and (pointer:fine){.game-page .replay-layout.replay-resized{justify-content:start;padding-left:var(--replay-board-offset,0px)}}

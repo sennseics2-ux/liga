@@ -1536,3 +1536,5 @@ Mouse: right-click to circle a square; right-drag to draw an arrow. Repeat to re
 Left-click anywhere on the board to clear this move's marks.	Clica com o botão esquerdo em qualquer ponto do tabuleiro para apagar as marcas deste lance.
 Round {number}	Ronda {number}
 Includes results from rounds 1–{round}.	Inclui os resultados das rondas 1–{round}.
+Resize board	Redimensionar o tabuleiro
+Drag to resize the board	Arrasta para redimensionar o tabuleiro

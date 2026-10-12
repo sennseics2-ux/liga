@@ -1,3 +1,7 @@
+## v56 desktop board resize
+
+Drag the bottom-right board handle to resize the desktop replay board. It stays square, annotations remain aligned, and the notation panel stays beside it. Size is saved in this browser and clamped to available width; mobile retains its responsive layout. The handle also supports arrow keys and Home/End. Assets use v56; database schema remains v32.
+
 ## v55 cumulative standings by round
 
 Standings default to All rounds. Selecting round N includes completed team matches from rounds 1 through N, including cumulative board points and tie-break results. Teams scheduled for later rounds remain visible with zero points before playing. Season changes reset the round filter; native form submission works without JavaScript. Assets use v55; database schema remains v32.
