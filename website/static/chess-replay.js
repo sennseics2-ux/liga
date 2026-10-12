@@ -28,6 +28,127 @@
   let timer = null;
   let flipped = false;
   const moveButtons = [];
+  const annotations = new Map();
+  let annotationGesture = null;
+  const svgNS = 'http://www.w3.org/2000/svg';
+  const annotationLayer = document.createElementNS(svgNS, 'svg');
+  annotationLayer.classList.add('replay-annotations');
+  annotationLayer.setAttribute('viewBox', '0 0 8 8');
+  annotationLayer.setAttribute('aria-hidden', 'true');
+
+  function svgElement(tag, attributes) {
+    const element = document.createElementNS(svgNS, tag);
+    for (const [name, value] of Object.entries(attributes)) element.setAttribute(name, String(value));
+    return element;
+  }
+  function squareCenter(square) {
+    const x = square.charCodeAt(0) - 97 + .5;
+    const y = 8 - Number(square[1]) + .5;
+    return flipped ? {x:8-x, y:8-y} : {x,y};
+  }
+  function drawCircle(square, preview = false) {
+    const {x,y} = squareCenter(square);
+    annotationLayer.appendChild(svgElement('circle', {
+      cx:x, cy:y, r:.41, class:'replay-annotation-circle', 'data-circle':square,
+      'data-preview':String(preview)
+    }));
+  }
+  function drawArrow(from, to, preview = false) {
+    const a = squareCenter(from), b = squareCenter(to);
+    const dx = b.x-a.x, dy = b.y-a.y;
+    const straight = dx === 0 || dy === 0 || Math.abs(dx) === Math.abs(dy);
+    let path = `M ${a.x} ${a.y} L ${b.x} ${b.y}`;
+    if (!straight) {
+      const length = Math.hypot(dx,dy);
+      const mx = (a.x+b.x)/2, my = (a.y+b.y)/2;
+      const nx = -dy/length*.7, ny = dx/length*.7;
+      // Bend towards the centre so arrows near the edges stay on the board.
+      const sign = (mx+nx-4)**2+(my+ny-4)**2 <= (mx-nx-4)**2+(my-ny-4)**2 ? 1 : -1;
+      path = `M ${a.x} ${a.y} Q ${mx+sign*nx} ${my+sign*ny} ${b.x} ${b.y}`;
+    }
+    annotationLayer.appendChild(svgElement('path', {
+      d:path, class:'replay-annotation-arrow', 'marker-end':'url(#replay-annotation-arrowhead)',
+      'data-from':from, 'data-to':to, 'data-shape':straight ? 'straight' : 'curved',
+      'data-preview':String(preview)
+    }));
+  }
+  function renderAnnotations() {
+    annotationLayer.replaceChildren();
+    const defs = svgElement('defs', {});
+    const marker = svgElement('marker', {
+      id:'replay-annotation-arrowhead', viewBox:'-.4 -.2 .4 .4', refX:0, refY:0,
+      markerWidth:.4, markerHeight:.4, markerUnits:'userSpaceOnUse', orient:'auto'
+    });
+    marker.appendChild(svgElement('path', {d:'M -.4 -.2 L 0 0 L -.4 .2 Z', fill:'currentColor'}));
+    defs.appendChild(marker);
+    annotationLayer.appendChild(defs);
+    const marks = annotations.get(index);
+    if (marks) {
+      for (const square of marks.circles) drawCircle(square);
+      for (const key of marks.arrows) drawArrow(...key.split(':'));
+    }
+    if (annotationGesture && annotationGesture.to) {
+      const {from,to} = annotationGesture;
+      if (from === to) drawCircle(from, true);
+      else drawArrow(from, to, true);
+    }
+  }
+  function cancelAnnotationGesture() {
+    if (!annotationGesture) return;
+    const pointerId = annotationGesture.pointerId;
+    annotationGesture = null;
+    if (board.hasPointerCapture(pointerId)) board.releasePointerCapture(pointerId);
+    renderAnnotations();
+  }
+  function mouseAnnotationsEnabled() {
+    return window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  }
+  function squareAt(event) {
+    const bounds = board.getBoundingClientRect();
+    if (event.clientX < bounds.left || event.clientX >= bounds.right ||
+        event.clientY < bounds.top || event.clientY >= bounds.bottom) return null;
+    let file = Math.floor((event.clientX-bounds.left)/bounds.width*8);
+    let rank = Math.floor((event.clientY-bounds.top)/bounds.height*8);
+    if (flipped) { file = 7-file; rank = 7-rank; }
+    return `${String.fromCharCode(97+file)}${8-rank}`;
+  }
+  board.addEventListener('contextmenu', event => {
+    if (mouseAnnotationsEnabled()) event.preventDefault();
+  });
+  board.addEventListener('pointerdown', event => {
+    if (event.button !== 2 || event.pointerType !== 'mouse' || !mouseAnnotationsEnabled()) return;
+    const from = squareAt(event);
+    if (!from) return;
+    event.preventDefault();
+    stop();
+    cancelAnnotationGesture();
+    annotationGesture = {pointerId:event.pointerId, from, to:from, move:index};
+    board.setPointerCapture(event.pointerId);
+    renderAnnotations();
+  });
+  board.addEventListener('pointermove', event => {
+    if (!annotationGesture || annotationGesture.pointerId !== event.pointerId) return;
+    const to = squareAt(event);
+    if (to !== annotationGesture.to) { annotationGesture.to = to; renderAnnotations(); }
+  });
+  board.addEventListener('pointerup', event => {
+    if (!annotationGesture || annotationGesture.pointerId !== event.pointerId) return;
+    const {from,move} = annotationGesture;
+    const to = squareAt(event);
+    cancelAnnotationGesture();
+    if (!to || move !== index) return;
+    const marks = annotations.get(index) || {circles:new Set(), arrows:new Set()};
+    const collection = from === to ? marks.circles : marks.arrows;
+    const key = from === to ? from : `${from}:${to}`;
+    if (collection.has(key)) collection.delete(key);
+    else collection.add(key);
+    if (marks.circles.size || marks.arrows.size) annotations.set(index, marks);
+    else annotations.delete(index);
+    renderAnnotations();
+  });
+  board.addEventListener('pointercancel', cancelAnnotationGesture);
+  board.addEventListener('lostpointercapture', cancelAnnotationGesture);
+  window.addEventListener('blur', cancelAnnotationGesture);
 
   pieceStyleSelect.addEventListener('change', () => {
     if (!availableStyles.has(pieceStyleSelect.value)) return;
@@ -86,6 +207,7 @@
     else if (bounds.bottom > viewport.bottom) list.scrollTop += bounds.bottom - viewport.bottom;
   }
   function render(nextIndex, scrollToMove = true) {
+    cancelAnnotationGesture();
     index = Math.max(0, Math.min(game.moves.length, nextIndex));
     const fen = game.positions[index];
     const squares = positionToBoard(fen);
@@ -129,6 +251,8 @@
       fragment.appendChild(row);
     }
     board.replaceChildren(fragment);
+    board.appendChild(annotationLayer);
+    renderAnnotations();
     for (const [moveIndex, button] of moveButtons.entries()) {
       const selected = moveIndex === index - 1;
       button.classList.toggle('selected', selected);
@@ -214,6 +338,9 @@
     if (timer !== null) { stop(); start(); }
   });
   document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && annotationGesture) {
+      cancelAnnotationGesture(); event.preventDefault(); return;
+    }
     if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ||
         event.target.isContentEditable || event.target.closest('input, select, textarea, [role="textbox"], [role="dialog"], [role="menu"]') ||
         document.querySelector('#account-toggle[aria-expanded="true"], #language-toggle[aria-expanded="true"], .nav-links.open, dialog[open], [aria-modal="true"]')) return;
@@ -247,8 +374,12 @@
     render(index, false);
   }
   document.addEventListener('liga:languagechange', localizeReplay);
-  window.addEventListener('pagehide', stop);
-  document.addEventListener('visibilitychange', () => { if (document.hidden) stop(); });
+  window.addEventListener('pagehide', () => {
+    stop(); cancelAnnotationGesture(); annotations.clear(); renderAnnotations();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { stop(); cancelAnnotationGesture(); }
+  });
   updateCoordinates();
   localizeReplay();
 })();
