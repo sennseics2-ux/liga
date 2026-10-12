@@ -13,7 +13,7 @@ def season_table(db, season_id, include_all=False, through_round=None):
         JOIN season_rounds r ON r.id=m.round_id JOIN seasons s ON s.id=r.season_id
         WHERE r.season_id=? AND s.status='published' ''',(season_id,))] if season_id else []
     participants=set(teams) if include_all else {m[side+'_team_id'] for m in fixtures for side in ('home','away')}
-    stats={team:{**teams[team],'played':0,'wins':0,'draws':0,'losses':0,'points':0,'half_points':0} for team in participants}
+    stats={team:{**teams[team],'played':0,'wins':0,'draws':0,'losses':0,'points':0,'half_points':0,'board_half_points':0} for team in participants}
     boards=defaultdict(list)
     if season_id:
         for row in db.execute('''SELECT mg.*,g.result,g.white_team_id,g.black_team_id,g.attribution_confirmed
@@ -26,6 +26,10 @@ def season_table(db, season_id, include_all=False, through_round=None):
         if through_round is not None and match['round_number']>through_round:continue
         if _datetime(match['scheduled_at'])>now:continue
         home,away=match['home_team_id'],match['away_team_id'];games=boards[match['id']]
+        for game in games:
+            if game['board'] not in (1,2,3,4) or game['result'] not in ('1-0','0-1','1/2-1/2') or not game['attribution_confirmed'] or {game['white_team_id'],game['black_team_id']}!={home,away}:continue
+            for side in ('white','black'):
+                stats[game[side+'_team_id']]['board_half_points']+=1 if game['result']=='1/2-1/2' else (2 if game['result']==('1-0' if side=='white' else '0-1') else 0)
         if len(games)!=4 or {g['board'] for g in games}!={1,2,3,4}:continue
         if any(g['result'] not in ('1-0','0-1','1/2-1/2') or not g['attribution_confirmed'] or
                {g['white_team_id'],g['black_team_id']}!={home,away} for g in games):continue
@@ -38,12 +42,12 @@ def season_table(db, season_id, include_all=False, through_round=None):
             row=stats[team];row['played']+=1;row['half_points']+=points[team]
             result='wins' if points[team]>points[opponent] else ('draws' if points[team]==points[opponent] else 'losses')
             row[result]+=1;row['points']+=3 if result=='wins' else (1 if result=='draws' else 0)
-    keys=_standing_keys({team:r['points'] for team,r in stats.items()},{team:r['half_points'] for team,r in stats.items()},records)
+    keys=_standing_keys({team:r['points'] for team,r in stats.items()},{team:r['board_half_points'] for team,r in stats.items()},records)
     ordered=sorted(stats.values(),key=lambda r:r['name'].casefold())
     ordered.sort(key=lambda r:keys[r['id']],reverse=True)
     for row in ordered:
         row['rank']=1+sum(key>keys[row['id']] for key in keys.values())
-        row['board_points']=chess_score(row['half_points'])
+        row['board_points']=chess_score(row['board_half_points'])
     return ordered
 
 

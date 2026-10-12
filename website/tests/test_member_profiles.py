@@ -54,7 +54,7 @@ def test_public_profiles_without_private_actions_or_invitations(client):
     assert 'Quit player role' not in player_page
     assert 'Request player activation' not in player_page
     assert 'href="/users/managerjoe"' in client.get('/players').text
-    assert 'href="/users/managerjoe/manager"' in client.get('/standings').text
+    assert 'data-label="CAPTAIN"' not in client.get('/standings').text
     logout(client)
     assert client.get(f'/users/{mid}/manager').status_code == 200
     anon = client.get(f'/users/{mid}/manager').text

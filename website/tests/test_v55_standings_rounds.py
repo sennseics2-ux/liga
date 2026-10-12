@@ -51,3 +51,26 @@ def test_later_round_participants_and_invalid_filters(client):
     for invalid in ('0','5','abc','-1','01','١','9'*5000):
         assert client.get(f'/standings?season={season}&round={invalid}').status_code==400
     assert client.get('/standings?season=999999&round=1').status_code==404
+
+
+def test_board_points_include_partial_matches_and_half_point_draws(client):
+    season,teams,matches,_=seed_podium()
+    with store.transaction() as db:
+        games=[r[0] for r in db.execute('SELECT game_id FROM match_games WHERE match_id=? ORDER BY board',(matches[0],))]
+        for game,result in zip(games,['1-0','1/2-1/2','0-1','*']):
+            db.execute('UPDATE games SET result=? WHERE id=?',(result,game))
+    with store.read_db() as db:
+        rows={r['id']:r for r in season_table(db,season,through_round=1)}
+    assert (rows[teams[0]]['board_points'],rows[teams[3]]['board_points'])==('1.5','1.5')
+    assert rows[teams[0]]['played']==rows[teams[3]]['played']==0
+    assert rows[teams[0]]['points']==rows[teams[3]]['points']==0
+    page=client.get(f'/standings?season={season}&round=1').text
+    headers=re.findall(r'<th[^>]*>(.*?)</th>',page)
+    assert headers==['RANK','TEAM','GAMES','WINS','DRAWS','LOSSES','POINTS','BOARD POINTS']
+    assert 'data-label="CAPTAIN"' not in page
+    assert 'data-label="GAMES"' in page
+    assert page.index('data-label="POINTS"')<page.index('data-label="BOARD POINTS"')
+    # Later rounds contribute only when they fall within the selected cutoff.
+    with store.read_db() as db:
+        through_two={r['id']:r for r in season_table(db,season,through_round=2)}
+    assert through_two[teams[0]]['board_points']=='5.5'

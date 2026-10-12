@@ -1537,5 +1537,7 @@
   "Round {number}": "Ronda {number}",
   "Includes results from rounds 1–{round}.": "Inclui os resultados das rondas 1–{round}.",
   "Resize board": "Redimensionar o tabuleiro",
-  "Drag to resize the board": "Arrasta para redimensionar o tabuleiro"
+  "Drag to resize the board": "Arrasta para redimensionar o tabuleiro",
+  "GAMES": "PARTIDAS",
+  "League points count completed team matches. Board points count every completed board: win 1, draw ½, loss 0. Ties use head-to-head match wins, head-to-head board points, then total board points. Exact ties share a rank.": "Os pontos da liga contam encontros concluídos. Os pontos de tabuleiro contam todas as partidas concluídas: vitória 1, empate ½, derrota 0. Os desempates usam as vitórias nos confrontos diretos, os pontos de tabuleiro nesses confrontos e depois o total de pontos de tabuleiro. Empates exatos partilham a posição."
 }

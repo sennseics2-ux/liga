@@ -31,7 +31,7 @@ def test_names_used_in_links_with_existing_player_and_team(client):
         uid = db.execute("SELECT id FROM users WHERE username='name_for_urls'").fetchone()[0]
     team = store.create_team('International Rooks')
     store.assign_manager(team, uid)
-    assert 'href="/users/name_for_urls/manager"' in client.get('/standings').text
+    assert f'href="/teams/{team}"' in client.get('/standings').text
     assert 'href="/users/name_for_urls"' in client.get('/teams/'+str(team)).text
     assert 'href="/account/profile"' in client.get('/').text
     assert client.get('/account/profile', follow_redirects=False).headers['location'] == '/users/name_for_urls'
