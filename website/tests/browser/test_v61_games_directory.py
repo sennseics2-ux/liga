@@ -48,6 +48,12 @@ def test_game_directory(chromium,client,width,theme):
         assert_fits_phone(page)
         if width<=700:panel.locator('summary').click()
         card=page.locator(f'.game-list-card[data-game-id="{games[0]}"]');card.scroll_into_view_if_needed()
+        expect(card.locator('.game-player-white .game-team-venue')).to_have_text('(home)')
+        expect(card.locator('.game-player-black .game-team-venue')).to_have_text('(away)')
+        reversed_card=page.locator(f'.game-list-card[data-game-id="{games[1]}"]')
+        expect(reversed_card.locator('.game-player-white .game-team-venue')).to_have_text('(away)')
+        expect(reversed_card.locator('.game-player-black .game-team-venue')).to_have_text('(home)')
+        assert page.locator('.game-team-venue').count()==8
         for selector in ['.game-player-identity strong','.game-player-identity small','.game-result-caption','.game-date time','.game-round-link']:
             box=card.locator(selector).first.bounding_box()
             href=page.evaluate('([x,y])=>document.elementFromPoint(x,y).closest("a")?.getAttribute("href")',[box['x']+box['width']/2,box['y']+box['height']/2])
@@ -72,8 +78,13 @@ def test_game_directory(chromium,client,width,theme):
         page.locator('.directory-filters button[type=submit]').click();page.wait_for_url('**/games?**')
         assert f'white_player={rosters[0][0]}' in page.url
         assert page.locator('.game-player-white .game-player-identity strong').all_text_contents()==['Alexandra Long Player Name With Many Words']*25
+        page.goto('http://liga.test/games')
         page.locator('#language-toggle').click();page.locator('button[data-language="pt-PT"]').click()
         if width<=700:expect(page.locator('.games-filter-panel summary')).to_contain_text('Filtros')
-        expect(page.locator('.game-result-caption').first).to_have_text('Vitória das brancas')
+        expect(page.locator('.game-list-card[data-result="1-0"] .game-result-caption').first).to_have_text('Brancas vencem')
+        expect(page.locator('.game-list-card[data-result="0-1"] .game-result-caption')).to_have_text('Pretas vencem')
+        card=page.locator(f'.game-list-card[data-game-id="{games[0]}"]')
+        expect(card.locator('.game-player-white .game-team-venue')).to_have_text('(casa)')
+        expect(card.locator('.game-player-black .game-team-venue')).to_have_text('(fora)')
         assert not errors,errors
     finally:context.close()

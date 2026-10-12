@@ -1084,7 +1084,8 @@ def game_rows(db, *, where='1=1', values=(), limit=200, offset=0, order='newest'
         wp.name AS white_name, bp.name AS black_name,
         wp.user_id AS white_user_id, bp.user_id AS black_user_id,
         wu.username AS white_username, bu.username AS black_username,
-        wt.name AS white_team_name, bt.name AS black_team_name, mg.match_id, gs.name AS season_name, gr.number AS season_round_number
+        wt.name AS white_team_name, bt.name AS black_team_name, mg.match_id, gs.name AS season_name, gr.number AS season_round_number,
+        gm.home_team_id AS match_home_team_id, gm.away_team_id AS match_away_team_id
         FROM games g JOIN players wp ON wp.id=g.white_player_id
         JOIN players bp ON bp.id=g.black_player_id
         LEFT JOIN users wu ON wu.id=wp.user_id

@@ -1,3 +1,7 @@
+## v62 game team venues and Portuguese outcomes
+
+Game cards label teams (home)/(away) using the linked team match, including boards with reversed colours. Portuguese uses (casa)/(fora) and Brancas vencem/Pretas vencem. Standalone games show no invented venue designation. Assets use v62; database schema remains v32.
+
 ## v61 approved game directory design
 
 The header and page banner retain their existing design. Below them, compact counters and filters precede game cards with date/round, White, centered score and Black columns. Winning names and scores are green with explicit outcome labels. Mobile stacks the players and collapses filters. Cards open games; season/round links open matches. Numbered pagination preserves filters and sorting. Light/dark themes and Portuguese translations are supported. Assets use v61; database schema remains v32.
