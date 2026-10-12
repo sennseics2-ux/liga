@@ -146,7 +146,7 @@ def test_lisbon_display_handles_both_dst_transitions_and_keeps_utc_storage(clien
         detail = client.get(f'/games/{game_id}')
         assert detail.status_code == 200
         assert day.strftime('%d-%m-%Y')+display[10:18] in detail.text
-        assert 'data-i18n="Lisbon"' in detail.text
+        assert 'data-i18n="Lisbon"' not in detail.text
         assert 'Europe/Lisbon' not in detail.text
     with store.read_db() as db:
         assert [row[0] for row in db.execute('SELECT scheduled_at FROM games ORDER BY id')] == [date for date, _ in dates]

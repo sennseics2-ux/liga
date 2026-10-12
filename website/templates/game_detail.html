@@ -3,7 +3,7 @@
 {% block content %}
 <section class="container game-workspace">
   <h1 class="sr-only"><span data-no-i18n>{{ game.white_name }}</span> <span data-i18n="vs">vs</span> <span data-no-i18n>{{ game.black_name }}</span></h1>
-  <header class="replay-page-header"><a class="text-link" href="/games" data-i18n="← All games">← All games</a><div><strong data-no-i18n>{{ game.event_name or 'Club game' }}</strong><span><time class="replay-game-time" datetime="{{ game.scheduled_at }}" title="{{ game.scheduled_at|replay_time }} · Lisbon" aria-label="{{ game.scheduled_at|replay_time }} · Lisbon" data-i18n-title="{date} · Lisbon" data-i18n-aria-label="{date} · Lisbon" data-i18n-vars="{{ {'date': game.scheduled_at|replay_time}|tojson|forceescape }}"><span data-no-i18n>{{ game.scheduled_at|replay_time }}</span> · <span data-i18n="Lisbon">Lisbon</span></time>{% if game.round_label %} · {% if game.match_id %}<a class="replay-round-link" data-no-i18n href="/matches/{{ game.match_id }}">{{ game.round_label }}</a>{% else %}<span data-no-i18n>{{ game.round_label }}</span>{% endif %}{% endif %}</span></div></header>
+  <header class="replay-page-header"><a class="text-link" href="/games" data-i18n="← All games">← All games</a><div><strong data-no-i18n>{{ game.event_name or 'Club game' }}</strong><span><time class="replay-game-time" datetime="{{ game.scheduled_at }}" title="{{ game.scheduled_at|replay_time }}" aria-label="{{ game.scheduled_at|replay_time }}" data-no-i18n>{{ game.scheduled_at|replay_time }}</time>{% if game.round_label %} · {% if game.match_id %}<a class="replay-round-link" data-no-i18n href="/matches/{{ game.match_id }}">{{ game.round_label }}</a>{% else %}<span data-no-i18n>{{ game.round_label }}</span>{% endif %}{% endif %}</span></div></header>
   {% if replay %}
     <div class="replay-layout" data-chess-replay tabindex="0" role="region" aria-label="Chess replay">
       <div class="replay-board-panel">  <div class="game-matchup">
@@ -18,8 +18,8 @@
       </div>
     </div>
     <script type="application/json" id="replay-data">{{ replay|tojson }}</script>
-    <script defer src="/static/chess-replay.js?v=65"></script>
-    <script defer src="/static/board-resize.js?v=65"></script>
+    <script defer src="/static/chess-replay.js?v=66"></script>
+    <script defer src="/static/board-resize.js?v=66"></script>
   {% elif pgn_available %}
   <div class="game-matchup">
     <div class="game-side"><div class="game-piece-token white" aria-hidden="true">♔</div><span>WHITE</span><strong data-no-i18n>{% if game.white_user_id %}<a href="/users/{{ game.white_username|urlencode }}">{{ game.white_name }}</a>{% else %}{{ game.white_name }}{% endif %}</strong>{% if game.white_team_name %}<small><span>Team at match:</span> <span data-no-i18n>{{ game.white_team_name }}</span></small>{% endif %}</div>

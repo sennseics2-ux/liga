@@ -37,6 +37,9 @@ def test_game_directory(chromium,client,width,theme):
     try:
         page.goto('http://liga.test/games')
         expect(page.locator('.game-list-card')).to_have_count(25)
+        expect(page.locator('.games-directory-heading h2')).to_have_text('Match history')
+        expect(page.locator('.games-counts>span')).to_have_count(1)
+        assert page.locator('.games-counts [data-i18n="upcoming"]').count()==0
         assert page.locator('select[name=status]').count()==0
         expect(page.locator('[data-game-date]').first).to_have_text('1 June 2026')
         expect(page.locator('.game-result-caption')).to_have_text(['Not played','Draw','Black wins','White wins']+['White wins']*21)
@@ -89,6 +92,7 @@ def test_game_directory(chromium,client,width,theme):
         page.goto('http://liga.test/games')
         page.locator('#language-toggle').click();page.locator('button[data-language="pt-PT"]').click()
         if width<=700:expect(page.locator('.games-filter-panel summary')).to_contain_text('Filtros')
+        expect(page.locator('.games-directory-heading h2')).to_have_text('Histórico de partidas')
         expect(page.locator('[data-game-date]').first).to_have_text('1 de junho de 2026')
         expect(page.locator('.game-list-card[data-result="1-0"] .game-result-caption').first).to_have_text('Brancas vencem')
         expect(page.locator('.game-list-card[data-result="0-1"] .game-result-caption')).to_have_text('Pretas vencem')
@@ -105,10 +109,10 @@ def test_game_directory(chromium,client,width,theme):
         expect(page.locator('[data-game-date]')).to_have_text('6 de setembro de 2026')
         review=page.locator('.game-card-link').get_attribute('href')
         page.goto('http://liga.test'+review)
-        expect(page.locator('.replay-game-time')).to_have_text('06-09-2026 · 00:30 · Lisbon')
+        expect(page.locator('.replay-game-time')).to_have_text('06-09-2026 · 00:30')
         page.locator('#language-toggle').click();page.locator('button[data-language="pt-PT"]').click()
-        expect(page.locator('.replay-game-time')).to_have_text('06-09-2026 · 00:30 · Lisboa')
-        expect(page.locator('.replay-game-time')).to_have_attribute('title','06-09-2026 · 00:30 · Lisboa')
-        expect(page.locator('.replay-game-time')).to_have_attribute('aria-label','06-09-2026 · 00:30 · Lisboa')
+        expect(page.locator('.replay-game-time')).to_have_text('06-09-2026 · 00:30')
+        expect(page.locator('.replay-game-time')).to_have_attribute('title','06-09-2026 · 00:30')
+        expect(page.locator('.replay-game-time')).to_have_attribute('aria-label','06-09-2026 · 00:30')
         assert not errors,errors
     finally:context.close()

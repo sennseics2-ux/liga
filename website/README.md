@@ -1,3 +1,7 @@
+## v66 match history and clean review timestamps
+
+The Games heading is Match history / Histórico de partidas, and only the completed counter remains. Review timestamps omit the city in visible text, hover text and accessibility labels, while retaining the existing local date/time conversion. Assets use v66; database schema remains v32.
+
 ## v65 match board result highlights
 
 Winning board scores and their players have green highlights. Drawn scores and both players have a lighter green tint. Highlights follow home/away results even on boards with reversed piece colours; unplayed boards stay neutral. Light and dark modes are supported. Assets use v65; database schema remains v32.
