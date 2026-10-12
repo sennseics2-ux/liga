@@ -17,12 +17,12 @@
   </form>
   <p class="directory-result-count" role="status" data-i18n="Showing {shown} of {total} matching games" data-i18n-vars="{{ {'shown': games|length, 'total': total_count}|tojson|forceescape }}">Showing {{ games|length }} of {{ total_count }} matching games</p><p class="time-zone-note" data-i18n="Times shown in Europe/Lisbon.">Times shown in Europe/Lisbon.</p>
   {% if games %}<div class="game-list">
-  {% for g in games %}<a href="/games/{{ g.id }}" class="game-list-card">
+  {% for g in games %}<article class="game-list-card" data-game-id="{{ g.id }}">
     <span class="game-date"><time datetime="{{ g.scheduled_at }}" data-no-i18n>{{ g.scheduled_at|local_time }}</time><small>{% if g.event_name %}<span data-no-i18n>{{ g.event_name }}</span>{% else %}<span data-i18n="Club game">Club game</span>{% endif %}{% if g.round_label %} · <span data-no-i18n>{{ g.round_label }}</span>{% endif %}</small></span>
-    <span class="game-players"><span class="color-disc white">♔</span> <span data-no-i18n>{{ g.white_name }}</span> <span class="versus">vs</span> <span class="color-disc black">♚</span> <span data-no-i18n>{{ g.black_name }}</span></span>
+    <span class="game-players"><span class="color-disc white">♔</span> <span class="game-player-identity"><a href="/games/{{ g.id }}" data-no-i18n>{{ g.white_name }}</a><small>{% if g.white_team_name %}<span data-no-i18n>{{ g.white_team_name }}</span>{% else %}<span data-i18n="No team">No team</span>{% endif %}</small></span> <span class="versus">vs</span> <span class="color-disc black">♚</span> <span class="game-player-identity"><a href="/games/{{ g.id }}" data-no-i18n>{{ g.black_name }}</a><small>{% if g.black_team_name %}<span data-no-i18n>{{ g.black_team_name }}</span>{% else %}<span data-i18n="No team">No team</span>{% endif %}</small></span></span>
     <span class="game-status {% if g.result!='*' %}finished{% endif %}">{{ g.result if g.result!='*' else 'Not played' }}</span>
-    <span class="game-watch">{% if g.pgn_available %}<span data-i18n="Replay">Replay</span> ↗{% else %}<span data-i18n="Details">Details</span> ↗{% endif %}</span>
-  </a>{% endfor %}</div>
+    <div class="game-list-actions"><a href="/games/{{ g.id }}" class="game-watch">{% if g.pgn_available %}<span data-i18n="Replay">Replay</span> ↗{% else %}<span data-i18n="Details">Details</span> ↗{% endif %}</a>{% if g.match_id %}<a href="/matches/{{ g.match_id }}" class="btn btn-quiet game-match-link" data-i18n="View match">View match</a>{% endif %}</div>
+  </article>{% endfor %}</div>
   {% if total_pages > 1 %}<nav class="pagination" aria-label="Game pages">{% if has_previous %}<a class="btn btn-outline-dark" href="{{ previous_url }}" rel="prev" data-i18n="Previous page">Previous page</a>{% endif %}<span data-i18n="Page {page} of {total}" data-i18n-vars="{{ {'page': page, 'total': total_pages}|tojson|forceescape }}">Page {{ page }} of {{ total_pages }}</span>{% if has_next %}<a class="btn btn-outline-dark" href="{{ next_url }}" rel="next" data-i18n="Next page">Next page</a>{% endif %}</nav>{% endif %}
   {% else %}<div class="empty-state"><div class="empty-icon">♘</div><h3>No matches found</h3><p>Try clearing the filters, or have the administrator schedule a game.</p><a href="/games" class="btn btn-outline-dark">View all games</a></div>{% endif %}
 </section>

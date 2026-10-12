@@ -206,3 +206,9 @@ body .account-dropdown{position:static}body .account-menu{right:15px;top:calc(10
 .replay-board-shell{position:relative}.board-resize-handle{display:none;position:absolute;right:0;bottom:0;width:28px;height:28px;padding:4px;border:0;border-radius:5px;background:#232323;color:#e8f0ec;cursor:nwse-resize;touch-action:none;z-index:3}.board-resize-handle:hover,.board-resize-handle:focus-visible{background:#315b43;color:#fff}.board-resize-active,.board-resize-active *{cursor:nwse-resize!important;user-select:none!important}
 @media(min-width:901px) and (hover:hover) and (pointer:fine){.board-resize-handle{display:grid;place-items:center}.game-page .replay-layout.replay-resized{grid-template-columns:var(--replay-board-size) minmax(280px,360px)}.game-page .replay-resized .replay-board-panel{max-width:none}}
 @media(min-width:901px) and (hover:hover) and (pointer:fine){.game-page .replay-layout.replay-resized{justify-content:start;padding-left:var(--replay-board-offset,0px)}}
+
+/* Game directory team identities and match navigation. */
+.game-list-card{grid-template-columns:minmax(145px,1fr) minmax(250px,2.7fr) minmax(85px,.7fr) minmax(110px,auto)}
+.game-player-identity{display:grid;gap:3px;min-width:0}.game-player-identity small{font-size:11px;font-weight:500;color:var(--muted);overflow-wrap:anywhere}.game-player-identity a:hover{text-decoration:underline}
+.game-list-actions{display:flex;flex-direction:column;align-items:flex-end;gap:8px}.game-match-link{font-size:11px;padding:7px 10px;white-space:nowrap}.replay-round-link{color:var(--ink);text-decoration:underline;text-underline-offset:3px}.replay-round-link:hover{color:var(--pine)}
+@media(max-width:600px){.game-list-card{grid-template-columns:minmax(0,1fr) auto}.game-list-actions{grid-column:1/-1;flex-direction:row;justify-content:flex-end;align-items:center}.game-players{gap:6px}.game-player-identity{flex:1}.game-player-identity a{overflow-wrap:anywhere}}

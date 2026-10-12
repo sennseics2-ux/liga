@@ -1,3 +1,7 @@
+## v59 game teams and match navigation
+
+Game cards show each player’s team at the match and a View match button for linked league games. Replay round labels link to that same match. Standalone games retain their details/replay links without an unrelated match button. Assets use v59; database schema remains v32.
+
 ## v58 player search
 
 The Players search matches only names and usernames, with the placeholder “Name or username” and its Portuguese translation. Assets use v58; database schema remains v32.

@@ -25,7 +25,7 @@ def insert_games(rows):
 def cards(response):
     assert response.status_code == 200
     return [int(game_id) for game_id in re.findall(
-        r'<a href="/games/(\d+)" class="game-list-card"', response.text)]
+        r'<article class="game-list-card" data-game-id="(\d+)"', response.text)]
 
 
 def pagination_link(response, relation):

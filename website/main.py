@@ -1084,13 +1084,14 @@ def game_rows(db, *, where='1=1', values=(), limit=200, offset=0, order='newest'
         wp.name AS white_name, bp.name AS black_name,
         wp.user_id AS white_user_id, bp.user_id AS black_user_id,
         wu.username AS white_username, bu.username AS black_username,
-        wt.name AS white_team_name, bt.name AS black_team_name
+        wt.name AS white_team_name, bt.name AS black_team_name, mg.match_id
         FROM games g JOIN players wp ON wp.id=g.white_player_id
         JOIN players bp ON bp.id=g.black_player_id
         LEFT JOIN users wu ON wu.id=wp.user_id
         LEFT JOIN users bu ON bu.id=bp.user_id
         LEFT JOIN teams wt ON wt.id=g.white_team_id
         LEFT JOIN teams bt ON bt.id=g.black_team_id
+        LEFT JOIN match_games mg ON mg.game_id=g.id
         WHERE ({where}) AND {visible} ORDER BY {ordering} LIMIT ? OFFSET ?
     """, (*values, *visibility_values, limit, offset)).fetchall()
 

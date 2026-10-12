@@ -51,6 +51,19 @@ def test_match_scores_follow_teams_across_alternating_colours_and_draws(client):
         games=[r[0] for r in db.execute('SELECT game_id FROM match_games WHERE match_id=? ORDER BY board',(match,))]
         db.execute("UPDATE team_matches SET scheduled_at='2026-06-01T18:00:00+00:00' WHERE id=?",(match,))
         db.execute("UPDATE games SET scheduled_at='2026-06-01T18:00:00+00:00' WHERE id IN (SELECT game_id FROM match_games WHERE match_id=?)",(match,))
+    directory=client.get('/games')
+    assert directory.status_code==200
+    assert directory.text.count('class="game-player-identity"')==8
+    assert 'Team home' in directory.text and 'Team away' in directory.text
+    assert directory.text.count(f'href="/matches/{match}"')==4
+    assert 'View match' in directory.text
+    detail=client.get(f'/games/{games[0]}')
+    assert f'class="replay-round-link" href="/matches/{match}"' in detail.text
+    assert client.get(f'/matches/{match}').status_code==200
+    # Standalone games have no league match to link to.
+    standalone=store.create_game(rosters[0][0],rosters[1][0],'2026-06-01T18:00',round_label='Friendly')
+    detail=client.get(f'/games/{standalone}')
+    assert 'Friendly' in detail.text and 'replay-round-link' not in detail.text
     with store.read_db() as db:
         empty=seasons.match_rows(db,season)[0]
         assert (empty['home_score'],empty['away_score'],empty['finished_boards'])==('—','—',0)
