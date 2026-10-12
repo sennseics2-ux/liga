@@ -1,3 +1,7 @@
+## v54 clear current replay annotations
+
+A left-click anywhere on the board clears all circles and arrows for the current position, preserving marks on other positions. Assets use v54; database schema remains v32.
+
 ## v53 annotation refinements
 
 Replay circles are thinner and sit near the square edges. Arrow shafts end inside their arrowheads, with the tip aligned to the destination square for straight and curved arrows. Assets use v53; database schema remains v32.

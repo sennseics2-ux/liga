@@ -62,6 +62,16 @@ def test_annotations_gestures_moves_flip_and_navigation(chromium,league_server,w
         page.locator('[data-action=first]').click()
         expect(page.locator('[data-circle=e4]')).to_have_count(1)
         expect(page.locator('.replay-annotation-arrow')).to_have_count(4)
+        # Clearing one position must preserve annotations on other positions.
+        page.locator('[data-board] .replay-square[data-square=h8]').click()
+        expect(page.locator('.replay-annotation-circle,.replay-annotation-arrow')).to_have_count(0)
+        page.locator('[data-action=next]').click()
+        expect(page.locator('[data-circle=d5]')).to_have_count(1)
+        page.locator('[data-action=first]').click()
+        expect(page.locator('.replay-annotation-circle,.replay-annotation-arrow')).to_have_count(0)
+        circle(page,'e4')
+        for start,end in [('e2','e4'),('a1','h1'),('c1','h6'),('b1','c3')]:
+            arrow(page,start,end)
         page.locator('[data-action=flip]').click()
         expect(page.locator('[data-circle=e4]')).to_have_attribute('cx','3.5')
         expect(page.locator('[data-circle=e4]')).to_have_attribute('cy','3.5')

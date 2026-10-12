@@ -125,6 +125,12 @@
     if (mouseAnnotationsEnabled()) event.preventDefault();
   });
   board.addEventListener('pointerdown', event => {
+    if (event.button === 0) {
+      cancelAnnotationGesture();
+      annotations.delete(index);
+      renderAnnotations();
+      return;
+    }
     if (event.button !== 2 || event.pointerType !== 'mouse' || !mouseAnnotationsEnabled()) return;
     const from = squareAt(event);
     if (!from) return;
