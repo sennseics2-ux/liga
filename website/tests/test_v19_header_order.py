@@ -22,5 +22,6 @@ def test_signed_in_admin_header_order(client):
 
 def test_signed_out_header_has_language_picker(client):
     html = client.get('/').text
-    assert 'class="account-dropdown"' not in html
+    assert 'data-piece-style' in html
+    assert 'href="/account/profile"' not in html
     assert html.index('href="/register"') < html.index('class="language-picker"')

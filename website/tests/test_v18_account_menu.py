@@ -5,11 +5,13 @@ from pathlib import Path
 from test_league import client, post, register, logout, seed_admin
 
 
-def test_signed_out_navigation_does_not_show_account_menu(client):
+def test_signed_out_navigation_offers_appearance_without_account_links(client):
     page = client.get('/')
     assert page.status_code == 200
-    assert 'id="account-toggle"' not in page.text
-    assert 'id="account-menu"' not in page.text
+    assert 'id="account-toggle"' in page.text
+    assert 'data-piece-style' in page.text
+    assert 'href="/account/profile"' not in page.text
+    assert 'action="/logout"' not in page.text
     assert client.get('/account/profile').status_code == 401
 
 

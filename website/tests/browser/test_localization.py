@@ -131,7 +131,7 @@ def test_real_directories_and_auction_cards_keep_user_supplied_names(client, pag
     page.route("http://liga.test/**", application)
     page.goto("http://liga.test/players")
     assert page.locator("tbody tr").first.locator("td").nth(0).locator("[data-no-i18n]").inner_text() == "Players"
-    assert page.locator("tbody tr").first.locator("td").nth(1).inner_text() == "White"
+    assert page.locator("tbody tr").first.locator("td").nth(1).inner_text() == "2100"
     assert page.locator('.nav-links a[href="/players"]').inner_text() == "Jogadores"
     page.goto("http://liga.test/teams")
     assert page.locator(".team-directory-copy h3").inner_text() == "Teams"

@@ -17,7 +17,7 @@
   const flipButton = root.querySelector('[data-action="flip"]');
   const speed = root.querySelector('[data-speed]');
   const pieces = 'KQRBNPkqrbnp';
-  const pieceStyleSelect = root.querySelector('[data-piece-style]');
+  const pieceStyleSelect = document.querySelector('[data-piece-style]');
   const availableStyles = new Map(Array.from(pieceStyleSelect.options, option => [option.value, option.dataset.pieceExtension]));
   let pieceStyle = 'cardinal';
   try { const saved = localStorage.getItem('clubdraft.pieceStyle'); if (availableStyles.has(saved)) pieceStyle = saved; } catch (_) {}

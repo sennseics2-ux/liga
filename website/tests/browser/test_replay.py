@@ -60,6 +60,7 @@ def test_replay_black_start_keyboard_flip_playback_and_localized_accessibility(c
         expect(page.locator('.replay-sidebar-header span')).to_have_text('4 moves')
         assert page.locator('.replay-controls').locator('[data-action=flip]').count() == 1
         assert page.locator('.replay-sidebar').locator('[data-action=play]').count() == 1
+        page.locator('#account-toggle').click()
         styles = page.locator('[data-piece-style]')
         expect(styles).to_have_value('cardinal')
         expect(styles.locator('option')).to_have_count(43)
@@ -73,8 +74,10 @@ def test_replay_black_start_keyboard_flip_playback_and_localized_accessibility(c
                 pytest.fail(f'{style} artwork did not load: {failures}')
         styles.select_option('cburnett')
         page.reload()
+        page.locator('#account-toggle').click()
         expect(page.locator('[data-piece-style]')).to_have_value('cburnett')
         page.locator('[data-piece-style]').select_option('cardinal')
+        page.locator('#account-toggle').click()
         expect(page.locator('[data-board] [role="row"]')).to_have_count(8)
         expect(page.locator('[data-board] [role="gridcell"]')).to_have_count(64)
         expect(page.locator('[data-board] [role="gridcell"]').first).to_have_attribute('data-square', 'a8')
@@ -102,7 +105,9 @@ def test_replay_black_start_keyboard_flip_playback_and_localized_accessibility(c
         expect(page.locator('[data-progress]')).to_have_text('Starting position')
         expect(page.locator('[data-action="prev"]')).to_be_disabled()
 
+        page.locator('.replay-more summary').click()
         page.locator('[data-speed]').select_option('625')
+        page.locator('.replay-more summary').click()
         page.locator('[data-action="play"]').click()
         expect(page.locator('[data-action="play"]')).to_have_attribute('aria-pressed', 'true')
         expect(page.locator('[data-action="play"]')).to_have_attribute('aria-label', 'Pause')

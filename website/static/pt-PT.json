@@ -1519,5 +1519,15 @@
   "Piece artwork and licenses": "Arte das peças e licenças",
   "Follow every club chess game, view results and replay recorded PGN games.": "Segue as partidas do clube, consulta os resultados e revê partidas com PGN.",
   "{count} moves": "{count} lances",
-  "Move {number}{suffix} {san} · {current} / {total} moves": "Lance {number}{suffix} {san} · {current} / {total} lances"
+  "Move {number}{suffix} {san} · {current} / {total} moves": "Lance {number}{suffix} {san} · {current} / {total} lances",
+  "Piece Set": "Conjunto de peças",
+  "Board appearance": "Aspeto do tabuleiro",
+  "Replay options": "Opções de reprodução",
+  "Brown": "Castanho",
+  "Blue": "Azul",
+  "Green": "Verde",
+  "Grey": "Cinzento",
+  "Purple": "Roxo",
+  "Amber": "Âmbar",
+  "All players": "Todos os jogadores"
 }

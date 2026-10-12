@@ -140,15 +140,15 @@ def test_member_replay_auction_and_recovery_journey(chromium, league_server, wid
         assert page.locator('.form-card').bounding_box()['y'] < page.locator('.auth-pitch').bounding_box()['y']
 
         page.goto(f'{league.base}/games/{league.game}')
-        assert page.locator('#replay-data').count() == 0
-        assert page.locator('[data-board]').count() == 0
+        assert page.locator('#replay-data').count() == 1
+        assert page.locator('[data-board]').count() == 1
         assert '1. e4 e5' not in page.content()
-        assert page.locator('a[href^="/login?next=/games/"]').count() == 1
+        assert page.locator('a[href^="/login?next=/games/"]').count() == 0
         denied = context.request.get(f'{league.base}/games/{league.game}/pgn',
                                      headers={'Accept': 'application/json'})
-        assert denied.status == 401
+        assert denied.status == 200
 
-        page.locator('a[href^="/login?next=/games/"]').click()
+        page.goto(f'{league.base}/login?next=/games/{league.game}')
         assert page.locator('input[name=next]').input_value() == f'/games/{league.game}'
         page.locator('input[name=username]').fill('BrowserMember')
         page.locator('input[name=password]').fill(PASSWORD)
@@ -207,10 +207,10 @@ def test_member_replay_auction_and_recovery_journey(chromium, league_server, wid
         page.locator('#account-toggle').click()
         page.locator('#account-menu form[action="/logout"] button').click()
         page.goto(f'{league.base}/games/{league.game}')
-        assert page.locator('#replay-data').count() == 0
+        assert page.locator('#replay-data').count() == 1
         assert context.request.get(f'{league.base}/games/{league.game}/pgn',
-                                   headers={'Accept': 'application/json'}).status == 401
-        page.locator('a[href^="/login?next=/games/"]').click()
+                                   headers={'Accept': 'application/json'}).status == 200
+        page.goto(f'{league.base}/login?next=/games/{league.game}')
         page.locator('input[name=username]').fill('BrowserMember')
         page.locator('input[name=password]').fill(PASSWORD)
         page.locator('input[name=csrf]').evaluate("el=>el.value='expired-form-token'")

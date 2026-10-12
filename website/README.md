@@ -1,3 +1,7 @@
+## v45 compact replay and appearance
+
+Game pages place player identities and score next to a viewport-sized board, with an independently scrolling notation panel. Piece Set and eight Board palettes are available from the top-right account/appearance menu and persist in this browser. Profile links highlight green; sign out highlights red. Assets use v45; database schema remains v32.
+
 ## v44 replay progress
 
 Progress beneath playback controls counts numbered moves and uses moves/lances rather than half-moves. Assets use v44; database schema remains v32.

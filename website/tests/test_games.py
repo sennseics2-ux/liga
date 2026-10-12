@@ -104,7 +104,7 @@ def test_genuine_pgn_validation_and_replay_if_dependency_available(client):
     sample=b'''[Event "Test"]\n[Site "Local"]\n[White "Ada White"]\n[Black "Ben Black"]\n[Result "1-0"]\n\n1. e4 e5 2. Bc4 Nc6 3. Qh5 Nf6 4. Qxf7# 1-0\n'''
     resp=client.post(f'/admin/games/{gid}/pgn',data={'csrf':token(client,'/')},files={'pgn':('mate.pgn',sample)},follow_redirects=True)
     assert 'PGN attached' in resp.text
-    assert 'Replay the game' in resp.text
+    assert 'data-chess-replay' in resp.text
     assert 'chess-replay.js' in resp.text
     assert 'Qxf7#' in resp.text
     assert client.get(f'/games/{gid}/pgn').content == sample

@@ -151,7 +151,7 @@ def test_quarantined_auction_is_reported_without_blocking_other_settlement_or_st
         assert restarted.get('/').status_code == 200
 
 
-def test_logout_revokes_browser_replay_access_and_invalid_csrf_keeps_session(tmp_path, monkeypatch):
+def test_logout_revokes_account_access_but_keeps_public_replay(tmp_path, monkeypatch):
     monkeypatch.setattr(store, 'DB_PATH', tmp_path / 'logout-access.sqlite3')
     with TestClient(app) as client:
         white = store.create_player('White Replay Player')
@@ -167,17 +167,19 @@ def test_logout_revokes_browser_replay_access_and_invalid_csrf_keeps_session(tmp
         assert 'replay-data' in client.get(f'/games/{game}').text
         assert client.post('/logout', data={'csrf': 'invalid'}).status_code == 403
         assert client.get(f'/games/{game}/pgn').text == pgn
+        assert client.get('/account/settings').status_code == 200
         token = csrf(client, f'/games/{game}')
         logged_out = client.post('/logout', data={'csrf': token}, follow_redirects=False)
         assert logged_out.status_code == 303
         assert logged_out.headers['cache-control'] == 'private, no-store'
         assert 'session' not in client.cookies
         summary = client.get(f'/games/{game}')
-        assert 'Log in to replay this game' in summary.text
-        assert 'replay-data' not in summary.text
-        assert 'Private Moves' not in summary.text
+        assert client.get('/account/settings').status_code == 401
+        assert 'Log in to replay this game' not in summary.text
+        assert 'replay-data' in summary.text
+        assert 'Private Moves' in summary.text
         download = client.get(f'/games/{game}/pgn', follow_redirects=False)
-        assert download.status_code == 401
+        assert download.status_code == 200
         assert download.headers['cache-control'] == 'private, no-store'
         assert download.headers['vary'] == 'Cookie'
-        assert download.text != pgn
+        assert download.text == pgn
