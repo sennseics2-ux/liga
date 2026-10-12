@@ -8,16 +8,16 @@
   <link rel="icon" href="/static/favicon.ico" sizes="any">
   <link rel="icon" type="image/png" href="/static/favicon-32.png" sizes="32x32">
   <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
-  <script src="/static/theme.js?v=66"></script>
-  <link rel="stylesheet" href="/static/style.css?v=66">
-  <link rel="stylesheet" href="/static/dark.css?v=66">
-  <link rel="stylesheet" href="/static/theme.css?v=66">
-  <script defer src="/static/i18n.js?v=66"></script>
-  <script defer src="/static/app.js?v=66"></script>
-  <script defer src="/static/board-settings.js?v=66"></script>
+  <script src="/static/theme.js?v=67"></script>
+  <link rel="stylesheet" href="/static/style.css?v=67">
+  <link rel="stylesheet" href="/static/dark.css?v=67">
+  <link rel="stylesheet" href="/static/theme.css?v=67">
+  <script defer src="/static/i18n.js?v=67"></script>
+  <script defer src="/static/app.js?v=67"></script>
+  <script defer src="/static/board-settings.js?v=67"></script>
   {% block page_assets %}{% endblock %}
 </head>
-<body{% if request.url.path == "/" %} class="home-theme"{% elif request.url.path.startswith("/games/") %} class="game-page"{% elif request.url.path.startswith("/matches/") %} class="match-page"{% endif %}>
+<body{% if request.url.path == "/" %} class="home-theme"{% elif request.url.path == "/games" %} class="games-list-page"{% elif request.url.path.startswith("/games/") %} class="game-page"{% elif request.url.path.startswith("/matches/") %} class="match-page"{% endif %}>
 <a class="skip-link" href="#main" data-i18n="Skip to content">Skip to content</a>
 <header class="site-header">
   <nav class="nav-shell container" aria-label="Main navigation">

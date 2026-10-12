@@ -1,3 +1,7 @@
+## v67 neutral game and match accents
+
+The Games directory and match-board content use black and grey accents for counters, controls, round links, pagination, hover/focus states and result emphasis. Wins remain stronger than draws using different grey backgrounds. Both themes retain readable contrast. Header and banner layouts stay unchanged. Assets use v67; database schema remains v32.
+
 ## v66 match history and clean review timestamps
 
 The Games heading is Match history / Histórico de partidas, and only the completed counter remains. Review timestamps omit the city in visible text, hover text and accessibility labels, while retaining the existing local date/time conversion. Assets use v66; database schema remains v32.

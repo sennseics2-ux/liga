@@ -37,6 +37,10 @@ def test_game_directory(chromium,client,width,theme):
     try:
         page.goto('http://liga.test/games')
         expect(page.locator('.game-list-card')).to_have_count(25)
+        for prop in ['color','backgroundColor','borderTopColor']:
+            colour=page.locator('#account-toggle').evaluate('(el,prop)=>getComputedStyle(el)[prop]',prop)
+            rgb=[int(part) for part in colour.removeprefix('rgb(').removesuffix(')').split(',')]
+            assert len(set(rgb))==1,colour
         expect(page.locator('.games-directory-heading h2')).to_have_text('Match history')
         expect(page.locator('.games-counts>span')).to_have_count(1)
         assert page.locator('.games-counts [data-i18n="upcoming"]').count()==0
@@ -66,6 +70,9 @@ def test_game_directory(chromium,client,width,theme):
         if width>700:
             white=card.locator('.game-player-white').bounding_box();score=card.locator('.game-result-summary').bounding_box();black=card.locator('.game-player-black').bounding_box()
             assert white['x']+white['width']<=score['x']<black['x']
+        neutral=page.locator('.games-directory .game-round-link').first.evaluate('(el)=>getComputedStyle(el).color')
+        rgb=[int(part) for part in neutral.removeprefix('rgb(').removesuffix(')').split(',')]
+        assert len(set(rgb))==1,neutral
         bad=page.evaluate(CONTRAST);assert not bad,bad
         page.mouse.move(0,0);assert not page.evaluate(CONTRAST)
         screenshots=Path('/workspace/review-runtime/v61-screenshots');screenshots.mkdir(parents=True,exist_ok=True)
@@ -75,6 +82,11 @@ def test_game_directory(chromium,client,width,theme):
         expect(page.locator('.match-board-player.match-outcome-win')).to_have_count(2)
         expect(page.locator('.match-board-score-value.match-outcome-draw')).to_have_count(2)
         expect(page.locator('.match-board-player.match-outcome-draw')).to_have_count(2)
+        for selector in ['.match-board-score-value.match-outcome-win','.match-board-score-value.match-outcome-draw','.board-open-icon','#account-toggle']:
+            neutral=page.locator(selector).first.evaluate('(el)=>getComputedStyle(el).color')
+            rgb=[int(part) for part in neutral.removeprefix('rgb(').removesuffix(')').split(',')]
+            assert len(set(rgb))==1,neutral
+
         assert_fits_phone(page)
         bad=page.evaluate(CONTRAST);assert not bad,bad
         page.goto('http://liga.test/games');card=page.locator(f'.game-list-card[data-game-id="{games[0]}"]')
