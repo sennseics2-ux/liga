@@ -1,3 +1,7 @@
+## v47 focused match and replay layouts
+
+Entire board rows open their game reviews with native keyboard-accessible links. Compact match scoreboards and captain forms fit desktop workspaces; long content scrolls within its panel. Replay tools sit beneath the board, with PGN download beside Replay options. Mobile replays have a single-row header and a full-width board; notation remains independently scrollable. Assets use v47; database schema remains v32.
+
 ## v46 match boards and immediate replay controls
 
 Arrow keys navigate a replay immediately when a game opens, while menus and form fields retain their normal keyboard controls. Match pages combine both lineups, player ratings, piece colours and game results in one board-by-board section. Pre-match lineup privacy and captain submissions remain enforced. Assets use v46; database schema remains v32.

@@ -64,7 +64,7 @@ def test_replay_black_start_keyboard_flip_playback_and_localized_accessibility(c
         expect(page.locator('[data-progress]')).to_have_text('Starting position')
         expect(page.locator('.replay-sidebar-header span')).to_have_text('4 moves')
         assert page.locator('.replay-controls').locator('[data-action=flip]').count() == 1
-        assert page.locator('.replay-sidebar').locator('[data-action=play]').count() == 1
+        assert page.locator('.replay-board-panel').locator('[data-action=play]').count() == 1
         page.locator('#account-toggle').click()
         styles = page.locator('[data-piece-style]')
         expect(styles).to_have_value('cardinal')

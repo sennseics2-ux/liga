@@ -11,8 +11,8 @@ import league_seasons as seasons
 pytestmark=pytest.mark.skipif(os.environ.get('RUN_BROWSER_TESTS')!='1',reason='Set RUN_BROWSER_TESTS=1 to require Chromium journeys.')
 
 
-@pytest.mark.parametrize('width',[320,390,1440])
-def test_current_season_dropdown_and_completed_match(chromium,league_server,width):
+@pytest.mark.parametrize('width,height',[(320,700),(390,844),(1280,720),(1366,768),(1440,900)])
+def test_current_season_dropdown_and_completed_match(chromium,league_server,width,height):
     league=league_server
     admin, season, rounds, match, teams, managers, rosters=setup()
     seasons.submit_lineup(match,managers[0],rosters[0])
@@ -24,7 +24,7 @@ def test_current_season_dropdown_and_completed_match(chromium,league_server,widt
         db.execute("UPDATE games SET scheduled_at='2026-06-01T18:00:00+00:00' WHERE id IN (SELECT game_id FROM match_games WHERE match_id=?)",(match,))
     for game,result in zip(games,['1-0','0-1','1/2-1/2','1-0']):
         league.store.update_game_result(game,result,actor_id=admin,reason='Synthetic browser fixture')
-    context=chromium.new_context(viewport={'width':width,'height':900})
+    context=chromium.new_context(viewport={'width':width,'height':height})
     context.route('**/*',lambda route:route.continue_() if route.request.url.startswith(league.base+'/') else route.abort())
     page=context.new_page();errors=[];page.on('pageerror',lambda error:errors.append(str(error)))
     try:
@@ -51,6 +51,25 @@ def test_current_season_dropdown_and_completed_match(chromium,league_server,widt
         page.wait_for_url(league.base+f'/matches/{match}')
         expect(page.locator('.board-result-card')).to_have_count(4)
         expect(page.locator('.match-board-row')).to_have_count(4)
+        expect(page.locator('.match-board-game-link')).to_have_count(0)
+        assert page.locator('.match-board-row a').count()==0
+        if width>1020:
+            assert page.evaluate('document.documentElement.scrollHeight')<=height+2
+            table=page.locator('.match-board-table')
+            assert table.evaluate('(el)=>el.scrollHeight<=el.clientHeight+2')
+        first_board=page.locator('.match-board-row').first
+        destination=first_board.get_attribute('href')
+        first_board.locator('.match-lineup-player').first.click()
+        page.wait_for_url(league.base+destination)
+        page.go_back()
+        page.locator('.match-board-row').first.focus()
+        page.keyboard.press('Enter')
+        page.wait_for_url(league.base+destination)
+        page.go_back()
+        row=page.locator('.match-board-row').first.bounding_box()
+        page.mouse.click(row['x']+4,row['y']+row['height']-5)
+        page.wait_for_url(league.base+destination)
+        page.go_back()
         expect(page.locator('.match-lineup-player')).to_have_count(8)
         expect(page.locator('.submitted-lineups-grid')).to_have_count(0)
         expect(page.locator('.scoreboard-numbers')).to_contain_text('2½')
@@ -92,7 +111,7 @@ def test_current_season_dropdown_and_completed_match(chromium,league_server,widt
             page.screenshot(path=str(directory/f'draw-dark-{width}.png'),full_page=True)
         assert not errors,errors
         # Native GET navigation remains available without JavaScript.
-        plain=chromium.new_context(java_script_enabled=False,viewport={'width':width,'height':900})
+        plain=chromium.new_context(java_script_enabled=False,viewport={'width':width,'height':height})
         plain_page=plain.new_page();plain_page.goto(league.base+'/seasons')
         plain_page.locator('#season-select').select_option(str(season))
         plain_page.locator(f'.season-fallback a[href="/seasons?season={season}"]').click()

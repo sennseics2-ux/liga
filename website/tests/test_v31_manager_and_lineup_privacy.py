@@ -90,7 +90,7 @@ def test_only_current_team_sees_own_lineup_before_kickoff(client,viewer,visible_
     for side in (0,1):
         for name in [f'{"home" if side==0 else "away"} Player {n}' for n in range(1,4)]:
             assert (name in response.text)==(side==visible_side)
-    assert 'class="board-result-card"' not in response.text
+    assert 'class="match-board-row board-result-card"' not in response.text
     if viewer and viewer.startswith('manager_'):
         assert len(re.findall(r'<select name="player_[1-4]"',response.text))==4
         for board,player_id in enumerate(rosters[visible_side],1):
@@ -121,7 +121,7 @@ def test_pairings_hidden_on_every_game_surface_including_direct_pgn(client,monke
     assert client.get(f'/matches/{match}').text.count('class="lineup-private"')==2
     monkeypatch.setattr(store,'now_utc',lambda:start)
     page=client.get(f'/matches/{match}').text
-    assert page.count('class="match-board-number"')==4 and page.count('class="board-result-card"')==4
+    assert page.count('class="match-board-number"')==4 and page.count('class="match-board-row board-result-card"')==4
     assert 'class="lineup-private"' not in page
     for game in games:assert client.get(f'/games/{game}').status_code==200
     assert 'e4 e5' in client.get(f'/games/{games[0]}/pgn').text

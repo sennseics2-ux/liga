@@ -17,13 +17,13 @@ def sign_in(page,base,username,password=PASSWORD):
     page.wait_for_url('**/admin' if username=='BrowserAdmin' else '**/users/'+username+'/manager')
 
 
-@pytest.mark.parametrize('width',[320,390,1440])
-def test_admin_cancel_and_reinvite_and_private_lineups(chromium,league_server,width):
+@pytest.mark.parametrize('width,height',[(320,700),(390,844),(1280,720),(1440,900)])
+def test_admin_cancel_and_reinvite_and_private_lineups(chromium,league_server,width,height):
     league=league_server;_,_,_,match,_,_,_=arranged_match()
     with league.store.read_db() as db:
         team=db.execute("SELECT id FROM teams WHERE name='Teams'").fetchone()[0]
         manager=db.execute("SELECT id FROM users WHERE username='BrowserMember'").fetchone()[0]
-    context=chromium.new_context(viewport={'width':width,'height':900})
+    context=chromium.new_context(viewport={'width':width,'height':height})
     context.route('**/*',lambda route:route.continue_() if route.request.url.startswith(league.base+'/') else route.abort())
     page=context.new_page();errors=[];page.on('pageerror',lambda error:errors.append(str(error)))
     directory=(Path('/workspace/review-runtime') if Path('/workspace/review-runtime').exists() else Path(tempfile.gettempdir())) / 'v31-screenshots';directory.mkdir(parents=True,exist_ok=True)
@@ -50,6 +50,9 @@ def test_admin_cancel_and_reinvite_and_private_lineups(chromium,league_server,wi
         sign_in(page,league.base,'manager_home','PlayerPassword123!');page.goto(league.base+f'/matches/{match}')
         expect(page.locator('.lineup-private')).to_have_count(1)
         expect(page.locator('.match-lineup-player')).to_have_count(4)
+        if width>1020:
+            assert page.evaluate('document.documentElement.scrollHeight')<=height+2
+            expect(page.locator('.manager-lineup-panel form button')).to_be_in_viewport()
         assert 'away Player 1' not in page.content()
         assert_fits_phone(page);page.screenshot(path=str(directory/f'own-lineup-{width}.png'),full_page=True)
         page.evaluate("localStorage.setItem('clubdraft.language','en')");page.reload()

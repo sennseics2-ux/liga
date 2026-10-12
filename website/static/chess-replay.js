@@ -42,7 +42,14 @@
   }
   function updatePlayState() {
     const playing = timer !== null;
-    playButton.textContent = playing ? 'Ⅱ' : '▶';
+    const icon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    icon.setAttribute('viewBox', '0 0 24 24');
+    icon.setAttribute('aria-hidden', 'true');
+    const shape = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    shape.setAttribute('d', playing ? 'M6 4h4v16H6zM14 4h4v16h-4z' : 'M7 4v16l13-8z');
+    shape.setAttribute('fill', 'currentColor');
+    icon.appendChild(shape);
+    playButton.replaceChildren(icon);
     playButton.setAttribute('aria-label', t(playing ? 'Pause' : 'Play'));
     playButton.setAttribute('aria-pressed', String(playing));
   }
