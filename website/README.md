@@ -1,3 +1,7 @@
+## v50 transfer window outline
+
+The home-page Transfer Window has a rounded outline in dark mode, using the same border colour as the other panels and responsive padding. Assets use v50; database schema remains v32.
+
 ## v49 appearance previews
 
 Piece choices show the actual king, queen, rook, bishop, knight and pawn alongside every set name, including the selected set. Board palette swatches appear alongside every colour name. Accessible selectors support arrow keys, Home/End, first-letter navigation and native selects when JavaScript is unavailable. Saved preferences and all 43 piece sets remain supported. Assets use v49; database schema remains v32.

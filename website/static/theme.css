@@ -189,3 +189,7 @@ body .account-dropdown{position:static}body .account-menu{right:15px;top:calc(10
 :root[data-theme="dark"] .appearance-picker>summary{background:var(--theme-surface);border-color:var(--theme-border);color:var(--theme-text)}:root[data-theme="dark"] .appearance-picker>summary:hover,:root[data-theme="dark"] body .account-menu .appearance-option[aria-selected="true"]{background:#214b34;color:#cff1da}:root[data-theme="dark"] .appearance-options{border-color:var(--theme-border)}
 @media(max-width:380px){.piece-set-preview img{width:18px;height:22px}.appearance-picker>summary{gap:6px;padding-inline:8px}.board-preferences{padding-inline:6px}}
 @media(min-width:641px){body .account-dropdown{position:relative}body .account-menu{right:0;top:calc(100% + 7px)}}
+
+/* V50: match the home-page dark panels around the transfer window. */
+:root[data-theme="dark"] body.home-theme .transfer-window{border:1px solid var(--theme-border);border-radius:16px;padding:28px;margin-block:28px}
+@media(max-width:640px){:root[data-theme="dark"] body.home-theme .transfer-window{padding:20px;margin-block:20px}}

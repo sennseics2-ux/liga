@@ -7,7 +7,7 @@ from zipfile import ZipFile, ZipInfo, ZIP_DEFLATED
 
 ROOT = Path(__file__).resolve().parents[1]
 WEBSITE = ROOT / 'website'
-VERSION = '49'
+VERSION = '50'
 
 
 def source_files():
