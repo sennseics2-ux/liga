@@ -52,15 +52,39 @@ def test_compact_replay_and_appearance(chromium,league_server,width,height):
         assert page.evaluate('window.scrollY')==before
         assert page.locator('[data-chess-replay] [data-piece-style]').count()==0
         page.locator('#account-toggle').click()
-        page.locator('[data-piece-style]').select_option('cburnett')
-        page.locator('select[data-board-color]').select_option('blue')
+        piece_picker=page.locator('[data-appearance-picker=pieces]')
+        piece_picker.locator('summary').click()
+        expect(piece_picker.locator('[role=option]')).to_have_count(43)
+        expect(piece_picker.locator('[role=option][data-value=cburnett] img')).to_have_count(6)
+        piece_picker.locator('[role=option][data-value=cburnett]').click()
+        expect(piece_picker.locator('summary .appearance-choice-name')).to_have_text('Cburnett')
+        board_picker=page.locator('[data-appearance-picker=board]')
+        board_picker.locator('summary').click()
+        board_picker.locator('[role=option][data-value=blue]').click()
+        expect(board_picker.locator('summary .board-color-preview')).to_have_attribute('data-board-color','blue')
+        assert board_picker.locator('summary .board-color-preview').evaluate('(el)=>getComputedStyle(el).getPropertyValue("--board-light").trim()')=='#dee3e6'
+        for picker in [piece_picker,board_picker]:
+            name=picker.locator('summary .appearance-choice-name').bounding_box()
+            sample=picker.locator('summary .piece-set-preview,summary .board-color-preview').bounding_box()
+            assert sample['x']>=name['x']+name['width']
+            assert abs(sample['y']+sample['height']/2-name['y']-name['height']/2)<2
+        assert_fits_phone(page)
+        page.evaluate("window.LigaI18n.setLanguage('en')")
+        expect(board_picker.locator('summary .appearance-choice-name')).to_have_text('Blue')
+        page.evaluate("window.LigaI18n.setLanguage('pt-PT')")
+        expect(board_picker.locator('summary .appearance-choice-name')).to_have_text('Azul')
         expect(page.locator('html')).to_have_attribute('data-board-color','blue')
         assert page.locator('.replay-square.light').first.evaluate('(el)=>getComputedStyle(el).backgroundColor')=='rgb(222, 227, 230)'
         page.reload()
         expect(page.locator('html')).to_have_attribute('data-board-color','blue')
+        expect(page.locator('[data-appearance-picker=board] summary .appearance-choice-name')).to_have_text('Azul')
         expect(page.locator('[data-board] img').first).to_have_attribute('src','/static/pieces/cburnett/bR.svg')
         page.locator('#account-toggle').click()
+        page.locator('[data-appearance-picker=pieces] summary').click()
+        page.screenshot(path=f'/workspace/review-runtime/v49-appearance-{width}.png',full_page=True)
+        assert_fits_phone(page)
         assert not page.evaluate(CONTRAST)
+        page.locator('[data-appearance-picker=pieces] summary').click()
         page.locator('#account-toggle').click()
         page.screenshot(path=f'/workspace/review-runtime/v47-replay-{width}.png',full_page=True)
         sign_in(page,league.base,'BrowserMember')

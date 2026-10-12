@@ -119,13 +119,13 @@ body .replay-controls .play-button{min-width:39px}
 @media(max-width:400px){.replay-controls{gap:4px;padding:14px 8px}.replay-controls button{min-width:40px}.replay-controls .replay-flip-button{margin-left:0}}
 /* V45 compact replay workspace and shared appearance preferences. */
 :root{--board-light:#f0d9b5;--board-dark:#b58863}
-:root[data-board-color="blue"]{--board-light:#dee3e6;--board-dark:#8ca2ad}
-:root[data-board-color="green"]{--board-light:#ffffdd;--board-dark:#86a666}
-:root[data-board-color="grey"]{--board-light:#efefef;--board-dark:#949494}
-:root[data-board-color="purple"]{--board-light:#e9ddf2;--board-dark:#927ca6}
-:root[data-board-color="slate"]{--board-light:#e7edf4;--board-dark:#6f8298}
-:root[data-board-color="amber"]{--board-light:#f9e5bd;--board-dark:#c7985e}
-:root[data-board-color="rose"]{--board-light:#f1d9dc;--board-dark:#b78089}
+:root[data-board-color="blue"],.board-color-preview[data-board-color="blue"]{--board-light:#dee3e6;--board-dark:#8ca2ad}
+:root[data-board-color="green"],.board-color-preview[data-board-color="green"]{--board-light:#ffffdd;--board-dark:#86a666}
+:root[data-board-color="grey"],.board-color-preview[data-board-color="grey"]{--board-light:#efefef;--board-dark:#949494}
+:root[data-board-color="purple"],.board-color-preview[data-board-color="purple"]{--board-light:#e9ddf2;--board-dark:#927ca6}
+:root[data-board-color="slate"],.board-color-preview[data-board-color="slate"]{--board-light:#e7edf4;--board-dark:#6f8298}
+:root[data-board-color="amber"],.board-color-preview[data-board-color="amber"]{--board-light:#f9e5bd;--board-dark:#c7985e}
+:root[data-board-color="rose"],.board-color-preview[data-board-color="rose"]{--board-light:#f1d9dc;--board-dark:#b78089}
 body .replay-square.light{background:var(--board-light)}body .replay-square.dark{background:var(--board-dark)}body .replay-square.last-move{box-shadow:inset 0 0 0 999px #edcc3266}
 .board-preferences{padding:8px 12px;border-block:1px solid var(--line);margin:4px 0;display:grid;gap:10px}.board-preferences label{display:grid;gap:5px;font-size:12px;font-weight:700}.board-preferences select{width:100%;min-width:0;max-width:220px;font-size:12px;min-height:36px;padding:6px;border:1px solid var(--line);border-radius:6px}.board-color-preview{display:block;width:48px;height:24px;background:conic-gradient(var(--board-light) 25%,var(--board-dark) 0 50%,var(--board-light) 0 75%,var(--board-dark) 0);background-size:24px 24px;border:1px solid var(--line);border-radius:3px}.account-menu{max-height:calc(100dvh - 140px);overflow-y:auto;min-width:230px}
 body .account-menu :is(a,button):is(:hover,:focus-visible){background:#d8efdf;color:#155832}body .account-menu form button:is(:hover,:focus-visible){background:#fee0e0;color:#8d2020}:root[data-theme="dark"] body .account-menu :is(a,button):is(:hover,:focus-visible){background:#214b34;color:#cff1da}:root[data-theme="dark"] body .account-menu form button:is(:hover,:focus-visible){background:#532b31;color:#ffd7da}
@@ -180,3 +180,12 @@ body .account-settings-toggle{display:inline-flex;align-items:center;justify-con
 body .account-toggle:is(:hover,[aria-expanded="true"]){background:#d8efdf;color:#155832;border-color:#619b77}body .account-toggle[aria-expanded="true"] .account-chevron{transform:rotate(180deg)}body .account-toggle:is(:hover,[aria-expanded="true"]) .account-settings-icon{transform:rotate(15deg)}body .account-toggle:focus-visible{outline:3px solid #327451;outline-offset:3px}
 :root[data-theme="dark"] body .account-settings-toggle{background:#263c31;color:#c9ecd5;border-color:#678572}:root[data-theme="dark"] body .account-toggle:is(:hover,[aria-expanded="true"]){background:#214b34;color:#cff1da;border-color:#8ecaa4}:root[data-theme="dark"] body .account-toggle:focus-visible{outline-color:#a7dcbc}:root[data-theme="dark"] body .account-chevron{color:inherit}
 @media(prefers-reduced-motion:reduce){body .account-toggle,.account-settings-icon,.account-chevron{transition:none}}
+
+/* V49: previews alongside every appearance choice. */
+.board-color-preview[data-board-color="brown"]{--board-light:#f0d9b5;--board-dark:#b58863}
+body .account-dropdown{position:static}body .account-menu{right:15px;top:calc(100% + 6px);width:min(360px,calc(100vw - 30px));min-width:0}
+.appearance-field{min-width:0;display:grid;gap:6px}.appearance-field>label{display:block}.appearance-enhanced>select{display:none}.appearance-picker{min-width:0}.appearance-picker>summary{display:grid;grid-template-columns:minmax(0,1fr) auto 10px;align-items:center;gap:8px;min-height:44px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;cursor:pointer;list-style:none;font-size:12px;font-weight:700}.appearance-picker>summary::-webkit-details-marker{display:none}.appearance-picker>summary::after{content:'';width:6px;height:6px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);justify-self:center}.appearance-picker[open]>summary::after{transform:rotate(225deg)}.appearance-picker>summary:hover{background:#edf7ef;color:#24603b}.appearance-choice-name{overflow-wrap:anywhere;min-width:0}.piece-set-preview{display:flex;align-items:center;gap:2px;flex-shrink:0;background:#e9ece9;border-radius:5px;padding:2px}.piece-set-preview img{width:22px;height:24px;object-fit:contain;display:block}.appearance-picker .board-color-preview{width:42px;height:24px;flex-shrink:0}
+.appearance-options{max-height:240px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;border:1px solid var(--line);border-radius:8px;margin-top:5px;padding:3px;scrollbar-gutter:stable}body .account-menu .appearance-option{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;min-height:44px;padding:7px;font-size:12px;font-weight:600;line-height:1.4}body .account-menu .appearance-option[aria-selected="true"]{background:#edf7ef;color:#24603b}
+:root[data-theme="dark"] .appearance-picker>summary{background:var(--theme-surface);border-color:var(--theme-border);color:var(--theme-text)}:root[data-theme="dark"] .appearance-picker>summary:hover,:root[data-theme="dark"] body .account-menu .appearance-option[aria-selected="true"]{background:#214b34;color:#cff1da}:root[data-theme="dark"] .appearance-options{border-color:var(--theme-border)}
+@media(max-width:380px){.piece-set-preview img{width:18px;height:22px}.appearance-picker>summary{gap:6px;padding-inline:8px}.board-preferences{padding-inline:6px}}
+@media(min-width:641px){body .account-dropdown{position:relative}body .account-menu{right:0;top:calc(100% + 7px)}}

@@ -1,3 +1,7 @@
+## v49 appearance previews
+
+Piece choices show the actual king, queen, rook, bishop, knight and pawn alongside every set name, including the selected set. Board palette swatches appear alongside every colour name. Accessible selectors support arrow keys, Home/End, first-letter navigation and native selects when JavaScript is unavailable. Saved preferences and all 43 piece sets remain supported. Assets use v49; database schema remains v32.
+
 ## v48 settings button and team labels
 
 The appearance button uses a crisp SVG settings icon with coordinated light/dark colours, green hover/open states and a visible keyboard-focus ring. The signed-in account button has a matching SVG chevron. The Players table, mobile cards and team filter use Team/Equipa. Assets use v48; database schema remains v32.
