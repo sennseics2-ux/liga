@@ -1,3 +1,7 @@
+## v53 annotation refinements
+
+Replay circles are thinner and sit near the square edges. Arrow shafts end inside their arrowheads, with the tip aligned to the destination square for straight and curved arrows. Assets use v53; database schema remains v32.
+
 ## v52 move-specific replay annotations
 
 Desktop mouse users can right-click to toggle green circles and right-drag to toggle directed green arrows. Rank, file and diagonal arrows are straight; other directions curve towards the board centre. Marks are associated with individual replay positions, follow board flips and survive move navigation, piece changes and language changes. They are held only in page memory and cleared on leaving, including browser back/forward-cache restoration. Assets use v52; database schema remains v32.

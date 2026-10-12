@@ -49,7 +49,7 @@
   function drawCircle(square, preview = false) {
     const {x,y} = squareCenter(square);
     annotationLayer.appendChild(svgElement('circle', {
-      cx:x, cy:y, r:.41, class:'replay-annotation-circle', 'data-circle':square,
+      cx:x, cy:y, r:.47, class:'replay-annotation-circle', 'data-circle':square,
       'data-preview':String(preview)
     }));
   }
@@ -57,15 +57,24 @@
     const a = squareCenter(from), b = squareCenter(to);
     const dx = b.x-a.x, dy = b.y-a.y;
     const straight = dx === 0 || dy === 0 || Math.abs(dx) === Math.abs(dy);
-    let path = `M ${a.x} ${a.y} L ${b.x} ${b.y}`;
+    const headInset = .28;
+    let tangentX = dx, tangentY = dy;
+    let control = null;
     if (!straight) {
       const length = Math.hypot(dx,dy);
       const mx = (a.x+b.x)/2, my = (a.y+b.y)/2;
       const nx = -dy/length*.7, ny = dx/length*.7;
       // Bend towards the centre so arrows near the edges stay on the board.
       const sign = (mx+nx-4)**2+(my+ny-4)**2 <= (mx-nx-4)**2+(my-ny-4)**2 ? 1 : -1;
-      path = `M ${a.x} ${a.y} Q ${mx+sign*nx} ${my+sign*ny} ${b.x} ${b.y}`;
+      control = {x:mx+sign*nx, y:my+sign*ny};
+      tangentX = b.x-control.x; tangentY = b.y-control.y;
     }
+    // End the shaft inside the head; the marker's tip still reaches the square centre.
+    const tangentLength = Math.hypot(tangentX,tangentY);
+    const end = {x:b.x-headInset*tangentX/tangentLength, y:b.y-headInset*tangentY/tangentLength};
+    const path = control
+      ? `M ${a.x} ${a.y} Q ${control.x} ${control.y} ${end.x} ${end.y}`
+      : `M ${a.x} ${a.y} L ${end.x} ${end.y}`;
     annotationLayer.appendChild(svgElement('path', {
       d:path, class:'replay-annotation-arrow', 'marker-end':'url(#replay-annotation-arrowhead)',
       'data-from':from, 'data-to':to, 'data-shape':straight ? 'straight' : 'curved',
@@ -76,7 +85,7 @@
     annotationLayer.replaceChildren();
     const defs = svgElement('defs', {});
     const marker = svgElement('marker', {
-      id:'replay-annotation-arrowhead', viewBox:'-.4 -.2 .4 .4', refX:0, refY:0,
+      id:'replay-annotation-arrowhead', viewBox:'-.4 -.2 .4 .4', refX:-.28, refY:0,
       markerWidth:.4, markerHeight:.4, markerUnits:'userSpaceOnUse', orient:'auto'
     });
     marker.appendChild(svgElement('path', {d:'M -.4 -.2 L 0 0 L -.4 .2 Z', fill:'currentColor'}));
