@@ -1,3 +1,7 @@
+## v60 streamlined game cards
+
+Game cards open replay across their full area, except the independent season/round link to the league match. Player and team identities align in two columns; separate Replay and View match buttons and displayed timezone text are removed. Times remain converted to Lisbon. Assets use v60; database schema remains v32.
+
 ## v59 game teams and match navigation
 
 Game cards show each player’s team at the match and a View match button for linked league games. Replay round labels link to that same match. Standalone games retain their details/replay links without an unrelated match button. Assets use v59; database schema remains v32.

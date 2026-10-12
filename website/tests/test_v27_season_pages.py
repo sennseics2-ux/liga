@@ -56,7 +56,11 @@ def test_match_scores_follow_teams_across_alternating_colours_and_draws(client):
     assert directory.text.count('class="game-player-identity"')==8
     assert 'Team home' in directory.text and 'Team away' in directory.text
     assert directory.text.count(f'href="/matches/{match}"')==4
-    assert 'View match' in directory.text
+    assert 'View match' not in directory.text
+    assert 'game-watch' not in directory.text
+    assert directory.text.count('class="game-card-link"')==4
+    assert directory.text.count('class="game-round-link"')==4
+    assert 'Europe/Lisbon' not in directory.text
     detail=client.get(f'/games/{games[0]}')
     assert f'class="replay-round-link" href="/matches/{match}"' in detail.text
     assert client.get(f'/matches/{match}').status_code==200
