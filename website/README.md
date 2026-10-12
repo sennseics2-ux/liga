@@ -1,3 +1,7 @@
+## v58 player search
+
+The Players search matches only names and usernames, with the placeholder “Name or username” and its Portuguese translation. Assets use v58; database schema remains v32.
+
 ## v57 standings columns and board scores
 
 Standings omit Captain and label completed team matches Games. League Points precede Board Points. Board Points sum every valid completed individual board result through the selected round, including partial team matches, using 1/½/0. Total-board tie-breaks use that same sum. Assets use v57; database schema remains v32.

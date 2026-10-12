@@ -887,9 +887,9 @@ def players(request: Request, q: str = '', team: str = 'all', status: str = 'all
     clauses = ['(p.user_id IS NULL OR (u.account_active=1 AND u.player_active=1))']
     params = []
     if q.strip():
-        clauses.append('(p.name LIKE ? OR p.club LIKE ? OR u.username LIKE ?)')
+        clauses.append('(p.name LIKE ? OR u.username LIKE ?)')
         term = '%' + q.strip() + '%'
-        params.extend([term,term,term])
+        params.extend([term,term])
     if team == 'free':
         clauses.append('p.owner_team_id IS NULL')
     elif team != 'all':

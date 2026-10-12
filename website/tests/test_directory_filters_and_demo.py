@@ -21,6 +21,7 @@ def test_player_search_filters_and_safe_sort(client):
                 store._start_player_term(db,pid,team)
     directory=client.get('/players')
     assert directory.status_code==200 and 'Search players' in directory.text
+    assert 'placeholder="Name or username"' in directory.text
     assert 'Minimum FIDE Rating' not in directory.text
     assert 'name="club"' not in directory.text
     assert '<th>CLUB</th>' not in directory.text
@@ -28,6 +29,11 @@ def test_player_search_filters_and_safe_sort(client):
     assert 'Bea Example' in directory.text
     page=client.get('/players',params={'q':'ana','team':str(knights)})
     assert 'Ana Example' in page.text and 'Bea Example' not in page.text
+    page=client.get('/players',params={'q':'knightmgr'})
+    assert '/users/knightmgr' in page.text and 'Ana Example' not in page.text
+    page=client.get('/players',params={'q':'Club'})
+    assert 'No matching players' in page.text
+    assert all(name not in page.text for name in ('Ana Example','Bea Example','Zoe Example'))
     page=client.get('/players',params={'status':'free','club':'Club B','min_rating':1900})
     assert 'Zoe Example' in page.text and 'Bea Example' not in page.text
     page=client.get('/players',params={'sort':'name_desc'})
