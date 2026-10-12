@@ -37,6 +37,8 @@ def test_game_directory(chromium,client,width,theme):
     try:
         page.goto('http://liga.test/games')
         expect(page.locator('.game-list-card')).to_have_count(25)
+        assert page.locator('select[name=status]').count()==0
+        expect(page.locator('[data-game-date]').first).to_have_text('June, 2026')
         expect(page.locator('.game-result-caption')).to_have_text(['Not played','Draw','Black wins','White wins']+['White wins']*21)
         assert page.locator('.game-list-card[data-result="1-0"] .game-player-white').first.get_attribute('class').endswith('game-player-winner')
         assert page.locator('.game-list-card[data-result="0-1"] .game-player-black').get_attribute('class').endswith('game-player-winner')
@@ -81,10 +83,19 @@ def test_game_directory(chromium,client,width,theme):
         page.goto('http://liga.test/games')
         page.locator('#language-toggle').click();page.locator('button[data-language="pt-PT"]').click()
         if width<=700:expect(page.locator('.games-filter-panel summary')).to_contain_text('Filtros')
+        expect(page.locator('[data-game-date]').first).to_have_text('1 de junho de 2026')
         expect(page.locator('.game-list-card[data-result="1-0"] .game-result-caption').first).to_have_text('Brancas vencem')
         expect(page.locator('.game-list-card[data-result="0-1"] .game-result-caption')).to_have_text('Pretas vencem')
         card=page.locator(f'.game-list-card[data-game-id="{games[0]}"]')
         expect(card.locator('.game-player-white .game-team-venue')).to_have_text('(casa)')
         expect(card.locator('.game-player-black .game-team-venue')).to_have_text('(fora)')
+        page.locator('#language-toggle').click();page.locator('button[data-language="en"]').click()
+        expect(page.locator('[data-game-date]').first).to_have_text('June, 2026')
+        # Midnight UTC conversion must keep the Lisbon day in the full Portuguese date.
+        store.create_game(rosters[0][0],rosters[1][0],'2026-09-05T23:30:00+00:00',event_name='Date example')
+        page.goto('http://liga.test/games?q=Date+example')
+        expect(page.locator('[data-game-date]')).to_have_text('September, 2026')
+        page.locator('#language-toggle').click();page.locator('button[data-language="pt-PT"]').click()
+        expect(page.locator('[data-game-date]')).to_have_text('6 de setembro de 2026')
         assert not errors,errors
     finally:context.close()

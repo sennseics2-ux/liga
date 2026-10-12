@@ -55,6 +55,16 @@ def local_time(value):
         return '—'
 
 
+def game_month(value):
+    """English fallback for the game list; client localizes the Lisbon calendar date."""
+    try:
+        day = datetime.fromisoformat(local_time(value)[:10])
+        return day.strftime('%B, %Y')
+    except (ValueError, TypeError):
+        return '—'
+
+
+TEMPLATES.env.filters['game_month'] = game_month
 TEMPLATES.env.filters['local_time'] = local_time
 TEMPLATES.env.filters['local_date'] = lambda value: '.'.join(reversed(local_time(value)[:10].split('-'))) if value else '—'
 

@@ -1,3 +1,7 @@
+## v63 localized game dates and simpler filters
+
+The Games list shows English month/year dates (September, 2026) or Portuguese full dates (6 de setembro de 2026), updating immediately when switching languages. Dates still use the Lisbon calendar day, with full dates available on hover. The Status selector is removed and the remaining filters use the available space. Assets use v63; database schema remains v32.
+
 ## v62 game team venues and Portuguese outcomes
 
 Game cards label teams (home)/(away) using the linked team match, including boards with reversed colours. Portuguese uses (casa)/(fora) and Brancas vencem/Pretas vencem. Standalone games show no invented venue designation. Assets use v62; database schema remains v32.

@@ -137,7 +137,8 @@ def test_lisbon_display_handles_both_dst_transitions_and_keeps_utc_storage(clien
     ids = insert_games([(date, 'DST fixture', '*') for date, _ in dates])
     directory = client.get('/games')
     for game_id, (stored, display) in zip(ids, dates):
-        assert '.'.join(reversed(display[:10].split('-'))) in directory.text
+        from datetime import datetime
+        assert datetime.fromisoformat(display[:10]).strftime('%B, %Y') in directory.text
         assert display[13:18] in directory.text
         assert display not in directory.text
         assert f'datetime="{stored}"' in directory.text
