@@ -1,3 +1,7 @@
+## v48 settings button and team labels
+
+The appearance button uses a crisp SVG settings icon with coordinated light/dark colours, green hover/open states and a visible keyboard-focus ring. The signed-in account button has a matching SVG chevron. The Players table, mobile cards and team filter use Team/Equipa. Assets use v48; database schema remains v32.
+
 ## v47 focused match and replay layouts
 
 Entire board rows open their game reviews with native keyboard-accessible links. Compact match scoreboards and captain forms fit desktop workspaces; long content scrolls within its panel. Replay tools sit beneath the board, with PGN download beside Replay options. Mobile replays have a single-row header and a full-width board; notation remains independently scrollable. Assets use v47; database schema remains v32.
