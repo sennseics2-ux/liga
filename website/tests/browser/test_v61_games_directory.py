@@ -82,6 +82,9 @@ def test_game_directory(chromium,client,width,theme):
         expect(page.locator('.match-board-player.match-outcome-win')).to_have_count(2)
         expect(page.locator('.match-board-score-value.match-outcome-draw')).to_have_count(2)
         expect(page.locator('.match-board-player.match-outcome-draw')).to_have_count(2)
+        names=page.locator('.match-lineup-player').evaluate_all('(els)=>els.map(el=>({color:getComputedStyle(el).color,bg:getComputedStyle(el).backgroundColor}))')
+        assert len({name['color'] for name in names})==1
+        assert all(name['bg']=='rgba(0, 0, 0, 0)' for name in names)
         for selector in ['.match-board-score-value.match-outcome-win','.match-board-score-value.match-outcome-draw','.board-open-icon','#account-toggle']:
             neutral=page.locator(selector).first.evaluate('(el)=>getComputedStyle(el).color')
             rgb=[int(part) for part in neutral.removeprefix('rgb(').removesuffix(')').split(',')]

@@ -219,9 +219,8 @@ body .account-dropdown{position:static}body .account-menu{right:15px;top:calc(10
 .match-boards{--board-win-text:#141414;--board-win-bg:#dedede;--board-draw-text:#4c4c4c;--board-draw-bg:#f1f1f1}
 :root[data-theme="dark"] .match-boards{--board-win-text:#ffffff;--board-win-bg:#535353;--board-draw-text:#d6d6d6;--board-draw-bg:#303030}
 .match-board-score>.match-board-score-value{display:inline-block;color:var(--match-text);font:inherit;line-height:1.2;padding:2px 5px;border-radius:5px}
-.match-board-player.match-outcome-win .match-lineup-player,.match-board-score>.match-outcome-win{color:var(--board-win-text);background:var(--board-win-bg)}
-.match-board-player.match-outcome-draw .match-lineup-player,.match-board-score>.match-outcome-draw{color:var(--board-draw-text);background:var(--board-draw-bg)}
-.match-board-player:is(.match-outcome-win,.match-outcome-draw) .match-lineup-player{border-radius:5px;padding:2px 4px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.match-board-score>.match-outcome-win{color:var(--board-win-text);background:var(--board-win-bg)}
+.match-board-score>.match-outcome-draw{color:var(--board-draw-text);background:var(--board-draw-bg)}
 @media(max-width:640px){.match-board-score>.match-board-score-value{padding:2px 3px}}
 
 /* Neutral settings accents only on the two requested page types. */

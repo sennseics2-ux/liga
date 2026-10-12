@@ -1,3 +1,7 @@
+## v70 match scores only
+
+Match-board player names use the same neutral styling regardless of result. Only winning/drawing board scores retain their highlights; the winning total in the banner stays highlighted. Assets use v70; database schema remains v32.
+
 ## v69 mobile replay header and five move rows
 
 Mobile replay titles and date/round metadata wrap without clipping. The scrolling notation panel reserves five full move rows (White and Black together). Short screens can scroll the page while keeping the board large; desktop keeps its existing layout. Assets use v69; database schema remains v32.
