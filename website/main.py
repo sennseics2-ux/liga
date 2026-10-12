@@ -1154,9 +1154,14 @@ def games_directory(request: Request, q: str = '', status: str = 'all', season: 
                'white_player':str(white_id) if white_id else 'all',
                'black_player':str(black_id) if black_id else 'all'}
     page_url = lambda number: '/games?' + urlencode({**filters, 'page':number})
+    pagination_pages = []
+    for number in sorted({1, total_pages, *range(max(1, page_number-1), min(total_pages, page_number+1)+1)}):
+        if pagination_pages and number > pagination_pages[-1] + 1:
+            pagination_pages.append(None)
+        pagination_pages.append(number)
     return view(request,'games.html',games=rows,years=years,season_options=season_options, filters=filters,
                 upcoming=upcoming,finished=finished,player_options=player_options,page=page_number,page_size=page_size,
-                total_count=total_count,total_pages=total_pages,
+                total_count=total_count,total_pages=total_pages,pagination_pages=pagination_pages,page_url=page_url,
                 has_previous=page_number>1,has_next=page_number<total_pages,
                 previous_url=page_url(page_number-1),next_url=page_url(page_number+1))
 

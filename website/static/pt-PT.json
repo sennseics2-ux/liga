@@ -1539,5 +1539,14 @@
   "Resize board": "Redimensionar o tabuleiro",
   "Drag to resize the board": "Arrasta para redimensionar o tabuleiro",
   "GAMES": "PARTIDAS",
-  "League points count completed team matches. Board points count every completed board: win 1, draw ½, loss 0. Ties use head-to-head match wins, head-to-head board points, then total board points. Exact ties share a rank.": "Os pontos da liga contam encontros concluídos. Os pontos de tabuleiro contam todas as partidas concluídas: vitória 1, empate ½, derrota 0. Os desempates usam as vitórias nos confrontos diretos, os pontos de tabuleiro nesses confrontos e depois o total de pontos de tabuleiro. Empates exatos partilham a posição."
+  "League points count completed team matches. Board points count every completed board: win 1, draw ½, loss 0. Ties use head-to-head match wins, head-to-head board points, then total board points. Exact ties share a rank.": "Os pontos da liga contam encontros concluídos. Os pontos de tabuleiro contam todas as partidas concluídas: vitória 1, empate ½, derrota 0. Os desempates usam as vitórias nos confrontos diretos, os pontos de tabuleiro nesses confrontos e depois o total de pontos de tabuleiro. Empates exatos partilham a posição.",
+  "completed": "concluídos",
+  "upcoming": "por disputar",
+  "Filters": "Filtros",
+  "Date & round": "Data e ronda",
+  "Result": "Resultado",
+  "White wins": "Vitória das brancas",
+  "Black wins": "Vitória das pretas",
+  "Page {page}": "Página {page}",
+  "Select a game to review. Select its round to view the match.": "Seleciona um jogo para o rever. Seleciona a ronda para ver o encontro."
 }

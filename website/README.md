@@ -1,3 +1,7 @@
+## v61 approved game directory design
+
+The header and page banner retain their existing design. Below them, compact counters and filters precede game cards with date/round, White, centered score and Black columns. Winning names and scores are green with explicit outcome labels. Mobile stacks the players and collapses filters. Cards open games; season/round links open matches. Numbered pagination preserves filters and sorting. Light/dark themes and Portuguese translations are supported. Assets use v61; database schema remains v32.
+
 ## v60 streamlined game cards
 
 Game cards open replay across their full area, except the independent season/round link to the league match. Player and team identities align in two columns; separate Replay and View match buttons and displayed timezone text are removed. Times remain converted to Lisbon. Assets use v60; database schema remains v32.
