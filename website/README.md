@@ -1,3 +1,7 @@
+## v80 centered monochrome landing page
+
+The www.sx-aac.com landing page removes the decorative chessboard and uses a centered black-and-white layout matching the League palette. Compact layouts adapt to portrait and landscape phones to fit the full page without hiding content. The League button and hosting configuration are retained. Assets use v80; database schema remains v32.
+
 ## v79 SX-AAC landing page
 
 A responsive Portuguese club landing page is included in landing/, with the SX-AAC logo and a League button pointing to https://liga.sx-aac.com/. The shared Caddy proxy serves it at www.sx-aac.com and redirects sx-aac.com to www. Configure both DNS records to this VM before deployment. The page uses local assets without external font or script dependencies. Assets use v79; database schema remains v32.

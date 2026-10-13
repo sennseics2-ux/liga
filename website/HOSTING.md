@@ -6,7 +6,7 @@ and downloads are public for visible games.
 
 ## Club landing page at www.sx-aac.com
 
-The v79 release includes a static Portuguese landing page in `landing/`. Its
+The v80 release includes a static Portuguese landing page in `landing/`. Its
 League button opens `https://liga.sx-aac.com/`. Caddy serves the landing page at
 `www.sx-aac.com` and redirects `sx-aac.com` to the www address, while retaining
 the existing League configuration.
@@ -37,6 +37,11 @@ propagate. If HTTPS is not ready, inspect the proxy logs for DNS or certificate
 errors. The static files can also be uploaded unchanged to another static host
 instead of using the shared VM.
 
+For later changes affecting only the landing page, copy just the release's
+`landing/` directory into `/opt/clubdraft/landing/`. The existing Caddy directory
+mount serves the changed files immediately; the League does not need to stop or
+rebuild. The v80 landing page is centered, monochrome and has no chessboard.
+
 ## Upgrade an existing server
 
 Run these commands on the server after reviewing the release. They are deployment
@@ -60,7 +65,7 @@ instructions, not evidence that this workspace has changed the live website.
    sudo docker compose down
    sudo rsync -a --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
      --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
-     ~/chess-fantasy-league-v79/ /opt/clubdraft/
+     ~/chess-fantasy-league-v80/ /opt/clubdraft/
    sudo mkdir -p data backups
    sudo chown -R 10001:10001 data backups
    sudo chmod 700 data backups
@@ -83,7 +88,7 @@ instructions, not evidence that this workspace has changed the live website.
 
 ## V35 release extraction and configuration
 
-The standalone release ZIP has `chess-fantasy-league-v79/` at its root. GitHub's
+The standalone release ZIP has `chess-fantasy-league-v80/` at its root. GitHub's
 Download ZIP instead contains `liga-main/website/` (or `liga-COMMIT/website/`
 for a commit archive). Copy the directory containing
 `main.py`, `compose.yaml`, and `league_migrations.py`; copying `liga-main/` directly
@@ -94,10 +99,10 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 ```bash
 (
   set -e
-  ZIP="$HOME/chess-fantasy-league-v79.zip"
-  RELEASE_DIR="$(mktemp -d "$HOME/liga-v79-release.XXXXXX")"
+  ZIP="$HOME/chess-fantasy-league-v80.zip"
+  RELEASE_DIR="$(mktemp -d "$HOME/liga-v80-release.XXXXXX")"
   unzip -q "$ZIP" -d "$RELEASE_DIR"
-  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v79"
+  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v80"
   if [ ! -f "$SOURCE_DIR/main.py" ]; then
     for CANDIDATE in "$RELEASE_DIR"/liga-*/website; do
       if [ -f "$CANDIDATE/main.py" ]; then

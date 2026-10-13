@@ -1,36 +1,26 @@
-:root{color-scheme:light;--paper:#f6f5f0;--ink:#202321;--muted:#60645f;--line:#d9dbd3}
+/* A compact, centered landing page using the League's monochrome palette. */
+:root{color-scheme:light;--paper:#f7f7f7;--ink:#1c1c1d;--muted:#696a6b;--line:#dedfe0}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif;-webkit-font-smoothing:antialiased}
 a{color:inherit;text-decoration:none}
-a:focus-visible{outline:3px solid #60715e;outline-offset:6px}
-.page{max-width:1280px;min-height:100svh;margin:auto;padding:0 56px;display:flex;flex-direction:column}
-.site-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:30px 0;border-bottom:1px solid var(--line)}
-.brand{display:inline-flex;align-items:center;gap:13px;font-size:25px;font-weight:800;letter-spacing:-1px}
-.brand img{display:block;object-fit:contain;mix-blend-mode:multiply}
+a:focus-visible{outline:3px solid #747474;outline-offset:5px}
+.page{max-width:1200px;min-height:100svh;margin:auto;padding:clamp(12px,2vh,24px) clamp(16px,4vw,56px);display:grid;grid-template-rows:auto 1fr auto;gap:18px}
+.site-header{display:flex;align-items:center;justify-content:center}
+.brand{display:inline-flex;align-items:center;gap:12px;font-size:25px;font-weight:800;letter-spacing:-1px}
+.brand img{display:block;width:48px;height:48px;object-fit:contain;mix-blend-mode:multiply}
 .brand small{display:block;font-size:9px;letter-spacing:2px;margin-top:5px;color:var(--muted)}
-.header-note{font-size:12px;color:var(--muted)}
-main{flex:1;display:grid;grid-template-columns:1.12fr 1fr;align-items:center;gap:70px;padding:68px 0}
-.eyebrow{display:flex;align-items:center;gap:10px;font-size:10px;font-weight:700;letter-spacing:2.4px;margin-bottom:26px;color:#4a5647}
-.eyebrow>span{width:8px;height:8px;background:#60715e;border-radius:50%}
-h1{font-size:clamp(42px,4.5vw,65px);font-weight:750;letter-spacing:-3.2px;line-height:1.07;margin:0;overflow-wrap:break-word}
-h1 em{font-style:normal;color:#66735f}
-.description{font-size:16px;line-height:1.85;color:var(--muted);max-width:400px;margin:25px 0 30px}
-.league-button{display:inline-flex;align-items:center;justify-content:space-between;gap:54px;background:#202321;color:white;border:1px solid #202321;border-radius:8px;padding:17px 23px;font-size:14px;font-weight:700;min-height:54px;transition:background .15s,transform .15s}
-.league-button span{font-size:22px;line-height:1}
-.league-button:hover{background:#3a4437;transform:translateY(-2px)}
-.button-note{font-size:10px;letter-spacing:.4px;color:var(--muted);margin-top:17px}
-.chess-art{width:100%;max-width:440px;justify-self:end;padding:24px;background:#e9ece3;border:1px solid #d4dacd;border-radius:16px;box-shadow:0 20px 50px #26301f09}
-.art-label{display:flex;justify-content:space-between;gap:16px;color:#55624e;font-size:8px;letter-spacing:1px;font-weight:700;margin-bottom:23px}
-.board-frame{padding:10px;background:#fafbf7;border:1px solid #ccd3c4;border-radius:5px;box-shadow:0 10px 18px #25351f13}
-.board{aspect-ratio:1;position:relative;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(8,1fr);background:conic-gradient(#819078 25%,#e9ecdf 0 50%,#819078 0 75%,#e9ecdf 0);background-size:25% 25%;isolation:isolate}
-.piece{grid-column:var(--file);grid-row:var(--rank);display:grid;place-items:center;line-height:1;font-size:clamp(25px,3.8vw,49px);font-family:Georgia,'Times New Roman',serif;filter:drop-shadow(0 2px 1px #20232135)}
-.piece.black{color:#242923}
-.piece.white{color:#fffef6;-webkit-text-stroke:1px #363d31}
-.art-caption{display:flex;align-items:center;justify-content:space-between;color:#4d5947;font-size:12px;font-weight:600;margin-top:22px}
-.art-caption>span:last-child{font-size:25px;font-weight:400}
-footer{display:flex;justify-content:space-between;gap:16px;padding:22px 0;border-top:1px solid var(--line);color:var(--muted);font-size:11px}
+main{display:flex;align-items:center;justify-content:center;background:#1a1b1c;color:#fff;border:1px solid #363738;border-radius:16px;padding:clamp(20px,4vh,44px) 24px}
+.intro{width:100%;max-width:700px;text-align:center}
+.eyebrow{display:flex;align-items:center;justify-content:center;gap:9px;font-size:10px;font-weight:700;letter-spacing:2.4px;margin-bottom:24px;color:#c9c9c9}
+.eyebrow>span{width:6px;height:6px;background:#c9c9c9;border-radius:50%}
+h1{font-size:clamp(38px,5.4vw,66px);font-weight:750;letter-spacing:-2.8px;line-height:1.08;margin:0;overflow-wrap:break-word}
+h1 em{font-style:normal;color:#bcbcbc}
+.description{font-size:16px;line-height:1.75;color:#d2d2d2;max-width:450px;margin:24px auto 28px}
+.league-button{display:inline-flex;align-items:center;justify-content:center;gap:30px;background:#fff;color:#1a1b1c;border:1px solid #fff;border-radius:9px;padding:15px 25px;font-size:14px;font-weight:700;min-height:52px;transition:background .15s,border-color .15s}
+.league-button svg{flex-shrink:0}.league-button:hover{background:#e2e2e2;border-color:#e2e2e2}.league-button:focus-visible{outline-color:#fff}
+.button-note{font-size:10px;letter-spacing:.4px;color:#bcbcbc;margin:16px 0 0}
+footer{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px 18px;color:var(--muted);font-size:11px;line-height:1.5;text-align:center}
 footer a:hover{text-decoration:underline}
-@media(max-width:900px){.page{padding-inline:30px}main{gap:32px;padding:48px 0}h1{font-size:48px;letter-spacing:-2.5px}.chess-art{padding:18px}.art-label{font-size:7px}.piece{font-size:clamp(24px,4vw,38px)}}
-@media(min-width:901px) and (max-height:780px){.site-header{padding-block:22px}main{padding-block:32px}.chess-art{max-width:360px}.piece{font-size:36px}}
-@media(max-width:650px){.page{padding-inline:22px}.site-header{padding:20px 0}.brand{font-size:22px}.brand img{width:44px;height:44px}.brand small{font-size:8px;letter-spacing:1.5px}.header-note{display:none}main{grid-template-columns:1fr;gap:36px;padding:36px 0}.eyebrow{margin-bottom:20px}h1{font-size:clamp(40px,9vw,56px);letter-spacing:-2px}.description{font-size:15px;margin:20px 0 24px;max-width:450px}.league-button{width:100%;max-width:400px}.chess-art{width:100%;max-width:420px;justify-self:center;padding:18px}.piece{font-size:clamp(28px,9vw,43px)}.art-label{font-size:8px}footer{font-size:10px;flex-wrap:wrap;line-height:1.6}}
-@media(prefers-reduced-motion:reduce){.league-button{transition:none}.league-button:hover{transform:none}}
+@media(max-width:650px){.page{gap:14px}.brand{font-size:22px}.brand img{width:40px;height:40px}.brand small{font-size:8px;letter-spacing:1.5px}main{padding:24px 18px;border-radius:12px}.eyebrow{font-size:9px;margin-bottom:20px}h1{font-size:clamp(34px,8vw,48px);letter-spacing:-1.6px}.description{font-size:14px;line-height:1.65;margin:20px auto 24px}.league-button{width:100%;max-width:280px;gap:24px;min-height:48px;padding:13px 20px}.button-note{font-size:9px;letter-spacing:0;margin-top:14px}footer{font-size:10px}}
+@media(max-height:500px){.page{padding-block:10px;gap:10px}.brand{font-size:20px}.brand img{width:32px;height:32px}.brand small{font-size:8px;margin-top:3px}main{padding:12px 18px}.eyebrow{margin-bottom:8px;font-size:9px}h1{font-size:28px;letter-spacing:-1px}.description{font-size:12px;line-height:1.5;margin:8px auto 10px}.league-button{padding:10px 22px;min-height:44px}.button-note{font-size:9px;margin-top:10px}footer{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.league-button{transition:none}}
