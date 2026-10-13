@@ -17,3 +17,20 @@
         format console
     }
 }
+
+# Static club landing page; the League remains on CHESS_DOMAIN above.
+www.sx-aac.com {
+    root * /srv/landing
+    encode zstd gzip
+    file_server
+    header {
+        -Server
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+}
+
+sx-aac.com {
+    redir https://www.sx-aac.com{uri} permanent
+}

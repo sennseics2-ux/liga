@@ -84,6 +84,7 @@ services:
       CHESS_DOMAIN: ${CHESS_DOMAIN:?Set CHESS_DOMAIN in .env}
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./landing:/srv/landing:ro
       - caddy_data:/data
       - caddy_config:/config
     networks:

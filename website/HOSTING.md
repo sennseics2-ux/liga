@@ -4,6 +4,39 @@ The web application, HTTPS proxy and scheduled SQLite snapshots run with Docker
 Compose. The existing domain, accounts and data remain compatible. PGN replay
 and downloads are public for visible games.
 
+## Club landing page at www.sx-aac.com
+
+The v79 release includes a static Portuguese landing page in `landing/`. Its
+League button opens `https://liga.sx-aac.com/`. Caddy serves the landing page at
+`www.sx-aac.com` and redirects `sx-aac.com` to the www address, while retaining
+the existing League configuration.
+
+Before deploying, set the A records for `www.sx-aac.com` and `sx-aac.com` to the
+VM's public IPv4 address in your DNS provider. Set AAAA records only if the VM
+also has working public IPv6; remove any stale records pointing elsewhere.
+Ports 80 and 443 must be reachable, as they already are for the League.
+If these domains currently serve a different site, this changes their destination.
+
+Deploy the release using the upgrade commands below. The proxy needs
+`docker compose up -d --build --force-recreate` so it receives the new read-only
+landing directory mount. Caddy obtains and renews HTTPS certificates automatically
+once DNS resolves to this VM. No additional `.env` settings are required.
+
+Verify after deployment:
+
+```sh
+curl -I https://www.sx-aac.com/
+curl -I https://sx-aac.com/
+curl -I https://liga.sx-aac.com/
+sudo docker compose logs --tail=80 proxy
+```
+
+The www page should return 200; the bare domain should redirect to www; the
+League should retain its existing behavior. Allow time for DNS changes to
+propagate. If HTTPS is not ready, inspect the proxy logs for DNS or certificate
+errors. The static files can also be uploaded unchanged to another static host
+instead of using the shared VM.
+
 ## Upgrade an existing server
 
 Run these commands on the server after reviewing the release. They are deployment
@@ -27,7 +60,7 @@ instructions, not evidence that this workspace has changed the live website.
    sudo docker compose down
    sudo rsync -a --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
      --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
-     ~/chess-fantasy-league-v78/ /opt/clubdraft/
+     ~/chess-fantasy-league-v79/ /opt/clubdraft/
    sudo mkdir -p data backups
    sudo chown -R 10001:10001 data backups
    sudo chmod 700 data backups
@@ -50,7 +83,7 @@ instructions, not evidence that this workspace has changed the live website.
 
 ## V35 release extraction and configuration
 
-The standalone release ZIP has `chess-fantasy-league-v78/` at its root. GitHub's
+The standalone release ZIP has `chess-fantasy-league-v79/` at its root. GitHub's
 Download ZIP instead contains `liga-main/website/` (or `liga-COMMIT/website/`
 for a commit archive). Copy the directory containing
 `main.py`, `compose.yaml`, and `league_migrations.py`; copying `liga-main/` directly
@@ -61,10 +94,10 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 ```bash
 (
   set -e
-  ZIP="$HOME/chess-fantasy-league-v78.zip"
-  RELEASE_DIR="$(mktemp -d "$HOME/liga-v78-release.XXXXXX")"
+  ZIP="$HOME/chess-fantasy-league-v79.zip"
+  RELEASE_DIR="$(mktemp -d "$HOME/liga-v79-release.XXXXXX")"
   unzip -q "$ZIP" -d "$RELEASE_DIR"
-  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v78"
+  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v79"
   if [ ! -f "$SOURCE_DIR/main.py" ]; then
     for CANDIDATE in "$RELEASE_DIR"/liga-*/website; do
       if [ -f "$CANDIDATE/main.py" ]; then

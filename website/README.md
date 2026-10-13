@@ -1,3 +1,7 @@
+## v79 SX-AAC landing page
+
+A responsive Portuguese club landing page is included in landing/, with the SX-AAC logo and a League button pointing to https://liga.sx-aac.com/. The shared Caddy proxy serves it at www.sx-aac.com and redirects sx-aac.com to www. Configure both DNS records to this VM before deployment. The page uses local assets without external font or script dependencies. Assets use v79; database schema remains v32.
+
 ## v78 show captain badge only for active captains
 
 Member profiles no longer display a Captain · Inactive badge. The captain role badge is shown only when the captain role is active. Assets use v78; database schema remains v32.
