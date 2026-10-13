@@ -262,3 +262,7 @@ body .notice-error{background:#fff1f0;color:#9f2424;border-color:#e6a8a4;border-
 /* V77 linked player rows retain table semantics and native link navigation. */
 .player-profile-row{cursor:pointer}.player-profile-row:is(:hover,:focus-within){background:#edf1f7}
 :root[data-theme="dark"] .player-profile-row:is(:hover,:focus-within){background:#354d69}
+
+/* V84: centered flags without a surrounding button bubble or chevron. */
+body .nav-actions .language-toggle,:root[data-theme="dark"] body .nav-actions .language-toggle{display:grid;place-items:center;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+body .language-toggle .flag-icon{display:block;margin:0}

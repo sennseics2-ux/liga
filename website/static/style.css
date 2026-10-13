@@ -99,7 +99,6 @@ h1,h2,h3{font-family:Manrope,system-ui,sans-serif;letter-spacing:-.045em;line-he
 .language-picker{position:relative;order:9;flex:0 0 auto}
 .language-toggle{display:flex;align-items:center;justify-content:center;gap:4px;min-width:48px;height:38px;border:1px solid #e0e0e0;border-radius:9px;background:#fff;font-size:23px;line-height:1;cursor:pointer}
 .language-toggle:focus-visible,.language-menu button:focus-visible{outline:2px solid #626262;outline-offset:3px}
-.language-arrow{font-size:11px;color:#646464}
 .language-menu{position:absolute;right:0;top:calc(100% + 6px);z-index:100;min-width:205px;padding:6px;background:white;border:1px solid #e2e2e2;border-radius:11px;box-shadow:0 10px 24px #1c1c1c24}
 .language-menu[hidden]{display:none!important}
 .language-menu button{display:flex;align-items:center;gap:8px;width:100%;text-align:left;padding:10px 11px;border:0;border-radius:7px;background:transparent;color:var(--pine);font-weight:700;font-size:13px;cursor:pointer}

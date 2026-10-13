@@ -1,3 +1,7 @@
+## v84 centered language flags
+
+The League language selector centers the Portuguese and English flags in an accessible click target, without the surrounding bubble or arrow. Light, dark and mobile replay layouts share the same treatment. Assets use v84; database schema remains v32.
+
 ## v83 compact League button
 
 The landing page League button fits its label, stays centered, and has slightly more vertical padding. Compact landscape layouts retain a comfortable touch target. Assets use v83; database schema remains v32.
