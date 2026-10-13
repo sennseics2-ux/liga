@@ -1,3 +1,7 @@
+## v81 redesigned club entrance
+
+The landing page pairs the SX-AAC emblem with centered editorial typography, a prominent League entry panel and direct links to teams, players, seasons and games. Its monochrome layout adapts to compact portrait and landscape screens. Assets use v81; database schema remains v32.
+
 ## v80 centered monochrome landing page
 
 The www.sx-aac.com landing page removes the decorative chessboard and uses a centered black-and-white layout matching the League palette. Compact layouts adapt to portrait and landscape phones to fit the full page without hiding content. The League button and hosting configuration are retained. Assets use v80; database schema remains v32.
