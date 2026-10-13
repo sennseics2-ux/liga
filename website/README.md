@@ -1,3 +1,7 @@
+## v78 show captain badge only for active captains
+
+Member profiles no longer display a Captain · Inactive badge. The captain role badge is shown only when the captain role is active. Assets use v78; database schema remains v32.
+
 ## v77 clickable player directory rows
 
 Clicking an account-linked player row opens their public player profile. Team links retain their own destination, and native profile links provide keyboard and no-JavaScript access. Linked rows highlight on hover and keyboard focus in both themes. Players without accounts remain non-interactive. Assets use v77; database schema remains v32.

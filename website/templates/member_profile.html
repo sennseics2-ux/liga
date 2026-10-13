@@ -15,7 +15,7 @@
       {% if not member.account_active %}<p class="notice notice-error" data-i18n="Account deactivated">Account deactivated</p>{% endif %}
       <div class="role-indicators" aria-label="Member role status">
         <span class="role-indicator {{ 'role-active' if member.player_active else 'role-inactive' }}"><span class="role-dot" aria-hidden="true"></span><span data-i18n="Player">Player</span> · <span data-i18n="{{ 'Active' if member.player_active else 'Inactive' }}">{{ 'Active' if member.player_active else 'Inactive' }}</span></span>
-        <span class="role-indicator {{ 'role-active' if member.manager_active else 'role-inactive' }}"><span class="role-dot" aria-hidden="true"></span><span data-i18n="Captain">Captain</span> · <span data-i18n="{{ 'Active' if member.manager_active else 'Inactive' }}">{{ 'Active' if member.manager_active else 'Inactive' }}</span></span>
+        {% if member.manager_active %}<span class="role-indicator role-active"><span class="role-dot" aria-hidden="true"></span><span data-i18n="Captain">Captain</span> · <span data-i18n="Active">Active</span></span>{% endif %}
       </div>
     </div>
     {% if career %}
