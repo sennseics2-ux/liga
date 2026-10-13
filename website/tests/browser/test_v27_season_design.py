@@ -28,6 +28,25 @@ def test_current_season_dropdown_and_completed_match(chromium,league_server,widt
     context.route('**/*',lambda route:route.continue_() if route.request.url.startswith(league.base+'/') else route.abort())
     page=context.new_page();errors=[];page.on('pageerror',lambda error:errors.append(str(error)))
     try:
+        banner_styles="""el => {
+            const style=getComputedStyle(el), heading=getComputedStyle(el.querySelector('h1'));
+            return {height:el.getBoundingClientRect().height,background:style.backgroundColor,
+                paddingTop:style.paddingTop,paddingBottom:style.paddingBottom,
+                fontSize:heading.fontSize,decoration:getComputedStyle(el,'::after').content,
+                legacyDecoration:getComputedStyle(el,'::before').content};
+        }"""
+        for theme in ['light','dark']:
+            page.goto(league.base+'/players')
+            page.locator('html').evaluate('(el,theme)=>el.dataset.theme=theme',theme)
+            reference=page.locator('.page-banner').evaluate(banner_styles)
+            page.goto(league.base+'/seasons?season='+str(season))
+            page.locator('html').evaluate('(el,theme)=>el.dataset.theme=theme',theme)
+            assert page.locator('.page-banner').evaluate(banner_styles)==reference
+            banner=page.locator('.page-banner').bounding_box()
+            for selector in ['h1','.eyebrow','.season-description','.season-dates']:
+                box=page.locator('.page-banner '+selector).bounding_box()
+                assert box['y']>=banner['y'] and box['y']+box['height']<=banner['y']+banner['height']
+            assert_fits_phone(page)
         page.goto(league.base+'/seasons')
         expect(page.locator('h1')).to_have_text('2026-2027')
         expect(page.locator('.competition-empty h3')).to_have_text('Calendário em breve')

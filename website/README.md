@@ -1,3 +1,7 @@
+## v74 consistent Seasons banner
+
+The Seasons page now uses the shared banner layout, background, typography and chess decoration used on Teams and Players, in light and dark mode. The selected season, status and dates remain visible. Assets use v74; database schema remains v32.
+
 ## v73 copy current replay FEN
 
 Ctrl+C (Cmd+C on macOS) copies the full FEN of the currently displayed replay position, independently of board orientation. Text selections, form inputs and open menus retain native copy behaviour. A localized confirmation appears briefly. Assets use v73; database schema remains v32.

@@ -97,6 +97,10 @@
 :root[data-theme="dark"] body :is(.season-hero,.admin-hero,.match-hero) :is(.competition-eyebrow,.match-back,.match-heading p,.admin-hero-inner>div>p){color:#cbd8e9}
 .career-record-compact .career-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.career-games-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 2px 10px;font-size:12px;font-weight:700}.career-games-heading strong{font:800 24px Manrope,sans-serif;font-variant-numeric:tabular-nums}
 
+/* V74 Seasons uses the shared page banner, with compact season metadata. */
+body .seasons-banner .season-description{margin-top:14px;color:inherit}
+body .seasons-banner .season-dates{font-size:12px;margin-top:12px}
+
 /* V37 consistent menu headers, controls below Results, solid replay pieces. */
 body .page-banner{height:240px;min-height:240px;padding:18px 0;display:flex;align-items:center;box-sizing:border-box}body .page-banner h1{font-size:clamp(40px,5vw,62px);letter-spacing:-2px}body .page-banner :is(.eyebrow,.competition-eyebrow){margin:0 0 14px}body .admin-hero-inner{padding-top:0;padding-bottom:0}body .admin-hero-inner>div>p:not(.competition-eyebrow){margin-top:14px}body .season-hero .season-description{margin-top:14px}.results-controls{padding-top:24px}.results-controls .season-picker-panel{width:100%;max-width:none}.results-controls .season-picker{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 20px}.results-controls .season-picker label{margin:0}.results-controls .season-picker label[for="season-select"]{grid-column:1;grid-row:1}.results-controls .season-picker label[for="round-select"]{grid-column:2;grid-row:1}.results-controls .season-picker>div{grid-row:2}.results-controls .season-admin-link{color:var(--muted)}.games-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
 
