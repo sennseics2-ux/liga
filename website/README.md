@@ -1,3 +1,7 @@
+## v76 admin player profile links
+
+Names in the Registered players directory link to the associated public player profile, including captain-players. Players without a linked account retain plain names. Assets use v76; database schema remains v32.
+
 ## v75 red validation alerts
 
 Scheduling validation errors and other shared error notices use red text, a red border and a tinted background with contrasting colors in light and dark mode. Error notices have an alert role for screen readers. Assets use v75; database schema remains v32.

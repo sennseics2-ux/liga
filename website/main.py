@@ -1313,7 +1313,7 @@ def admin(request: Request):
     auth(request, "admin")
     store.settle_expired()
     with store.read_db() as db:
-        players = db.execute("""SELECT p.*, t.name AS owner_name,u.player_active,
+        players = db.execute("""SELECT p.*, t.name AS owner_name,u.player_active,u.username,
             EXISTS(SELECT 1 FROM auctions WHERE player_id=p.id AND status='open') AS listed
             FROM players p LEFT JOIN teams t ON t.id=p.owner_team_id
             LEFT JOIN users u ON u.id=p.user_id ORDER BY p.name""").fetchall()
