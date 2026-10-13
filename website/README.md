@@ -1,3 +1,7 @@
+## v82 landing affiliation and simplified entry
+
+The landing page names Associação Académica de Coimbra beneath Secção de Xadrez in the top-right header. The League button displays only Entrar na Liga. Assets use v82; database schema remains v32.
+
 ## v81 redesigned club entrance
 
 The landing page pairs the SX-AAC emblem with centered editorial typography, a prominent League entry panel and direct links to teams, players, seasons and games. Its monochrome layout adapts to compact portrait and landscape screens. Assets use v81; database schema remains v32.
