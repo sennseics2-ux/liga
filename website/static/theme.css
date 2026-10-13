@@ -258,3 +258,7 @@ body:is(.games-list-page,.match-page) .account-menu a:is(:hover,:focus-visible),
 /* V75 make validation failures unmistakable in both themes. */
 body .notice-error{background:#fff1f0;color:#9f2424;border-color:#e6a8a4;border-left-color:#c53030}
 :root[data-theme="dark"] body .notice-error{background:#46272d;color:#ffbdba;border-color:#b2787c;border-left-color:#ff8c85}
+
+/* V77 linked player rows retain table semantics and native link navigation. */
+.player-profile-row{cursor:pointer}.player-profile-row:is(:hover,:focus-within){background:#edf1f7}
+:root[data-theme="dark"] .player-profile-row:is(:hover,:focus-within){background:#354d69}

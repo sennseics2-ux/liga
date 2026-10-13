@@ -175,3 +175,12 @@ document.querySelectorAll('[data-season-selector]').forEach(select => {
     select.form.requestSubmit();
   });
 });
+
+// Make player rows clickable without overriding their native profile/team links.
+document.querySelectorAll('[data-player-profile]').forEach(row => {
+  row.addEventListener('click', event => {
+    if (event.defaultPrevented || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey ||
+        event.target.closest('a, button, input, select, textarea') || window.getSelection()?.toString()) return;
+    window.location.assign(row.dataset.playerProfile);
+  });
+});

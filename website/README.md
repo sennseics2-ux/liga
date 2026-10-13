@@ -1,3 +1,7 @@
+## v77 clickable player directory rows
+
+Clicking an account-linked player row opens their public player profile. Team links retain their own destination, and native profile links provide keyboard and no-JavaScript access. Linked rows highlight on hover and keyboard focus in both themes. Players without accounts remain non-interactive. Assets use v77; database schema remains v32.
+
 ## v76 admin player profile links
 
 Names in the Registered players directory link to the associated public player profile, including captain-players. Players without a linked account retain plain names. Assets use v76; database schema remains v32.
