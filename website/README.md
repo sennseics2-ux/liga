@@ -1,3 +1,7 @@
+## v75 red validation alerts
+
+Scheduling validation errors and other shared error notices use red text, a red border and a tinted background with contrasting colors in light and dark mode. Error notices have an alert role for screen readers. Assets use v75; database schema remains v32.
+
 ## v74 consistent Seasons banner
 
 The Seasons page now uses the shared banner layout, background, typography and chess decoration used on Teams and Players, in light and dark mode. The selected season, status and dates remain visible. Assets use v74; database schema remains v32.

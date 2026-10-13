@@ -254,3 +254,7 @@ body:is(.games-list-page,.match-page) .account-menu a:is(:hover,:focus-visible),
 /* V73: unobtrusive confirmation for native FEN copying. */
 .replay-copy-feedback{position:fixed;bottom:max(16px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:20;max-width:calc(100% - 32px);padding:9px 14px;border:1px solid #777;border-radius:8px;background:#242424;color:#fff;font-size:13px;box-shadow:0 4px 16px #0003;pointer-events:none}
 :root[data-theme="dark"] .replay-copy-feedback{background:#ededed;color:#171717}
+
+/* V75 make validation failures unmistakable in both themes. */
+body .notice-error{background:#fff1f0;color:#9f2424;border-color:#e6a8a4;border-left-color:#c53030}
+:root[data-theme="dark"] body .notice-error{background:#46272d;color:#ffbdba;border-color:#b2787c;border-left-color:#ff8c85}
