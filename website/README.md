@@ -1,3 +1,7 @@
+## v83 compact League button
+
+The landing page League button fits its label, stays centered, and has slightly more vertical padding. Compact landscape layouts retain a comfortable touch target. Assets use v83; database schema remains v32.
+
 ## v82 landing affiliation and simplified entry
 
 The landing page names Associação Académica de Coimbra beneath Secção de Xadrez in the top-right header. The League button displays only Entrar na Liga. Assets use v82; database schema remains v32.
