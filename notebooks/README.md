@@ -4,7 +4,7 @@
 
 1. In Colab, choose **Runtime → Change runtime type → GPU → A100** and connect.
 2. Run notebook setup cells 1–4. They compile Lc0 v0.32.1 with the CUDA FP16 backend and download the official BT4-it332 network. Allow several minutes for the first build and network download.
-3. On a Liga game review, pause replay on the exact position you want. Open the desktop browser console (F12 → Console), then paste the snippet below. It copies the displayed FEN and recorded move history.
+3. On a Liga game review, pause replay on the exact position you want. Press **Ctrl+C** (Cmd+C on macOS) to copy its FEN for quick analysis. To include the recorded move history as well, open the desktop browser console (F12 → Console) and run the snippet below.
 4. Paste the copied JSON between the triple quotes in notebook cell 5. A full FEN alone is also supported. Keep the JSON when possible: Lc0 uses position history and repetition information.
 5. Run cells 5–7. Confirm the displayed board and side to move. Begin with 120 seconds and 3 candidate moves; try 300–600 seconds or MultiPV 1 for a deeper single-line search.
 6. Read the evaluation from White's perspective: positive favours White, negative favours Black. W/D/L percentages mean White win / draw / Black win. The line is a suggested continuation. Cell 8 optionally downloads the analysis JSON.

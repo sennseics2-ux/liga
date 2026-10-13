@@ -1554,3 +1554,5 @@ Select a game to review. Select its round to view the match.	Seleciona um jogo p
 Lisbon	Lisboa
 {date} · Lisbon	{date} · Lisboa
 Match history	Histórico de partidas
+FEN copied to clipboard	FEN copiado para a área de transferência
+Keyboard: ←/→ move, Home/End jump, Space play or pause, F flip board, Ctrl+C copy FEN.	Teclado: ←/→ para avançar ou recuar, Home/End para saltar, espaço para reproduzir ou pausar, F para virar o tabuleiro, Ctrl+C para copiar o FEN.

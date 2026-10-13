@@ -1,3 +1,7 @@
+## v73 copy current replay FEN
+
+Ctrl+C (Cmd+C on macOS) copies the full FEN of the currently displayed replay position, independently of board orientation. Text selections, form inputs and open menus retain native copy behaviour. A localized confirmation appears briefly. Assets use v73; database schema remains v32.
+
 ## v72 Seasons navigation and banner
 
 The /seasons navigation item, banner label and browser title now use Seasons. Portuguese navigation and banner labels use Épocas. Assets use v72; database schema remains v32.

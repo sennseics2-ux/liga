@@ -352,6 +352,28 @@
   speed.addEventListener('change', () => {
     if (timer !== null) { stop(); start(); }
   });
+  // Native copy events support Ctrl+C/Cmd+C without clipboard permission prompts.
+  let copyNotice = null;
+  let copyNoticeTimer = null;
+  document.addEventListener('copy', (event) => {
+    const target = document.activeElement;
+    if (event.defaultPrevented || !event.clipboardData || window.getSelection()?.toString() ||
+        target?.isContentEditable || target?.closest('input, textarea, select, [role="textbox"], [role="dialog"], [role="menu"]') ||
+        document.querySelector('#account-toggle[aria-expanded="true"], #language-toggle[aria-expanded="true"], .nav-links.open, dialog[open], [aria-modal="true"]')) return;
+    event.clipboardData.setData('text/plain', game.positions[index]);
+    event.preventDefault();
+    if (!copyNotice) {
+      copyNotice = document.createElement('div');
+      copyNotice.className = 'replay-copy-feedback';
+      copyNotice.setAttribute('role', 'status');
+      copyNotice.setAttribute('data-i18n', 'FEN copied to clipboard');
+      document.body.appendChild(copyNotice);
+    }
+    copyNotice.textContent = t('FEN copied to clipboard');
+    copyNotice.hidden = false;
+    window.clearTimeout(copyNoticeTimer);
+    copyNoticeTimer = window.setTimeout(() => { copyNotice.hidden = true; }, 2000);
+  });
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && annotationGesture) {
       cancelAnnotationGesture(); event.preventDefault(); return;
