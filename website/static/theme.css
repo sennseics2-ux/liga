@@ -95,7 +95,7 @@
 /* V36 shared dark headers and career record hierarchy. */
 :root[data-theme="dark"] body :is(.season-hero,.admin-hero,.match-hero){background:#23344b;color:var(--theme-text);border-bottom:1px solid #71849e}
 :root[data-theme="dark"] body :is(.season-hero,.admin-hero,.match-hero) :is(.competition-eyebrow,.match-back,.match-heading p,.admin-hero-inner>div>p){color:#cbd8e9}
-.career-record-compact .career-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.career-games-heading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 2px 10px;font-size:12px;font-weight:700}.career-games-heading strong{font:800 24px Manrope,sans-serif;font-variant-numeric:tabular-nums}
+.career-record-compact .career-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.career-games-heading{display:flex;align-items:center;justify-content:flex-start;flex-wrap:wrap;gap:8px;margin:0 0 10px;padding:0;font-size:12px;font-weight:700;line-height:1.4}.career-games-heading strong{display:inline-flex;align-items:center;justify-content:center;min-width:30px;padding:3px 8px;border-radius:6px;background:#eceef2;color:#293342;font:800 18px/1.2 Manrope,sans-serif;font-variant-numeric:tabular-nums}
 
 /* V74 Seasons uses the shared page banner, with compact season metadata. */
 body .seasons-banner .season-description{margin-top:14px;color:inherit}
@@ -273,3 +273,5 @@ body .language-toggle .flag-icon{display:block;margin:0}
 .profile-identity-meta{display:flex;align-items:center;flex-wrap:wrap;gap:4px 6px}
 .profile-country{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:100%}.profile-country>span{overflow-wrap:anywhere}
 .profile-country-flag{display:block;width:24px;height:18px;object-fit:cover;border-radius:2px;box-shadow:0 0 0 1px #00000024;flex:none}
+
+:root[data-theme="dark"] .career-games-heading strong{background:var(--theme-soft);color:var(--theme-text)}

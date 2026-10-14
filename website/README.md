@@ -1,3 +1,7 @@
+## v89 grouped games-played total
+
+The profile career summary places the games-played total directly beside its label in a compact neutral badge, rather than against the far edge. The heading aligns vertically above the wins/draws/losses grid and adapts to both themes. Assets use v89; database schema remains v32.
+
 ## v88 profile country flags
 
 Player and captain profiles show a small local SVG flag beside recognized countries. English/Portuguese names and ISO codes share the account country mapping. Empty or unrecognized values have no flag. All 249 ISO country flags are bundled from flag-icons v7.5.0 under MIT, with attribution in licenses/. Assets use v88; database schema remains v32.

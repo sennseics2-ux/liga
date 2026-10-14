@@ -20,7 +20,7 @@
     </div>
     {% if career %}
   <section class="career-record career-record-compact" aria-label="All-season chess record">
-    <div class="career-games-heading"><span data-i18n="Games played">Games played</span><strong data-no-i18n>{{ career.played }}</strong></div>
+    <h3 class="career-games-heading"><span data-i18n="Games played">Games played</span><strong data-no-i18n>{{ career.played }}</strong></h3>
     <dl class="career-stats"><div class="career-stat career-wins"><dt data-i18n="Wins">Wins</dt><dd data-no-i18n>{{ career.wins }}</dd></div><div class="career-stat career-draws"><dt data-i18n="Draws">Draws</dt><dd data-no-i18n>{{ career.draws }}</dd></div><div class="career-stat career-losses"><dt data-i18n="Losses">Losses</dt><dd data-no-i18n>{{ career.losses }}</dd></div></dl>
   </section>
     {% endif %}
