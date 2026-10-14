@@ -41,14 +41,14 @@
   <div class="season-squad-card">
     <div class="season-squad-heading"><div><span class="competition-eyebrow" data-i18n="Season squad">Season squad</span><h3 data-no-i18n>{{ season_name }}</h3></div><span class="season-squad-note" data-i18n="Season record">Season record</span></div>
     <div class="table-scroll"><table class="data-table mobile-cards season-squad-table">
-      <thead><tr><th>PLAYER</th><th>ROLE</th><th data-i18n="SCORE / MATCHES">SCORE / MATCHES</th><th data-i18n="JOIN DATE">JOIN DATE</th><th data-i18n="LEAVE DATE">LEAVE DATE</th></tr></thead>
+      <thead><tr><th>PLAYER</th><th>ROLE</th><th data-i18n="SCORE">SCORE</th><th data-i18n="JOIN DATE">JOIN DATE</th><th data-i18n="LEAVE DATE">LEAVE DATE</th></tr></thead>
       <tbody>{% for p in membership %}<tr>
         <td data-label="PLAYER"><div class="table-person">
           {% if p.user_id and p.photo_updated_at %}<img class="squad-avatar" src="/users/{{ p.username|urlencode }}/photo" alt="" loading="lazy">{% else %}<span class="squad-avatar photo-placeholder team-player-placeholder" aria-hidden="true">♞</span>{% endif %}
           <a class="strong-link" href="/players/{{ p.player_id }}"><span data-no-i18n>{{ p.name }}</span></a>
         </div></td>
         <td data-label="ROLE"><span class="squad-role {{ 'squad-captain' if p.manager_player else '' }}" data-i18n="{{ 'Captain-player' if p.manager_player else 'Player' }}">{{ 'Captain-player' if p.manager_player else 'Player' }}</span></td>
-        <td data-label="SCORE / MATCHES"><strong class="season-player-score" data-no-i18n>{{ season_scores.get(p.player_id, {}).get('summary', '0/0') }}</strong></td>
+        <td data-label="SCORE"><strong class="season-player-score" data-no-i18n>{{ season_scores.get(p.player_id, {}).get('summary', '0/0') }}</strong></td>
         <td data-label="JOIN DATE"><time datetime="{{ p.started_at }}" data-no-i18n>{{ (p.started_at|local_time)[:10] }}</time>{% if p.source in ('imported current snapshot','legacy auction listing') %}<small class="history-tag">first confirmed</small>{% endif %}</td>
         <td data-label="LEAVE DATE">{% if p.end_reason == 'unrecorded legacy change; end date unknown' %}<span class="history-tag">Unknown (older records incomplete)</span>{% elif p.ended_at and p.ended_at < season_end %}<time datetime="{{ p.ended_at }}" data-no-i18n>{{ (p.ended_at|local_time)[:10] }}</time>{% else %}<span class="season-stayed" title="Stayed through season end" data-i18n-title="Stayed through season end">-</span>{% endif %}</td>
       </tr>{% endfor %}</tbody>
