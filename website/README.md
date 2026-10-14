@@ -1,3 +1,7 @@
+## v106 current squad scores and matches
+
+Current squad replaces Club with Score / Matches, using completed games played for the team in the current league season. Choosing an archived season only changes the archive statistics below. Squad by season uses the same Score / Matches label; Portuguese retains PONTOS / PARTIDAS. Assets use v106; schema remains v103_player_countries.
+
 ## v104 inactive-player badge
 
 Active player badges are hidden on member profiles. Inactive player roles display a red Inactive Player badge (Jogador inativo in Portuguese), with accessible colors in both themes. Captain badges are preserved. Assets use v104; schema remains v103_player_countries.

@@ -1075,8 +1075,17 @@ def team_detail(request: Request, team_id: int, season: str | None = None):
         visible, visibility_values=public_game_visibility()
         season_scores=team_season_scores(db,team_id,start,end,
             int(season[1:]) if str(season).startswith('s') else None,visible,visibility_values)
-        seasons=[option['value'] for option in season_options]
-        current_score=next((row['points'] for row in current_table(db) if row['id']==team_id),0)
+        season_keys=[option['value'] for option in season_options]
+        current_season=seasons.calendar_view(db,'current')['season']
+        if current_season['id']:
+            current_start,current_end,_=season_bounds(db,f"s{current_season['id']}")
+        else:
+            zone=ZoneInfo('Europe/Lisbon')
+            current_start=store.iso(datetime(current_season['start_year'],7,1,tzinfo=zone))
+            current_end=store.iso(datetime(current_season['start_year']+1,7,1,tzinfo=zone))
+        current_season_scores=team_season_scores(db,team_id,current_start,current_end,
+            current_season['id'],visible,visibility_values)
+        current_score=next((row['points'] for row in season_table(db,current_season['id'],True) if row['id']==team_id),0)
         current=db.execute("""SELECT p.*,u.username,u.photo_updated_at FROM players p LEFT JOIN users u ON u.id=p.user_id
             WHERE p.owner_team_id=? ORDER BY CASE WHEN p.user_id=? THEN 0 ELSE 1 END,p.rating DESC,p.name COLLATE NOCASE""",
             (team_id,team['manager_id'])).fetchall()
@@ -1107,9 +1116,9 @@ def team_detail(request: Request, team_id: int, season: str | None = None):
             ORDER BY a.closed_at DESC,a.id DESC""",
             (team_id,team_id,start,end)).fetchall()
     return view(request,'team_detail.html',team=team,current=current,season_honours=honours,
-                season=season,seasons=seasons,season_options=season_options,season_name=season_name,membership=membership,
+                season=season,seasons=season_keys,season_options=season_options,season_name=season_name,membership=membership,
                 management=management,transfers=transfers,team_games=team_games,history_complete=history_complete,
-                current_score=current_score,season_scores=season_scores,season_end=end)
+                current_score=current_score,current_season_scores=current_season_scores,season_scores=season_scores,season_end=end)
 
 
 

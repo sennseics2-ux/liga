@@ -412,3 +412,7 @@ body .language-toggle .flag-icon{display:block;margin:0}
 /* V104: player status appears only when inactive. */
 .member-profile-page .role-indicator.inactive-player{background:#fff1f0;border-color:#d87171;color:#9f2424}
 :root[data-theme="dark"] .member-profile-page .role-indicator.inactive-player{background:#46272d;border-color:#b2787c;color:#ffbdba}
+
+/* V106: compact chess score and game-count totals in the current roster. */
+.current-squad-table .current-player-score{display:inline-block;padding:5px 9px;border-radius:6px;background:#eceef2;color:#293342;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+:root[data-theme="dark"] .current-squad-table .current-player-score{background:var(--theme-soft);color:var(--theme-text)}
