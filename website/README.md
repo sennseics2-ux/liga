@@ -1,3 +1,7 @@
+## v116 transfer-market empty-state wording
+
+The homepage empty market now says No players are listed for transfer. The transfer market is currently closed., with the corresponding Portuguese translation. Assets use v116; schema remains v108_unregistered_player_fide.
+
 ## v115 homepage title and site branding
 
 The homepage browser title is Liga SX-AAC. Header and footer branding now read SX-AAC, with matching accessible header/link labels in English and Portuguese. Layout and the CHESS LEAGUE subtitle remain unchanged. Assets use v115; schema remains v108_unregistered_player_fide.
