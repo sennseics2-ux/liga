@@ -858,6 +858,28 @@ def update_player_country(player_id, country, actor_id):
                before={'country':player['country']},after={'country':country})
 
 
+def update_player_name(player_id, name, actor_id, original_name):
+    """Rename a player and its linked profile without changing public identities."""
+    name=str(name or '').strip()
+    if not 2<=len(name)<=80 or any(ord(char)<32 or ord(char)==127 for char in name):
+        raise ValueError('Player name must be 2–80 characters.')
+    with transaction() as db:
+        _admin_actor(db,actor_id)
+        player=db.execute('SELECT name,user_id FROM players WHERE id=?',(player_id,)).fetchone()
+        if player is None:
+            raise ValueError('Player not found')
+        if player['name']!=original_name:
+            raise ValueError('Player name changed. Reload the page and try again.')
+        if name==player['name']:
+            return
+        db.execute('UPDATE players SET name=? WHERE id=?',(name,player_id))
+        if player['user_id'] is not None:
+            db.execute('UPDATE users SET name=? WHERE id=?',(name,player['user_id']))
+        _audit(db,'player_name_updated','player',player_id,actor_id,'Player name updated',
+               before={'name':player['name'],'user_id':player['user_id']},
+               after={'name':name,'user_id':player['user_id']})
+
+
 def validate_player_fide_id(value):
     value=str(value or '').strip()
     if value=='0':return None

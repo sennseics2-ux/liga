@@ -1814,5 +1814,10 @@
   "SCORE / MATCHES": "PONTOS / PARTIDAS",
   "SCORE": "PONTOS",
   "Kosovo": "Kosovo",
-  "Two teams. Four boards. Every point counts.": "Duas equipas. Quatro tabuleiros. Cada ponto conta."
+  "Two teams. Four boards. Every point counts.": "Duas equipas. Quatro tabuleiros. Cada ponto conta.",
+  "Player name": "Nome do jogador",
+  "Edit player name": "Editar nome do jogador",
+  "Save player name": "Guardar nome do jogador",
+  "Player name updated.": "Nome do jogador atualizado.",
+  "Player name changed. Reload the page and try again.": "O nome do jogador foi alterado. Atualize a página e tente novamente."
 }

@@ -27,6 +27,41 @@ for (const form of document.querySelectorAll('form[data-confirm]')) {
   });
 }
 
+// Player names remain profile links until the administrator opens the editor.
+for (const form of document.querySelectorAll('[data-player-name-editor]')) {
+  const input = form.querySelector('[data-name-input]');
+  const link = form.querySelector('[data-name-link]');
+  const edit = form.querySelector('[data-name-edit]');
+  const save = form.querySelector('[data-name-save]');
+  const original = input.value;
+  const setEditing = (active) => {
+    input.hidden = !active;
+    input.disabled = !active;
+    link.hidden = active;
+    edit.hidden = active;
+    save.hidden = !active;
+    edit.setAttribute('aria-expanded', String(active));
+    if (active) {
+      input.focus();
+      input.select();
+    }
+  };
+  setEditing(false);
+  edit.addEventListener('click', () => setEditing(true));
+  input.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      input.value = original;
+      setEditing(false);
+      edit.focus();
+    }
+  });
+  form.addEventListener('submit', () => {
+    save.disabled = true;
+    form.setAttribute('aria-busy', 'true');
+  });
+}
+
 // Accessible account menu: click to open, click elsewhere or press Escape to close.
 const accountToggle = document.getElementById('account-toggle');
 const accountMenu = document.getElementById('account-menu');

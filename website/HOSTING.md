@@ -6,7 +6,7 @@ and downloads are public for visible games.
 
 ## Club landing page at www.sx-aac.com
 
-The v112 release includes a static Portuguese landing page in `landing/`. Its
+The v113 release includes a static Portuguese landing page in `landing/`. Its
 League button opens `https://liga.sx-aac.com/`. Caddy serves the landing page at
 `www.sx-aac.com` and redirects `sx-aac.com` to the www address, while retaining
 the existing League configuration.
@@ -40,7 +40,7 @@ instead of using the shared VM.
 For later changes affecting only the landing page, copy just the release's
 `landing/` directory into `/opt/clubdraft/landing/`. The existing Caddy directory
 mount serves the changed files immediately; the League does not need to stop or
-rebuild. The v112 landing page is centered, monochrome and has no chessboard.
+rebuild. The v113 landing page is centered, monochrome and has no chessboard.
 
 ## Upgrade an existing server
 
@@ -65,7 +65,7 @@ instructions, not evidence that this workspace has changed the live website.
    sudo docker compose down
    sudo rsync -a --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
      --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
-     ~/chess-fantasy-league-v112/ /opt/clubdraft/
+     ~/chess-fantasy-league-v113/ /opt/clubdraft/
    sudo mkdir -p data backups
    sudo chown -R 10001:10001 data backups
    sudo chmod 700 data backups
@@ -88,7 +88,7 @@ instructions, not evidence that this workspace has changed the live website.
 
 ## V35 release extraction and configuration
 
-The standalone release ZIP has `chess-fantasy-league-v112/` at its root. GitHub's
+The standalone release ZIP has `chess-fantasy-league-v113/` at its root. GitHub's
 Download ZIP instead contains `liga-main/website/` (or `liga-COMMIT/website/`
 for a commit archive). Copy the directory containing
 `main.py`, `compose.yaml`, and `league_migrations.py`; copying `liga-main/` directly
@@ -99,10 +99,10 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 ```bash
 (
   set -e
-  ZIP="$HOME/chess-fantasy-league-v112.zip"
-  RELEASE_DIR="$(mktemp -d "$HOME/liga-v112-release.XXXXXX")"
+  ZIP="$HOME/chess-fantasy-league-v113.zip"
+  RELEASE_DIR="$(mktemp -d "$HOME/liga-v113-release.XXXXXX")"
   unzip -q "$ZIP" -d "$RELEASE_DIR"
-  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v112"
+  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v113"
   if [ ! -f "$SOURCE_DIR/main.py" ]; then
     for CANDIDATE in "$RELEASE_DIR"/liga-*/website; do
       if [ -f "$CANDIDATE/main.py" ]; then
@@ -539,7 +539,7 @@ sudo env CHESS_USE_OFFSITE_COMPOSE=1 bash deploy/reset_database.sh --keep-admin-
 
 ## Import the requested AA Coimbra players
 
-After installing and rebuilding v112, run inside the live web container:
+After installing and rebuilding v113, run inside the live web container:
 
 ```bash
 cd /opt/clubdraft
@@ -565,7 +565,7 @@ rating or nationality is inferred from the PDF.
 
 ## Refresh all FIDE ratings immediately
 
-After deploying and rebuilding v112, run:
+After deploying and rebuilding v113, run:
 
 ```bash
 cd /opt/clubdraft
@@ -613,7 +613,7 @@ for the full roster; per-record output includes the country or `country unchange
 
 ## Fill only missing countries
 
-After deploying v112, run this country-only command:
+After deploying v113, run this country-only command:
 
 ```bash
 cd /opt/clubdraft
@@ -655,3 +655,15 @@ that the record needs review and exits with a nonzero status, so it cannot be
 mistaken for a completed update. Network failures are also reported. Players
 without a FIDE ID need an ID or a country entered before their country can be
 resolved; the script does not guess from names or team membership.
+
+## Administrator inline player names in v113
+
+Deploy using the normal source upgrade and rebuild. No database migration or
+additional database command is needed. On `/admin/players`, click the pencil next
+to a player's name, enter the name, and click the floppy disk to save. Enter also
+saves; Escape restores the original name without saving. Names link to their
+profiles when the editor is closed. Editing a linked player updates the account's
+display name as well, keeping its username, login credentials, profile URL, FIDE
+ID, country and ratings intact. Server-side validation requires 2–80 characters
+and an administrator session with CSRF. Concurrent name changes are rejected
+rather than overwritten. Player-name updates are recorded in the audit log.

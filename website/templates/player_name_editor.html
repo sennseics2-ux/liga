@@ -1,0 +1,16 @@
+<div class="admin-player-identity">
+  <form class="player-name-editor" method="post" action="/admin/players/{{ p.id }}/name" data-player-name-editor>
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <input type="hidden" name="original_name" value="{{ p.name }}">
+    <a class="strong-link" href="/players/{{ p.id }}" data-name-link hidden><span data-no-i18n>{{ p.name }}</span></a>
+    <label class="sr-only" for="player-name-{{ p.id }}" data-i18n="Player name">Player name</label>
+    <input id="player-name-{{ p.id }}" name="name" value="{{ p.name }}" minlength="2" maxlength="80" required autocomplete="off" data-name-input>
+    <button class="player-name-button" type="button" data-name-edit aria-controls="player-name-{{ p.id }}" aria-expanded="false" aria-label="Edit player name" title="Edit player name" hidden>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m16 3 5 5L8 21H3v-5L16 3Z M13 6l5 5"/></svg>
+    </button>
+    <button class="player-name-button player-name-save" type="submit" data-name-save aria-label="Save player name" title="Save player name">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12l4 4v12a2 2 0 0 1-2 2Z M7 3v6h9V3 M7 21v-8h10v8"/><path d="M13 4v3"/></svg>
+    </button>
+  </form>
+  {% if p.is_manager_player %}<span class="pill pill-winner admin-player-role">Captain · not transferable</span>{% endif %}
+</div>
