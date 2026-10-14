@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}Admin dashboard{% endblock %}
 {% block content %}
-<div class="page-banner"><div class="container"><div class="eyebrow">LEAGUE CONTROL ROOM</div><h1>Commissioner's <em>desk.</em></h1><p>Create teams, invite captains, approve roles and run auctions.</p></div></div>
+{% include 'admin_workspace_banner.html' %}
 <section class="section container admin-workspace-content">{% include 'admin_nav.html' %}
 {% if admin_section in ('admin','teams') %}<div class="section-heading" id="teams"><div><div class="eyebrow dark">CLUB TEAMS</div><h2>Team management</h2><p>Create teams and invite available captains. An invitation must be accepted before the captain takes charge.</p></div></div>
 <div class="admin-actions"><div class="admin-box"><div class="box-icon">♜</div><h2>Create a team</h2><p>New teams begin without a captain and have 1,000 transfer credits.</p><form class="stack-form" method="post" action="/admin/teams"><input type="hidden" name="csrf" value="{{ csrf }}"><label>Team name<input name="name" minlength="3" maxlength="45" placeholder="e.g. Knight Riders" required></label><button class="btn btn-primary btn-wide" type="submit">Create team →</button></form></div>

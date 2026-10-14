@@ -1,4 +1,7 @@
-{% extends 'base.html' %}{% block title %}Member accounts{% endblock %}{% block content %}<section class="section container"><h1 data-i18n="Member accounts">Member accounts</h1>{% include 'admin_nav.html' %}
+{% extends 'base.html' %}{% block title %}Member accounts{% endblock %}{% block content %}
+{% include 'admin_workspace_banner.html' %}
+<section class="section container admin-workspace-content">{% include 'admin_nav.html' %}
+<div class="section-heading"><h2 data-i18n="Member accounts">Member accounts</h2></div>
 <div class="account-management-grid">{% for member in members %}<article class="admin-box"><h2 data-no-i18n>{{ member.username }}</h2><p data-i18n="{{ 'Active' if member.account_active else 'Inactive' }}">{{ 'Active' if member.account_active else 'Inactive' }}</p>
 <form class="stack-form" method="post" action="/admin/users/{{ member.id }}/profile"><input type="hidden" name="csrf" value="{{ csrf }}">
 <label><span data-i18n="Name">Name</span><input name="name" value="{{ member.name }}" minlength="2" maxlength="80" required></label><label><span data-i18n="Country">Country</span><input name="country" value="{{ member.country }}" maxlength="80"></label><label><span data-i18n="FIDE ID">FIDE ID</span><input name="fide_id" value="{{ member.fide_id or '' }}" pattern="[0-9]{6,8}" inputmode="numeric" maxlength="8"></label>

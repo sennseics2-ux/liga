@@ -1,3 +1,7 @@
+## v86 consistent admin workspace banners
+
+Member accounts and Season setup now share the Players administration banner, including typography, background, decoration and dimensions. A shared template keeps the banners consistent. Section titles and navigation appear beneath the banner. Assets use v86; database schema remains v32.
+
 ## v85 remove admin Games workspace
 
 The dedicated /admin/games page and its navigation entry are removed. Old admin bookmarks redirect to /games. Match scheduling links open Season setup, and result/PGN controls remain on individual game pages. Assets use v85; database schema remains v32.
