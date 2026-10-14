@@ -32,6 +32,6 @@ def test_current_squad_scores_do_not_follow_the_archive_picker(client,monkeypatc
         assert f'data-no-i18n>1.5/{2 if configured else 3}</strong>' in row
         assert 'data-label="CLUB"' not in current_table
         assert 'Removed club' not in current_table
-        assert 'data-label="SCORE / MATCHES"' in row
+        assert 'data-label="SCORE"' in row
         assert 'SCORE / PLAYED' not in page
     assert 'class="season-player-score" data-no-i18n>0/1</strong>' in page
