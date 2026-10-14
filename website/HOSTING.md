@@ -6,7 +6,7 @@ and downloads are public for visible games.
 
 ## Club landing page at www.sx-aac.com
 
-The v106 release includes a static Portuguese landing page in `landing/`. Its
+The v107 release includes a static Portuguese landing page in `landing/`. Its
 League button opens `https://liga.sx-aac.com/`. Caddy serves the landing page at
 `www.sx-aac.com` and redirects `sx-aac.com` to the www address, while retaining
 the existing League configuration.
@@ -40,7 +40,7 @@ instead of using the shared VM.
 For later changes affecting only the landing page, copy just the release's
 `landing/` directory into `/opt/clubdraft/landing/`. The existing Caddy directory
 mount serves the changed files immediately; the League does not need to stop or
-rebuild. The v106 landing page is centered, monochrome and has no chessboard.
+rebuild. The v107 landing page is centered, monochrome and has no chessboard.
 
 ## Upgrade an existing server
 
@@ -65,7 +65,7 @@ instructions, not evidence that this workspace has changed the live website.
    sudo docker compose down
    sudo rsync -a --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
      --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
-     ~/chess-fantasy-league-v106/ /opt/clubdraft/
+     ~/chess-fantasy-league-v107/ /opt/clubdraft/
    sudo mkdir -p data backups
    sudo chown -R 10001:10001 data backups
    sudo chmod 700 data backups
@@ -88,7 +88,7 @@ instructions, not evidence that this workspace has changed the live website.
 
 ## V35 release extraction and configuration
 
-The standalone release ZIP has `chess-fantasy-league-v106/` at its root. GitHub's
+The standalone release ZIP has `chess-fantasy-league-v107/` at its root. GitHub's
 Download ZIP instead contains `liga-main/website/` (or `liga-COMMIT/website/`
 for a commit archive). Copy the directory containing
 `main.py`, `compose.yaml`, and `league_migrations.py`; copying `liga-main/` directly
@@ -99,10 +99,10 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 ```bash
 (
   set -e
-  ZIP="$HOME/chess-fantasy-league-v106.zip"
-  RELEASE_DIR="$(mktemp -d "$HOME/liga-v106-release.XXXXXX")"
+  ZIP="$HOME/chess-fantasy-league-v107.zip"
+  RELEASE_DIR="$(mktemp -d "$HOME/liga-v107-release.XXXXXX")"
   unzip -q "$ZIP" -d "$RELEASE_DIR"
-  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v106"
+  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v107"
   if [ ! -f "$SOURCE_DIR/main.py" ]; then
     for CANDIDATE in "$RELEASE_DIR"/liga-*/website; do
       if [ -f "$CANDIDATE/main.py" ]; then
@@ -138,7 +138,7 @@ creates a consistent snapshot before migrating. The additional `.pre-v103.bak`
 snapshot preserves the pre-migration database; keep a copy off the VM.
 
 After web is healthy, `/health` must report `"schema":"v103_player_countries"`, and
-the homepage assets must use `v=106`. A browser hard refresh may be necessary.
+the homepage assets must use `v=107`. A browser hard refresh may be necessary.
 Open `/seasons`: it defaults to the current July–June season (2026-2027 in October
 2026), including before its schedule is published. Use the season dropdown to
 view 2024-2025 and 2025-2026; their results no longer appear on the initial page.
@@ -502,3 +502,37 @@ if reported, checkpoint the stopped database using the command in
 `deploy/install_past_seasons.sh` before retrying. A full rollback also removes
 any sign-ups or edits made after the original snapshot. Use both Compose files
 in each command when offsite backups are enabled.
+
+## Reset the live league, keeping the existing admin
+
+After installing this release, run on the hosting VM:
+
+```bash
+cd /opt/clubdraft
+sudo bash deploy/reset_database.sh --keep-admin-only
+```
+
+This removes every non-admin account and all teams, players, seasons, matches,
+games, transfers and other league records. It preserves the selected admin's
+username, password hash, email and profile details, plus the installed `.env`,
+SMTP settings and backups. Log in again afterward. The user-ID sequence is kept
+above old account IDs so old session cookies cannot belong to new accounts.
+
+The script builds the new image, stops database users, backs up the original to
+`backups/reset-<timestamp>-<pid>/original/`, prepares and validates a fresh database,
+checkpoints SQLite and installs the prepared copy atomically before restarting.
+A preparation failure leaves the original database in place and restarts services.
+The prepared copy is retained beside the backup. No sample data is generated.
+
+If there is more than one admin, the script stops without replacing the database.
+Choose the single admin to retain explicitly:
+
+```bash
+sudo bash deploy/reset_database.sh --keep-admin-only ADMIN_USERNAME
+```
+
+For installations using encrypted offsite backups, preserve the compose profile:
+
+```bash
+sudo env CHESS_USE_OFFSITE_COMPOSE=1 bash deploy/reset_database.sh --keep-admin-only
+```

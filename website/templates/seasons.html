@@ -28,7 +28,7 @@
   <nav class="season-schedule" aria-label="Season schedule" data-i18n-aria-label="Season schedule">
     <div class="schedule-heading"><h2 data-i18n="Season schedule">Season schedule</h2><p data-i18n="Select a round to see its matches.">Select a round to see its matches.</p></div>
     <div class="schedule-grid">{% for round in schedule_rounds %}
-      {% if round.matches %}<a href="/seasons?season={{ season.id if season.id else 'current' }}&amp;round={{ round.number }}#round-{{ round.number }}"{% else %}<div{% endif %} class="schedule-round{% if round.completed %} schedule-round-complete{% endif %}">
+      {% if round.matches %}<a href="{% if round.matches|length == 1 %}/matches/{{ round.matches[0].id }}{% else %}/rounds/{{ round.matches[0].round_id }}{% endif %}"{% else %}<div{% endif %} class="schedule-round{% if round.completed %} schedule-round-complete{% endif %}">
         <span class="schedule-round-label"><span data-i18n="Round">Round</span> <strong data-no-i18n>{{ '%02d'|format(round.number) }}</strong></span>
         <span class="schedule-round-date">{% if round.first_date %}<time datetime="{{ round.first_date }}" data-no-i18n>{{ round.first_date|local_date }}</time>{% if round.first_date|local_date != round.last_date|local_date %} — <time datetime="{{ round.last_date }}" data-no-i18n>{{ round.last_date|local_date }}</time>{% endif %}{% else %}<span data-i18n="Date to be announced">Date to be announced</span>{% endif %}</span>
         <span class="schedule-round-state" data-i18n="{{ 'Completed' if round.completed else 'Not completed' }}">{{ 'Completed' if round.completed else 'Not completed' }}</span>
@@ -41,18 +41,7 @@
   {% for round in rounds %}
   <section class="round-section{% if round.completed %} round-complete{% endif %}" aria-labelledby="round-{{ round.number }}">
     <div class="round-heading"><h3 id="round-{{ round.number }}"><span class="round-number" data-no-i18n>{{ '%02d'|format(round.number) }}</span><span data-i18n="Round">Round</span> <span data-no-i18n>{{ round.number }}</span></h3><span><span data-no-i18n>{{ round.matches|length }}</span> <span data-i18n="Matches">Matches</span></span></div>
-    <div class="fixture-grid">
-      {% for match in round.matches %}
-      <a class="fixture-card" href="/matches/{{ match.id }}">
-        <div class="fixture-top"><div class="fixture-kickoff"><time data-no-i18n>{{ match.scheduled_at|local_time }}</time><strong class="fixture-match-label"><span data-no-i18n>{{ match.home_name }}</span> <span data-i18n="vs">vs</span> <span data-no-i18n>{{ match.away_name }}</span></strong></div><span class="result-status{% if match.finished_boards==4 %} result-complete{% endif %}" data-i18n="{{ match.result_status }}">{{ match.result_status }}</span></div>
-        <div class="fixture-teams">
-          {% for side in ['home','away'] %}<div class="fixture-team{% if match.outcome == side %} fixture-team-winner{% elif match.outcome == 'draw' %} fixture-team-draw{% endif %}"><span class="team-emblem{% if side=='away' %} team-emblem-light{% endif %}" aria-hidden="true" data-no-i18n>{% if match[side+'_photo_updated_at'] %}<img class="team-picture" src="/teams/{{ match[side+'_team_id'] }}/photo" alt="" loading="lazy">{% else %}{{ match[side+'_name'][:2]|upper }}{% endif %}</span><strong data-no-i18n>{{ match[side+'_name'] }}</strong><span class="fixture-score" data-no-i18n>{{ match[side+'_score'] }}</span></div>{% endfor %}
-        </div>
-        <div class="fixture-bottom"><span class="fixture-location" data-no-i18n>{{ match.location }}</span><span class="fixture-cta"><span data-i18n="View match">View match</span> <span aria-hidden="true">↗</span></span></div>
-        {% if match.finished_boards %}<div class="fixture-progress"><span data-no-i18n>{{ match.finished_boards }}/4</span> <span data-i18n="boards completed">boards completed</span></div>{% endif %}
-      </a>
-      {% endfor %}
-    </div>
+    {% include 'round_fixture_grid.html' %}
   </section>
   {% else %}
   <div class="competition-empty"><span class="empty-chess" aria-hidden="true">♞</span><h3 data-i18n="Schedule coming soon">Schedule coming soon</h3><p data-i18n="This season is here. Match dates, pairings and results will appear once the schedule is published.">This season is here. Match dates, pairings and results will appear once the schedule is published.</p><span class="empty-season" data-no-i18n>{{ season.name }}</span></div>

@@ -1,3 +1,7 @@
+## v107 round navigation and admin-only database reset
+
+Configured round bubbles open their single match directly, or a dedicated round page listing all its matches. Empty rounds stay noninteractive and draft schedules remain private. The optional deploy/reset_database.sh --keep-admin-only command backs up the installed league and replaces it with a fresh database retaining one existing admin and login credentials. Deploying the release alone does not reset data. Assets use v107; schema remains v103_player_countries.
+
 ## v106 current squad scores and matches
 
 Current squad replaces Club with Score / Matches, using completed games played for the team in the current league season. Choosing an archived season only changes the archive statistics below. Squad by season uses the same Score / Matches label; Portuguese retains PONTOS / PARTIDAS. Assets use v106; schema remains v103_player_countries.

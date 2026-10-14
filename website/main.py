@@ -1757,6 +1757,22 @@ def season_calendar(request: Request, season: str='current', round_number: str=Q
     return view(request,'seasons.html',round_selection=round_number,**context)
 
 
+@app.get('/rounds/{round_id}', response_class=HTMLResponse)
+def round_match_list(request: Request, round_id: int):
+    if not 0 < round_id < 2**63:
+        raise HTTPException(404,'Round not found.')
+    viewer=session_user(request)
+    with store.read_db() as db:
+        rnd=db.execute('SELECT season_id,number FROM season_rounds WHERE id=?',(round_id,)).fetchone()
+        if rnd is None:
+            raise HTTPException(404,'Round not found.')
+        context=seasons.calendar_view(db,str(rnd['season_id']),bool(viewer and viewer['role']=='admin'))
+    selected=next((r for r in context['rounds'] if r['number']==rnd['number']),None)
+    if selected is None:
+        raise HTTPException(404,'Round not found.')
+    return view(request,'round_detail.html',season=context['season'],round=selected)
+
+
 @app.get('/matches/{match_id}', response_class=HTMLResponse)
 def team_match_detail(request: Request,match_id: int):
     viewer=session_user(request)

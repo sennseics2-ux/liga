@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}{{ season.name }} · Round {{ round.number }}{% endblock %}
+{% block content %}
+<section class="page-banner"><div class="container">
+  <div class="eyebrow"><a href="/seasons?season={{ season.id }}"><span aria-hidden="true">←</span> <span data-no-i18n>{{ season.name }}</span></a></div>
+  <h1><span data-i18n="Round">Round</span> <span data-no-i18n>{{ round.number }}</span></h1>
+</div></section>
+<section class="container competition-content">
+  <div class="competition-section-heading"><h2 data-i18n="Fixtures & results">Fixtures &amp; results</h2></div>
+  {% include 'round_fixture_grid.html' %}
+</section>
+{% endblock %}
