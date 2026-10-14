@@ -1,3 +1,7 @@
+## v101 consistent team player placeholders
+
+Players without photos use the same knight placeholder as member profiles in both Current squad and Squad by season. Uploaded player photos remain in use. Assets use v101; database schema remains v32.
+
 ## v100 auction team navigation and closing time
 
 Team names in bid history link to their public team profiles. The exact scheduled closing date and time in the league timezone appears beneath the countdown, with responsive wrapping. Assets use v100; database schema remains v32.

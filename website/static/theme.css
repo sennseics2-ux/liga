@@ -388,3 +388,7 @@ body .language-toggle .flag-icon{display:block;margin:0}
 .auction-detail-page .auction-team-link:focus-visible{outline:2px solid currentColor;outline-offset:3px;border-radius:2px}
 .auction-detail-page .auction-closing-time{display:block;margin-top:8px;color:var(--muted);font-size:11px;line-height:1.6;overflow-wrap:anywhere}
 :root[data-theme="dark"] .auction-detail-page .auction-closing-time{color:var(--theme-muted)}
+
+/* V101: the profile knight fallback at compact squad-avatar sizes. */
+.team-player-placeholder.photo-placeholder{display:inline-grid;place-items:center;flex:none;background:#eee;border:1px solid #dedede;border-radius:8px;font-size:23px;line-height:1;overflow:hidden}
+:root[data-theme="dark"] .team-player-placeholder.photo-placeholder{background:var(--theme-soft);border-color:var(--theme-border);color:var(--theme-muted)}
