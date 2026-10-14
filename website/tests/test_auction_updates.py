@@ -22,7 +22,7 @@ def seed_market():
     with store.transaction() as db:
         db.execute('UPDATE teams SET budget=789 WHERE id=?', (second_team,))
     store.place_bid(first, first_team, 100)
-    store.place_bid(first, second_team, 110)
+    store.place_bid(first, second_team, 150)
     store.place_bid(second, first_team, 200)
     return first_manager, second_manager, first_team, second_team, first, second
 
@@ -41,10 +41,10 @@ def test_anonymous_snapshot_contains_public_bid_totals_only(client):
     assert data['viewer_team_id'] is None and data['available_credits'] is None
     assert len(data['auctions']) == 2
     assert all(set(item) == PUBLIC_FIELDS for item in data['auctions'])
-    assert data['auctions'][0]['high_bid'] == 110
+    assert data['auctions'][0]['high_bid'] == 150
     assert data['auctions'][0]['high_bid_team_id'] == second_team
     assert data['auctions'][0]['bid_count'] == 2
-    assert data['auctions'][0]['minimum'] == 111
+    assert data['auctions'][0]['minimum'] == 200
     assert data == snapshot(client)
 
 
@@ -68,9 +68,9 @@ def test_assigned_manager_sees_only_own_available_funds_and_bid(client):
     post(client, '/login', username='snapshot-second', password='SnapshotPassphrase123!')
     other = snapshot(client, f'{first},{second}')
     records = {item['id']: item for item in other['auctions']}
-    assert other['viewer_team_id'] == second_team and other['available_credits'] == 679
-    assert records[first]['my_bid'] == 110 and records[first]['available'] == 789
-    assert records[second]['my_bid'] is None and records[second]['available'] == 679
+    assert other['viewer_team_id'] == second_team and other['available_credits'] == 639
+    assert records[first]['my_bid'] == 150 and records[first]['available'] == 789
+    assert records[second]['my_bid'] is None and records[second]['available'] == 639
 
 
 def test_player_and_revoked_manager_session_do_not_receive_private_finances(client):
@@ -149,3 +149,23 @@ def test_reassigned_manager_cannot_bid_with_previously_captured_team(client):
         db.execute('UPDATE users SET manager_active=0 WHERE id=?', (current,))
     with pytest.raises(ValueError):
         store.place_bid(auction, team, 30, manager_id=current)
+
+
+def test_first_bid_and_fifty_credit_increment_match_form_and_snapshot(client):
+    _, _, first_team, second_team, _, _ = seed_market()
+    auction = store.create_auction(store.create_player('Increment Player'), 73, 24)
+    assert snapshot(client, str(auction))['auctions'][0]['minimum'] == 73
+    with pytest.raises(ValueError, match='minimum bid is 73'):
+        store.place_bid(auction, first_team, 72)
+    store.place_bid(auction, first_team, 73)
+    for amount in (74, 122):
+        with pytest.raises(ValueError, match='minimum bid is 123'):
+            store.place_bid(auction, second_team, amount)
+    assert snapshot(client, str(auction))['auctions'][0]['minimum'] == 123
+    post(client, '/login', username='snapshot-second', password='SnapshotPassphrase123!')
+    assert 'min="123"' in client.get(f'/auctions/{auction}').text
+    post(client, f'/auctions/{auction}/bid', amount='122')
+    assert snapshot(client, str(auction))['auctions'][0]['bid_count'] == 1
+    store.place_bid(auction, second_team, 123)
+    store.place_bid(auction, first_team, 180)
+    assert snapshot(client, str(auction))['auctions'][0]['minimum'] == 230

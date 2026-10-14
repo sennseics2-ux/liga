@@ -853,6 +853,7 @@ def create_player(name, club='', rating=None, user_id=None):
 # Compatibility facade: web routes, offline tools and older integrations keep
 # the established database API while the business rules live in focused modules.
 from league_auctions import (
+    minimum_bid,
     highest_bid,
     reserved_credits,
     settle_auction,

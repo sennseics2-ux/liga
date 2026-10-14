@@ -48,7 +48,7 @@ def auction_page(client):
 
         page.route('http://liga.test/**', local_application)
         page.goto(f'http://liga.test/auctions/{auction}')
-        page.wait_for_function("document.querySelector('[name=amount]').min==='26'")
+        page.wait_for_function("document.querySelector('[name=amount]').min==='75'")
         yield page, auction, rival_team, state, errors
         context.close()
         browser.close()
@@ -66,11 +66,11 @@ def test_real_polling_preserves_edited_bid_reports_outbid_and_disables_closed_fo
     field = page.locator('[data-live-bid-form] [name="amount"]')
     submit = page.locator('[data-live-bid-form] button[type="submit"]')
     field.fill('99')
-    store.place_bid(auction, rival_team, 30)
+    store.place_bid(auction, rival_team, 75)
     force_refresh(page)
-    expect(page.locator('[data-live-high-bid]')).to_have_text('30')
+    expect(page.locator('[data-live-high-bid]')).to_have_text('75')
     expect(field).to_have_value('99')
-    expect(field).to_have_attribute('min', '31')
+    expect(field).to_have_attribute('min', '125')
     expect(field).to_have_attribute('max', '1000')
     expect(submit).to_be_enabled()
     expect(page.locator('[data-live-notice-text]')).to_have_text('You have been outbid.')

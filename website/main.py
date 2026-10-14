@@ -831,7 +831,7 @@ def auction_detail(request: Request, auction_id: int):
              WHERE b.auction_id=? ORDER BY b.amount DESC, b.id DESC LIMIT 50""", (auction_id,)).fetchall()
         team = get_team(db, session_user(request))
         available = (team["budget"] - store.reserved_credits(db, team["id"], exclude_auction=auction_id)) if team else None
-        minimum = max(auction["starting_price"], bids[0]["amount"] + 1 if bids else 0)
+        minimum = store.minimum_bid(auction["starting_price"], bids[0]["amount"] if bids else None)
     return view(request, "auction.html", auction=auction, bids=bids, team=team, available=available, minimum=minimum)
 
 
@@ -859,7 +859,7 @@ def auction_snapshot(request: Request, ids: str = ''):
         snapshots=[]
         for auction in records:
             item = dict(auction)
-            item['minimum'] = max(item['starting_price'], item['high_bid']+1 if item['high_bid'] else 0)
+            item['minimum'] = store.minimum_bid(item['starting_price'], item['high_bid'])
             item['high_bid'] = item['high_bid'] or item['starting_price']
             if team:
                 item['available'] = team['budget']-store.reserved_credits(db, team['id'], exclude_auction=item['id'])

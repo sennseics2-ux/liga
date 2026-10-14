@@ -10,6 +10,12 @@ import sqlite3
 logger = logging.getLogger(__name__)
 
 
+BID_INCREMENT = 50
+
+def minimum_bid(starting_price, highest_amount=None):
+    return starting_price if highest_amount is None else max(starting_price, highest_amount + BID_INCREMENT)
+
+
 def highest_bid(db, auction_id):
     return db.execute('''SELECT b.*, t.name AS team_name FROM bids b
         JOIN teams t ON t.id=b.team_id WHERE b.auction_id=? ORDER BY b.amount DESC,b.id ASC LIMIT 1''',
@@ -185,7 +191,7 @@ def place_bid(auction_id, team_id, amount, manager_id=None):
         if auction['seller_team_id'] == team_id:
             raise ValueError('You cannot bid on a player you already own.')
         top = store.highest_bid(db, auction_id)
-        minimum = max(auction['starting_price'], top['amount'] + 1 if top else 0)
+        minimum = minimum_bid(auction['starting_price'], top['amount'] if top else None)
         if amount < minimum:
             raise ValueError(f'The minimum bid is {minimum} credits.')
         available = team['budget'] - store.reserved_credits(db, team_id, exclude_auction=auction_id)

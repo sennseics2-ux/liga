@@ -1,3 +1,7 @@
+## v99 minimum bid increment
+
+The first bid can equal the administrator starting price. Later bids must increase the highest bid by at least 50 credits. A shared calculation drives transaction validation, the auction form and live snapshots. Existing bids remain intact. Transfer rules are updated in English and Portuguese. Assets use v99; database schema remains v32.
+
 ## v98 auction detail usability
 
 The player name links to its public account profile when linked. The binding-bid note now has clear spacing below the bid button; profile links have hover and keyboard focus feedback. Assets use v98; database schema remains v32.

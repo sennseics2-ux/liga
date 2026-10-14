@@ -185,7 +185,7 @@ def test_member_replay_auction_and_recovery_journey(chromium, league_server, wid
         page.wait_for_function("document.querySelector('[data-live-position]').dataset.i18n==='Leading'")
         assert page.locator('[data-live-total-available]').inner_text() == '950'
         assert page.locator('a[data-i18n="Recruit players"]').count() == 1
-        league.store.place_bid(league.auction, league.other_team, 60)
+        league.store.place_bid(league.auction, league.other_team, 100)
         with page.expect_response(snapshot):
             page.evaluate("window.dispatchEvent(new Event('online'))")
         page.wait_for_function("document.querySelector('[data-live-position]').dataset.i18n==='Outbid'")
@@ -194,14 +194,14 @@ def test_member_replay_auction_and_recovery_journey(chromium, league_server, wid
 
         with page.expect_response(snapshot):
             page.goto(f'{league.base}/auctions/{league.auction}')
-        page.wait_for_function("document.querySelector('[data-live-high-bid]').textContent==='60'")
+        page.wait_for_function("document.querySelector('[data-live-high-bid]').textContent==='100'")
         page.locator('input[name=amount]').fill('777')
-        league.store.place_bid(league.auction, league.other_team, 70)
+        league.store.place_bid(league.auction, league.other_team, 150)
         with page.expect_response(snapshot):
             page.evaluate("window.dispatchEvent(new Event('online'))")
-        page.wait_for_function("document.querySelector('[data-live-high-bid]').textContent==='70'")
+        page.wait_for_function("document.querySelector('[data-live-high-bid]').textContent==='150'")
         assert page.locator('input[name=amount]').input_value() == '777'
-        assert page.locator('input[name=amount]').get_attribute('min') == '71'
+        assert page.locator('input[name=amount]').get_attribute('min') == '200'
         assert_fits_phone(page)
 
         page.locator('#account-toggle').click()
