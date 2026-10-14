@@ -305,3 +305,52 @@ body .language-toggle .flag-icon{display:block;margin:0}
  .has-player-summary .player-profile-summary .metric-card>small{font-size:11px}
  .member-profile-identity.has-player-summary>.career-record-compact{width:100%;max-width:none;padding-left:14px}
 }
+
+/* V95: profile hierarchy and responsive history panels. */
+.member-profile-page{--profile-surface:#fff;--profile-soft:#f5f5f5;--profile-border:#dedede;--profile-muted:#626262;padding-top:24px}
+:root[data-theme="dark"] .member-profile-page{--profile-surface:var(--theme-surface);--profile-soft:var(--theme-soft);--profile-border:var(--theme-border);--profile-muted:var(--theme-muted)}
+.member-profile-page .member-profile-header{margin:0 0 14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.member-profile-page .member-profile-header>a{display:inline-flex;align-items:center;min-height:44px}
+.member-profile-page .member-profile-identity{padding:24px;border-color:var(--profile-border);box-shadow:none;background:var(--profile-surface);margin-bottom:20px;gap:18px}
+.member-profile-page .identity-details{min-width:0;overflow-wrap:anywhere}
+.member-profile-page .identity-details h2{font-size:24px;line-height:1.25;letter-spacing:-.6px}
+.member-profile-page .identity-details p{color:var(--profile-muted);line-height:1.6}
+.member-profile-page .member-photo{border-radius:16px;object-fit:cover}
+.member-profile-page .player-profile-summary .metric-card{background:var(--profile-soft);border:1px solid var(--profile-border);box-shadow:none;border-radius:9px}
+.member-profile-page .player-profile-summary .metric-card>span{color:var(--profile-muted)}
+.member-profile-page .career-stats{gap:8px}
+.member-profile-page .career-stat{padding:10px 4px}
+.member-profile-page .career-stat dt{min-height:0;font-size:11px}
+.member-profile-page .career-stat dd{font-size:24px;font-variant-numeric:tabular-nums}
+.member-profile-page .profile-tabs{display:inline-flex;max-width:100%;gap:4px;padding:5px;margin:0 0 24px;background:var(--profile-soft);border:1px solid var(--profile-border);border-radius:12px}
+.member-profile-page .profile-tabs a{border-radius:8px;min-height:44px;display:flex;align-items:center;justify-content:center;padding:10px 18px;font-size:14px}
+.member-profile-page a:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+.member-profile-page .profile-history-panel{background:var(--profile-surface);border:1px solid var(--profile-border);border-radius:14px;margin-bottom:24px;overflow:hidden}
+.member-profile-page .profile-history-panel .section-heading{margin:0;padding:22px 24px;gap:16px;align-items:center}
+.member-profile-page .section-heading h2{font-size:23px;line-height:1.3;letter-spacing:-.4px}
+.member-profile-page .section-heading p{color:var(--profile-muted);line-height:1.6;margin-top:6px}
+.member-profile-page .profile-history-panel .table-scroll{border:0;border-top:1px solid var(--profile-border);border-radius:0}
+.member-profile-page .data-table th{background:var(--profile-soft);color:var(--profile-muted);padding:13px 24px;letter-spacing:.7px}
+.member-profile-page .data-table td{padding:16px 24px;line-height:1.5}
+.member-profile-page .data-table tbody tr:hover{background:var(--profile-soft)}
+.member-profile-page .data-table a{display:inline-block;padding:5px 0;text-underline-offset:4px}
+.member-profile-page .profile-history-panel>.profile-status,.member-profile-page .profile-history-panel>.muted{margin:0;padding:20px 24px;border:0;border-top:1px solid var(--profile-border);border-radius:0;color:var(--profile-muted);background:var(--profile-soft)}
+.member-profile-page .profile-history-panel>.profile-status p{color:var(--profile-muted)}
+.member-profile-page .profile-captain-content>.section-heading{margin-top:28px}
+.member-profile-page .role-settings{margin-top:28px;border-color:var(--profile-border);border-radius:12px}
+@media(min-width:1001px){.member-profile-page .member-profile-identity.has-player-summary{grid-template-columns:72px minmax(140px,1fr) minmax(300px,1.4fr) 190px}.member-profile-page .has-player-summary>.member-photo{width:72px;height:72px}}
+@media(max-width:600px){
+ .member-profile-page{padding-top:14px}
+ .member-profile-page .member-profile-identity{padding:16px;gap:16px 12px;grid-template-columns:56px minmax(0,1fr)}
+ .member-profile-page .member-photo{width:56px;height:56px;border-radius:12px;align-self:start}
+ .member-profile-page .identity-details h2{font-size:22px}
+ .member-profile-page .profile-tabs{display:flex;width:100%}
+ .member-profile-page .profile-tabs a{flex:1;padding:10px 8px;font-size:13px}
+ .member-profile-page .profile-history-panel .section-heading{padding:18px 16px;align-items:flex-start;flex-wrap:wrap}
+ .member-profile-page .section-heading h2{font-size:21px}
+ .member-profile-page .data-table td{padding:10px 16px}
+ .member-profile-page .profile-history-panel>.profile-status,.member-profile-page .profile-history-panel>.muted{padding:18px 16px}
+ .member-profile-page .player-profile-summary .metric-card{min-height:80px}
+}
+.member-profile-page .member-photo.photo-placeholder{display:grid;place-items:center;font-size:44px;line-height:1;overflow:hidden}
+@media(max-width:600px){.member-profile-page .member-photo.photo-placeholder{font-size:34px}.member-profile-page .profile-history-panel .mobile-cards tbody tr{border:0;border-radius:0;box-shadow:none;margin:0}.member-profile-page .profile-history-panel .mobile-cards tbody tr+tr{border-top:2px solid var(--profile-border)}}

@@ -1,3 +1,7 @@
+## v95 player profile presentation
+
+Profile pages gain a compact navigation toolbar, refined identity and career summary, grouped membership and game-history panels, and clearer responsive tables. Player and captain features, role controls, result colors and public profile data remain available. Light and dark themes are supported. Assets use v95; database schema remains v32.
+
 ## v94 inline desktop profile summary
 
 Desktop profiles place Chess Player, Current Team and FIDE Rating between the member identity and the games-played summary in a single row. Cards and the avatar are resized to fit this space. Tablet/mobile layouts retain their stacked arrangement. Assets use v94; database schema remains v32.

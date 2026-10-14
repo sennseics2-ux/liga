@@ -33,7 +33,7 @@ def test_profile_record_is_compact_in_identity_and_directory_removes_old_sorts(c
     _,team=new_team('Manager','Manager Team')
     page=client.get('/users/Manager').text
     assert page.count('career-record-compact')==1
-    assert page.index('member-profile-identity') < page.index('career-record-compact') < page.index('member-profile-header')
+    assert page.index('member-profile-header') < page.index('member-profile-identity') < page.index('career-record-compact')
     assert '<h2><span data-no-i18n>Manager</span></h2>' in page
     assert 'Captain profile' in page
     for sort in ('name','newest','players_desc'):
