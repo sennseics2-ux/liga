@@ -1,3 +1,7 @@
+## v108 AA Coimbra player import
+
+An optional backed-up importer adds exactly the requested 128 FPX entries as player records with no accounts or team assignments. 87 FIDE IDs are preserved, including nine-digit IDs; 41 missing IDs remain NULL. FPX record keys prevent duplicates on rerun without merging namesakes. Unregistered profiles display their FIDE IDs and share the rating worker's monthly/retry scheduling. Migration v108_unregistered_player_fide adds player FIDE metadata and the import registry; existing data is preserved. Assets use v108.
+
 ## v107 round navigation and admin-only database reset
 
 Configured round bubbles open their single match directly, or a dedicated round page listing all its matches. Empty rounds stay noninteractive and draft schedules remain private. The optional deploy/reset_database.sh --keep-admin-only command backs up the installed league and replaces it with a fresh database retaining one existing admin and login credentials. Deploying the release alone does not reset data. Assets use v107; schema remains v103_player_countries.

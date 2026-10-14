@@ -84,7 +84,7 @@ def test_upgrade_v29_adds_picture_storage_without_changing_league(client):
     with store.transaction() as db:
         before=[tuple(r) for r in db.execute('SELECT id,name,manager_id,budget FROM teams ORDER BY id')]
         db.execute('DROP TABLE team_photos')
-        db.execute("DELETE FROM schema_migrations WHERE version IN ('v30_team_photos','v32_shared_fide_ids','v103_player_countries')")
+        db.execute("DELETE FROM schema_migrations WHERE version IN ('v30_team_photos','v32_shared_fide_ids','v103_player_countries','v108_unregistered_player_fide')")
     # V29 may already have a pre-V25 backup: V30 must still snapshot its data.
     live=store.DB_PATH
     live.with_name(live.name+'.pre-v25.bak').write_bytes(b'old backup')

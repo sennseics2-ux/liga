@@ -1,0 +1,16 @@
+{
+  "source": "https://fpx.pt/site/public/uploads/pdf/Filiados-2025-2026-Nomes.pdf",
+  "pdf_sha256": "d32c172b55f97f078151625d0749c9259ce4aa7384b77e673293a37b3fd4ccfe",
+  "pages": [
+    40,
+    41,
+    42,
+    43
+  ],
+  "club": "AA Coimbra",
+  "entries": 128,
+  "first_fpx_id": "759",
+  "last_fpx_id": "53304",
+  "missing_fide_ids": 41,
+  "note": "Only the inclusive range requested by the user; no births, accounts, teams or inferred countries."
+}

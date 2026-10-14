@@ -51,7 +51,7 @@ def test_upgrade_keeps_existing_players_and_can_be_repeated(client):
     player=store.create_player('Existing Guest',rating=1700)
     with store.transaction() as db:
         db.execute('ALTER TABLE players DROP COLUMN country')
-        db.execute("DELETE FROM schema_migrations WHERE version='v103_player_countries'")
+        db.execute("DELETE FROM schema_migrations WHERE version IN ('v103_player_countries','v108_unregistered_player_fide')")
     store.init_db()
     assert store.DB_PATH.with_name(store.DB_PATH.name+'.pre-v103.bak').exists()
     with store.read_db() as db:

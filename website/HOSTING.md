@@ -6,7 +6,7 @@ and downloads are public for visible games.
 
 ## Club landing page at www.sx-aac.com
 
-The v107 release includes a static Portuguese landing page in `landing/`. Its
+The v108 release includes a static Portuguese landing page in `landing/`. Its
 League button opens `https://liga.sx-aac.com/`. Caddy serves the landing page at
 `www.sx-aac.com` and redirects `sx-aac.com` to the www address, while retaining
 the existing League configuration.
@@ -40,7 +40,7 @@ instead of using the shared VM.
 For later changes affecting only the landing page, copy just the release's
 `landing/` directory into `/opt/clubdraft/landing/`. The existing Caddy directory
 mount serves the changed files immediately; the League does not need to stop or
-rebuild. The v107 landing page is centered, monochrome and has no chessboard.
+rebuild. The v108 landing page is centered, monochrome and has no chessboard.
 
 ## Upgrade an existing server
 
@@ -65,7 +65,7 @@ instructions, not evidence that this workspace has changed the live website.
    sudo docker compose down
    sudo rsync -a --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
      --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
-     ~/chess-fantasy-league-v107/ /opt/clubdraft/
+     ~/chess-fantasy-league-v108/ /opt/clubdraft/
    sudo mkdir -p data backups
    sudo chown -R 10001:10001 data backups
    sudo chmod 700 data backups
@@ -88,7 +88,7 @@ instructions, not evidence that this workspace has changed the live website.
 
 ## V35 release extraction and configuration
 
-The standalone release ZIP has `chess-fantasy-league-v107/` at its root. GitHub's
+The standalone release ZIP has `chess-fantasy-league-v108/` at its root. GitHub's
 Download ZIP instead contains `liga-main/website/` (or `liga-COMMIT/website/`
 for a commit archive). Copy the directory containing
 `main.py`, `compose.yaml`, and `league_migrations.py`; copying `liga-main/` directly
@@ -99,10 +99,10 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 ```bash
 (
   set -e
-  ZIP="$HOME/chess-fantasy-league-v107.zip"
-  RELEASE_DIR="$(mktemp -d "$HOME/liga-v107-release.XXXXXX")"
+  ZIP="$HOME/chess-fantasy-league-v108.zip"
+  RELEASE_DIR="$(mktemp -d "$HOME/liga-v108-release.XXXXXX")"
   unzip -q "$ZIP" -d "$RELEASE_DIR"
-  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v107"
+  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v108"
   if [ ! -f "$SOURCE_DIR/main.py" ]; then
     for CANDIDATE in "$RELEASE_DIR"/liga-*/website; do
       if [ -f "$CANDIDATE/main.py" ]; then
@@ -113,7 +113,7 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
   test -f "$SOURCE_DIR/main.py"
   test -f "$SOURCE_DIR/compose.yaml"
   test -f "$SOURCE_DIR/deploy/install_past_seasons.sh"
-  grep -q 'v103_player_countries' "$SOURCE_DIR/league_migrations.py"
+  grep -q 'v108_unregistered_player_fide' "$SOURCE_DIR/league_migrations.py"
 
   cd /opt/clubdraft
   sudo docker compose exec -T web python -m deploy.backup_sqlite
@@ -134,11 +134,11 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 
 If encrypted offsite backups are enabled, use both compose files in every compose
 command as described below. Preserve `.env` and `secrets/`. Application startup
-creates a consistent snapshot before migrating. The additional `.pre-v103.bak`
+creates a consistent snapshot before migrating. The additional `.pre-v108.bak`
 snapshot preserves the pre-migration database; keep a copy off the VM.
 
-After web is healthy, `/health` must report `"schema":"v103_player_countries"`, and
-the homepage assets must use `v=107`. A browser hard refresh may be necessary.
+After web is healthy, `/health` must report `"schema":"v108_unregistered_player_fide"`, and
+the homepage assets must use `v=108`. A browser hard refresh may be necessary.
 Open `/seasons`: it defaults to the current July–June season (2026-2027 in October
 2026), including before its schedule is published. Use the season dropdown to
 view 2024-2025 and 2025-2026; their results no longer appear on the initial page.
@@ -536,3 +536,29 @@ For installations using encrypted offsite backups, preserve the compose profile:
 ```bash
 sudo env CHESS_USE_OFFSITE_COMPOSE=1 bash deploy/reset_database.sh --keep-admin-only
 ```
+
+## Import the requested AA Coimbra players
+
+After installing and rebuilding v108, run inside the live web container:
+
+```bash
+cd /opt/clubdraft
+sudo docker compose exec -T web python -m deploy.import_fpx_players
+```
+
+The importer backs up the current database, then atomically adds the 128 entries
+from pages 40–43 of the FPX Filiados 2025–2026 list, from MORAIS, MÁRIO MARTINS
+FREITAS to SERRADELL VILLA, ANDREA inclusive. It creates no user accounts or team
+assignments. Club is AA Coimbra; country remains unknown until entered by an
+administrator. FIDE 0 becomes SQL NULL; all other IDs retain their full digits,
+including nine-digit IDs. The source CSV and provenance are in `data_imports/`.
+
+Expect `Players added: 128. Already imported: 0. Login accounts created: 0.` on
+the first run. Reruns use FPX record identifiers and skip previous imports; they
+never merge unrelated players by name or FIDE ID. Existing accounts and league
+records remain intact. Do not run the database reset after importing players.
+
+The standard-rating worker also processes unregistered players with FIDE IDs,
+using the existing retry and monthly refresh schedule. Newly imported ratings
+start blank and fill asynchronously when the configured provider responds. No
+rating or nationality is inferred from the PDF.

@@ -8,7 +8,8 @@ ATTRIBUTION_VERSION = 'v24_historical_attribution'
 ACCOUNTS_VERSION = 'v25_accounts_seasons'
 TEAM_PHOTOS_VERSION = 'v30_team_photos'
 SHARED_FIDE_VERSION = 'v32_shared_fide_ids'
-SCHEMA_VERSION = 'v103_player_countries'
+PLAYER_COUNTRIES_VERSION = 'v103_player_countries'
+SCHEMA_VERSION = 'v108_unregistered_player_fide'
 
 
 def apply(db, applied_at):
@@ -18,6 +19,7 @@ def apply(db, applied_at):
     _apply_team_photos(db, applied_at)
     _apply_shared_fide_ids(db, applied_at)
     _apply_player_countries(db, applied_at)
+    _apply_player_fide(db, applied_at)
 
 
 def _apply_ledger(db, applied_at):
@@ -179,9 +181,25 @@ def _apply_shared_fide_ids(db, applied_at):
 
 
 def _apply_player_countries(db, applied_at):
-    if db.execute('SELECT 1 FROM schema_migrations WHERE version=?', (SCHEMA_VERSION,)).fetchone():
+    if db.execute('SELECT 1 FROM schema_migrations WHERE version=?', (PLAYER_COUNTRIES_VERSION,)).fetchone():
         return
     fields = {row[1] for row in db.execute('PRAGMA table_info(players)')}
     if 'country' not in fields:
         db.execute("ALTER TABLE players ADD COLUMN country TEXT NOT NULL DEFAULT ''")
-    db.execute('INSERT INTO schema_migrations(version,applied_at) VALUES(?,?)', (SCHEMA_VERSION,applied_at))
+    db.execute('INSERT INTO schema_migrations(version,applied_at) VALUES(?,?)', (PLAYER_COUNTRIES_VERSION,applied_at))
+
+
+def _apply_player_fide(db, applied_at):
+    if db.execute('SELECT 1 FROM schema_migrations WHERE version=?',(SCHEMA_VERSION,)).fetchone():
+        return
+    fields={row[1] for row in db.execute('PRAGMA table_info(players)')}
+    for field,definition in [('fide_id','TEXT'),('fide_rating_month','TEXT'),('fide_checked_at','TEXT'),
+                             ('fide_next_attempt','TEXT'),('fide_error','TEXT'),('fide_attempts','INTEGER NOT NULL DEFAULT 0')]:
+        if field not in fields:
+            db.execute(f'ALTER TABLE players ADD COLUMN {field} {definition}')
+    db.execute('CREATE INDEX IF NOT EXISTS players_fide_lookup ON players(fide_id) WHERE fide_id IS NOT NULL')
+    db.execute("""CREATE TABLE IF NOT EXISTS player_import_records (
+        source TEXT NOT NULL, record_key TEXT NOT NULL,
+        player_id INTEGER NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        imported_at TEXT NOT NULL, PRIMARY KEY(source,record_key))""")
+    db.execute('INSERT INTO schema_migrations(version,applied_at) VALUES(?,?)',(SCHEMA_VERSION,applied_at))

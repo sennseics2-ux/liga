@@ -667,7 +667,7 @@ def player_profile(request: Request, player_id: int):
             term = next((row for row in past_teams if row['team_id']==profile['owner_team_id'] and not row['ended_at']), None)
             affiliation = {'role':'Player','team_id':profile['owner_team_id'],
                            'team_name':profile['team_name'],'joined_at':term['started_at'] if term else None}
-    member = {'username':profile['name'],'name':profile['name'],'country':profile['country'],'fide_id':'',
+    member = {'username':profile['name'],'name':profile['name'],'country':profile['country'],'fide_id':profile['fide_id'],
               'account_active':True,'player_active':True,'manager_active':False,'photo_updated_at':None}
     return view(request,'member_profile.html',member=member,profile=profile,standalone_player=True,
                 owner=False,selected_tab='player',career=career,past_teams=past_teams,

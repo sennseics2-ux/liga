@@ -247,7 +247,12 @@ def init_db():
             if not backup_file.exists():
                 with sqlite3.connect(backup_file) as backup_db:
                     db.backup(backup_db)
-        for suffix in ('.pre-v2.bak', '.pre-v3.bak', '.pre-v4.bak', '.pre-v9.bak', '.pre-v25.bak', '.pre-v30.bak', '.pre-v32.bak', '.pre-v103.bak'):
+        if legacy and not upgraded:
+            backup_file = DB_PATH.with_name(DB_PATH.name + '.pre-v108.bak')
+            if not backup_file.exists():
+                with sqlite3.connect(backup_file) as backup_db:
+                    db.backup(backup_db)
+        for suffix in ('.pre-v2.bak', '.pre-v3.bak', '.pre-v4.bak', '.pre-v9.bak', '.pre-v25.bak', '.pre-v30.bak', '.pre-v32.bak', '.pre-v103.bak', '.pre-v108.bak'):
             backup_file = DB_PATH.with_name(DB_PATH.name + suffix)
             if backup_file.exists():
                 backup_file.chmod(0o600)
@@ -853,8 +858,17 @@ def update_player_country(player_id, country, actor_id):
                before={'country':player['country']},after={'country':country})
 
 
-def create_player(name, club='', rating=None, user_id=None, *, country=''):
+def validate_player_fide_id(value):
+    value=str(value or '').strip()
+    if value=='0':return None
+    if value and not re.fullmatch(r'[0-9]{6,9}',value):
+        raise ValueError('Player FIDE ID must contain 6 to 9 digits.')
+    return value or None
+
+
+def create_player(name, club='', rating=None, user_id=None, *, country='', fide_id=None):
     country = normalize_player_country(country)
+    fide_id = validate_player_fide_id(fide_id)
     name = name.strip()
     club = club.strip()
     if not 2 <= len(name) <= 80:
@@ -874,8 +888,8 @@ def create_player(name, club='', rating=None, user_id=None, *, country=''):
             db.execute('UPDATE users SET name=? WHERE id=?',(name,user_id))
             rating = account['fide_rating'] if account['fide_rating'] is not None else rating
         try:
-            return db.execute('INSERT INTO players(name,club,rating,user_id,created_at,country) VALUES (?,?,?,?,?,?)',
-                              (name, club, rating, user_id, iso(now_utc()),country)).lastrowid
+            return db.execute('INSERT INTO players(name,club,rating,user_id,created_at,country,fide_id) VALUES (?,?,?,?,?,?,?)',
+                              (name, club, rating, user_id, iso(now_utc()),country,fide_id)).lastrowid
         except sqlite3.IntegrityError:
             raise ValueError('Could not create player; account may already be linked.') from None
 

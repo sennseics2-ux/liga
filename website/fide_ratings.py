@@ -48,8 +48,10 @@ def _field(payload, path):
 
 
 def fetch_standard_rating(fide_id):
-    from account_service import validate_fide_id
-    fide_id=validate_fide_id(fide_id)
+    from database import validate_player_fide_id
+    fide_id=validate_player_fide_id(fide_id)
+    if fide_id is None:
+        raise ValueError('FIDE ID is required for rating lookup.')
     template=os.getenv('CHESS_FIDE_API_URL_TEMPLATE') or DEFAULT_URL
     if not template or '{fide_id}' not in template:
         raise ValueError('FIDE API configuration is missing.')
@@ -113,11 +115,14 @@ def sync_ratings(*, fetcher=None, limit=10):
     now=store.now_utc()
     fetcher=fetcher or fetch_standard_rating
     with store.read_db() as db:
-        users=[dict(row) for row in db.execute('''SELECT id,fide_id,fide_attempts FROM users
+        users=[{**dict(row),'kind':'user'} for row in db.execute('''SELECT id,fide_id,fide_attempts FROM users
             WHERE account_active=1 AND fide_id IS NOT NULL AND (fide_next_attempt IS NULL OR fide_next_attempt<=?)
             ORDER BY fide_next_attempt,id LIMIT ?''',(store.iso(now),limit))]
+        players=[{**dict(row),'kind':'player'} for row in db.execute('''SELECT id,fide_id,fide_attempts FROM players
+            WHERE user_id IS NULL AND fide_id IS NOT NULL AND (fide_next_attempt IS NULL OR fide_next_attempt<=?)
+            ORDER BY fide_next_attempt,id LIMIT ?''',(store.iso(now),max(0,limit-len(users))))]
     completed=0
-    for user in users:
+    for user in users+players:
         try:
             rating,month=fetcher(user['fide_id'])
             error=None;attempts=0;next_time=next_success(now,month)
@@ -126,13 +131,21 @@ def sync_ratings(*, fetcher=None, limit=10):
             attempts=user['fide_attempts']+1
             next_time=now+timedelta(minutes=min(360,5*2**min(attempts-1,7)))
         with store.transaction() as db:
-            current=db.execute('SELECT fide_id,account_active FROM users WHERE id=?',(user['id'],)).fetchone()
-            if not current or current['fide_id']!=user['fide_id'] or not current['account_active']:
+            if user['kind']=='user':
+                current=db.execute('SELECT fide_id,account_active FROM users WHERE id=?',(user['id'],)).fetchone()
+                valid=current and current['account_active']
+            else:
+                current=db.execute('SELECT fide_id,user_id FROM players WHERE id=?',(user['id'],)).fetchone()
+                valid=current and current['user_id'] is None
+            if not valid or current['fide_id']!=user['fide_id']:
                 continue
+            table='users' if user['kind']=='user' else 'players'
+            rating_field='fide_rating' if user['kind']=='user' else 'rating'
             if error is None:
-                db.execute('UPDATE users SET fide_rating=?,fide_rating_month=? WHERE id=?',(rating,month,user['id']))
-                db.execute('UPDATE players SET rating=? WHERE user_id=?',(rating,user['id']))
+                db.execute(f'UPDATE {table} SET {rating_field}=?,fide_rating_month=? WHERE id=?',(rating,month,user['id']))
+                if user['kind']=='user':
+                    db.execute('UPDATE players SET rating=? WHERE user_id=?',(rating,user['id']))
                 completed+=1
-            db.execute('''UPDATE users SET fide_checked_at=?,fide_next_attempt=?,fide_error=?,fide_attempts=? WHERE id=?''',
+            db.execute(f"""UPDATE {table} SET fide_checked_at=?,fide_next_attempt=?,fide_error=?,fide_attempts=? WHERE id=?""",
                        (store.iso(now),store.iso(next_time),error,attempts,user['id']))
     return completed
