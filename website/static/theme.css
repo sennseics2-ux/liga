@@ -268,3 +268,8 @@ body .nav-actions .language-toggle,:root[data-theme="dark"] body .nav-actions .l
 body .language-toggle .flag-icon{display:block;margin:0}
 
 .country-select{width:100%;max-width:100%;min-width:0}
+
+/* V88: a compact country flag beside the profile's existing country label. */
+.profile-identity-meta{display:flex;align-items:center;flex-wrap:wrap;gap:4px 6px}
+.profile-country{display:inline-flex;align-items:center;gap:6px;min-width:0;max-width:100%}.profile-country>span{overflow-wrap:anywhere}
+.profile-country-flag{display:block;width:24px;height:18px;object-fit:cover;border-radius:2px;box-shadow:0 0 0 1px #00000024;flex:none}

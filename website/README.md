@@ -1,3 +1,7 @@
+## v88 profile country flags
+
+Player and captain profiles show a small local SVG flag beside recognized countries. English/Portuguese names and ISO codes share the account country mapping. Empty or unrecognized values have no flag. All 249 ISO country flags are bundled from flag-icons v7.5.0 under MIT, with attribution in licenses/. Assets use v88; database schema remains v32.
+
 ## v87 country dropdown
 
 Account settings offers all 249 ISO 3166-1 countries and territories in a native dropdown, translated and alphabetically ordered for Portuguese/English. Existing names/codes are matched where possible; unrecognized legacy values remain selectable. Blank country remains optional. The bundled country list is derived from Debian iso-codes. Assets use v87; database schema remains v32.

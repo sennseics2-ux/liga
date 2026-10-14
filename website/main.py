@@ -30,7 +30,7 @@ from web_security import (BoundedRequestBodyMiddleware, parse_secure_form,
 from web_queries import authenticate_account, team_for_member, close_auction_safely, AccountDeactivated
 
 import database as store
-from countries import country_field
+from countries import country_field, country_code
 import account_service as accounts
 import league_seasons as seasons
 from league_honours import season_honours
@@ -709,7 +709,8 @@ def member_profile(request: Request, username: str):
                 profile=profile,team=team,roster=roster,score=score,bids=bids,reserved=reserved,
                 available=team['budget']-reserved if team else 0,
                 history=history,invitations=invitations,request_rows=request_rows,member_games=member_games,
-                past_teams=past_teams,career=career,affiliation=affiliation)
+                past_teams=past_teams,career=career,affiliation=affiliation,
+                country_flag_code=country_code(member['country']))
 
 
 @app.post('/my/roles/{role}/quit')

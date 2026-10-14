@@ -14,6 +14,7 @@ _ALIASES = {
     for alias in [row['name'], row['code'], *row['aliases']]
 }
 _ALIASES['uk'] = 'United Kingdom'
+_CODES = {row['name']: row['code'].lower() for row in _ROWS}
 
 
 def country_field(current):
@@ -25,3 +26,9 @@ def country_field(current):
         'selected_country': selected,
         'legacy_country': current if current and selected not in COUNTRIES else None,
     }
+
+
+def country_code(value):
+    """Return a recognized ISO code for local flags, or None for unknown text."""
+    name = _ALIASES.get(str(value or '').strip().casefold())
+    return _CODES.get(name)
