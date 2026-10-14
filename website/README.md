@@ -1,3 +1,7 @@
+## v91 simplify Current Team caption
+
+The Current Team card on player profiles no longer shows the Chess player caption. The captain caption remains for captain-players. Assets use v91; database schema remains v32.
+
 ## v90 profile cleanup and account photo settings
 
 Public player profiles remove the Registered identity and Standard FIDE rating captions. The player photo editor is now in Account settings, with a current-photo preview. Upload, replacement, removal and validation messages return to settings; existing photo permissions and public image URLs remain in effect. Assets use v90; database schema remains v32.

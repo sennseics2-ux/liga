@@ -2,7 +2,7 @@
   <div class="metric-grid">
     <div class="metric-card"><span>CHESS PLAYER</span><strong class="small-stat"><span data-no-i18n>{{ profile.name }}</span></strong></div>
 
-    <div class="metric-card"><span>CURRENT TEAM</span><strong class="small-stat">{% if not member.player_active %}<span data-i18n="Not playing">Not playing</span>{% elif profile.team_name %}<span data-no-i18n>{{ profile.team_name }}</span>{% else %}<span data-i18n="Free agent">Free agent</span>{% endif %}</strong><small>{% if profile.is_manager_player %}Team Captain{% else %}Chess player{% endif %}</small></div>
+    <div class="metric-card"><span>CURRENT TEAM</span><strong class="small-stat">{% if not member.player_active %}<span data-i18n="Not playing">Not playing</span>{% elif profile.team_name %}<span data-no-i18n>{{ profile.team_name }}</span>{% else %}<span data-i18n="Free agent">Free agent</span>{% endif %}</strong>{% if profile.is_manager_player %}<small>Team Captain</small>{% endif %}</div>
     <div class="metric-card"><span>FIDE RATING</span><strong>{{ profile.rating or '—' }}</strong></div>
   </div>
 

@@ -12,7 +12,7 @@ def test_language_switch_is_in_global_nav_and_portuguese_is_default(client):
         assert response.status_code == 200
         html = response.text
         assert '<html lang="pt-PT">' in html
-        assert 'src="/static/i18n.js?v=90"' in html
+        assert 'src="/static/i18n.js?v=91"' in html
         assert 'id="language-toggle"' in html
         assert 'id="language-flag"' in html
         assert 'src="/static/flags/pt.svg"' in html and 'Português (Portugal)' in html
