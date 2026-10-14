@@ -1,3 +1,7 @@
+## v115 homepage title and site branding
+
+The homepage browser title is Liga SX-AAC. Header and footer branding now read SX-AAC, with matching accessible header/link labels in English and Portuguese. Layout and the CHESS LEAGUE subtitle remain unchanged. Assets use v115; schema remains v108_unregistered_player_fide.
+
 ## v114 inline administrator team-name editing
 
 /admin/teams now uses the same pencil/floppy-disk inline editor as players. Enter saves and Escape restores the original name; closed editors retain team-profile links. A shared template and controller keep both editors consistent in English/Portuguese and light/dark themes. Team name changes require admin access, CSRF and 3–45 characters; existing case-insensitive uniqueness and stale-name checks prevent duplicate names and lost updates. Changes are audited. Only the team name changes: IDs, profile URLs, captains, squads, budgets, pictures and league records remain intact. Assets use v114; schema remains v108_unregistered_player_fide.
