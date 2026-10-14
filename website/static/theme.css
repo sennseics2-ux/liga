@@ -375,3 +375,9 @@ body .language-toggle .flag-icon{display:block;margin:0}
 @media(min-width:1001px){.member-profile-page .member-profile-identity.has-player-summary{grid-template-columns:72px minmax(140px,1fr) minmax(260px,1.3fr) 230px}}
 @media(max-width:600px){.member-profile-page .member-profile-identity>.player-profile-summary{max-width:none;gap:10px}.member-profile-page .player-profile-summary .metric-card{min-height:92px;padding:14px 10px}.member-profile-page .career-games-heading{font-size:13px}.member-profile-page .career-record-compact .career-stat dt{font-size:12px}}
 .member-profile-page .career-record-compact .career-stat dt{flex-direction:column;flex-wrap:nowrap}
+
+/* V98: separate bid guidance from actions and expose player navigation. */
+.auction-detail-page .bid-panel>.form-hint{margin:16px 0 0;line-height:1.6}
+.auction-detail-page .auction-player-link{color:inherit;text-decoration:underline;text-decoration-color:#aaa;text-underline-offset:5px;text-decoration-thickness:1px}
+.auction-detail-page .auction-player-link:hover{text-decoration-thickness:2px}
+.auction-detail-page .auction-player-link:focus-visible{outline:2px solid currentColor;outline-offset:4px;border-radius:3px}

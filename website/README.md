@@ -1,3 +1,7 @@
+## v98 auction detail usability
+
+The player name links to its public account profile when linked. The binding-bid note now has clear spacing below the bid button; profile links have hover and keyboard focus feedback. Assets use v98; database schema remains v32.
+
 ## v97 season banner label
 
 Removed the Current season label from the Seasons page banner. Season status, dates and selection remain available. Database schema remains v32.

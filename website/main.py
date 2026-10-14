@@ -819,8 +819,9 @@ def auction_detail(request: Request, auction_id: int):
     with store.read_db() as db:
         auction = db.execute("""
             SELECT a.*, p.name AS player_name, p.club, p.rating, p.points,
-              st.name AS seller_name, wt.name AS winner_name
+              pu.username AS player_username, st.name AS seller_name, wt.name AS winner_name
             FROM auctions a JOIN players p ON p.id=a.player_id
+            LEFT JOIN users pu ON pu.id=p.user_id
             LEFT JOIN teams st ON st.id=a.seller_team_id
             LEFT JOIN teams wt ON wt.id=a.winner_team_id WHERE a.id=?
         """, (auction_id,)).fetchone()
