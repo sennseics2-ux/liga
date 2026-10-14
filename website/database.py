@@ -573,6 +573,27 @@ def create_account(username, password, role, email=None):
             raise ValueError('That username or email address is already taken.') from None
 
 
+def update_team_name(team_id, name, actor_id, original_name):
+    name=str(name or '').strip()
+    if not 3<=len(name)<=45 or any(ord(char)<32 or ord(char)==127 for char in name):
+        raise ValueError('Team name must be 3–45 characters.')
+    with transaction() as db:
+        _admin_actor(db,actor_id)
+        team=db.execute('SELECT name FROM teams WHERE id=?',(team_id,)).fetchone()
+        if team is None:
+            raise ValueError('Team not found.')
+        if team['name']!=original_name:
+            raise ValueError('Team name changed. Reload the page and try again.')
+        if name==team['name']:
+            return
+        try:
+            db.execute('UPDATE teams SET name=? WHERE id=?',(name,team_id))
+        except sqlite3.IntegrityError:
+            raise ValueError('That team name is already taken.') from None
+        _audit(db,'team_name_updated','team',team_id,actor_id,'Team name updated',
+               before={'name':team['name']},after={'name':name})
+
+
 def create_team(name):
     name = name.strip()
     if not 3 <= len(name) <= 45:

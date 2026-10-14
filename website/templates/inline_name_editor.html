@@ -1,0 +1,13 @@
+<form class="name-editor" method="post" action="/admin/{{ kind }}s/{{ record.id }}/name" data-name-editor {% if kind=='player' %}data-player-name-editor{% else %}data-team-name-editor{% endif %}>
+  <input type="hidden" name="csrf" value="{{ csrf }}">
+  <input type="hidden" name="original_name" value="{{ record.name }}">
+  <a class="strong-link" href="/{{ kind }}s/{{ record.id }}" data-name-link hidden><span data-no-i18n>{{ record.name }}</span></a>
+  <label class="sr-only" for="{{ kind }}-name-{{ record.id }}" data-i18n="{{ kind|title }} name">{{ kind|title }} name</label>
+  <input id="{{ kind }}-name-{{ record.id }}" name="name" value="{{ record.name }}" minlength="{{ 2 if kind=='player' else 3 }}" maxlength="{{ 80 if kind=='player' else 45 }}" required autocomplete="off" data-name-input>
+  <button class="name-editor-button" type="button" data-name-edit aria-controls="{{ kind }}-name-{{ record.id }}" aria-expanded="false" aria-label="Edit {{ kind }} name" title="Edit {{ kind }} name" hidden>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m16 3 5 5L8 21H3v-5L16 3Z M13 6l5 5"/></svg>
+  </button>
+  <button class="name-editor-button name-editor-save" type="submit" data-name-save aria-label="Save {{ kind }} name" title="Save {{ kind }} name">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12l4 4v12a2 2 0 0 1-2 2Z M7 3v6h9V3 M7 21v-8h10v8"/><path d="M13 4v3"/></svg>
+  </button>
+</form>

@@ -201,6 +201,7 @@ def expected_form_fields(path):
     patterns = (
         (r'/admin/players/\d+/country', ('country',)),
         (r'/admin/players/\d+/name', ('name','original_name')),
+        (r'/admin/teams/\d+/name', ('name','original_name')),
         (r'/admin/users/\d+/profile', ('name','country','fide_id','fide_id_locked')),
         (r'/admin/users/\d+/activation', ('active','confirmation')),
         (r'/admin/seasons/\d+/edit', ('start_year','start_date','end_date','round_count')),
@@ -703,6 +704,21 @@ async def admin_player_name(request: Request, player_id: int):
     except ValueError as exc:
         flash(request,str(exc),'error')
     return redirect('/admin/players#player-list')
+
+
+@app.post('/admin/teams/{team_id}/name')
+async def admin_team_name(request: Request, team_id: int):
+    administrator=await run_in_threadpool(auth,request,'admin')
+    data=await form_data(request)
+    if not 0<team_id<2**63:
+        raise HTTPException(404,'Team not found')
+    try:
+        await run_in_threadpool(store.update_team_name,team_id,data.get('name',''),
+                               administrator['id'],data.get('original_name',''))
+        flash(request,'Team name updated.','success')
+    except ValueError as exc:
+        flash(request,str(exc),'error')
+    return redirect('/admin/teams#teams')
 
 
 @app.get('/users/{username}', response_class=HTMLResponse)

@@ -1,17 +1,17 @@
 /* V32 appearance preferences and career/season statistics. */
 .admin-player-identity{min-width:0}
-.player-name-editor{display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;gap:8px;width:100%;max-width:480px;min-width:0;margin:0}
-.player-name-editor [hidden]{display:none!important}
-.player-name-editor .strong-link{min-width:0;overflow-wrap:anywhere;line-height:1.45}
-.player-name-editor input[name="name"]{width:100%;min-width:0;margin:0;min-height:44px;padding:9px 10px;border-radius:8px;font:inherit}
-.player-name-button{display:inline-grid;place-items:center;width:44px;height:44px;padding:0;border:1px solid #b9bec7;border-radius:9px;background:#fff;color:#252a32;cursor:pointer}
-.player-name-button:hover{background:#edf0f4;border-color:#687383}.player-name-button:focus-visible{outline:3px solid #54677f;outline-offset:2px}
-.player-name-save{background:#252a32;border-color:#252a32;color:#fff}.player-name-save:hover{background:#404854;color:#fff}.player-name-save:disabled{opacity:.6;cursor:wait}
+.name-editor{display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;gap:8px;width:100%;max-width:480px;min-width:0;margin:0}
+.name-editor [hidden]{display:none!important}
+.name-editor .strong-link{min-width:0;overflow-wrap:anywhere;line-height:1.45}
+.name-editor input[name="name"]{width:100%;min-width:0;margin:0;min-height:44px;padding:9px 10px;border-radius:8px;font:inherit}
+.name-editor-button{display:inline-grid;place-items:center;width:44px;height:44px;padding:0;border:1px solid #b9bec7;border-radius:9px;background:#fff;color:#252a32;cursor:pointer}
+.name-editor-button:hover{background:#edf0f4;border-color:#687383}.name-editor-button:focus-visible{outline:3px solid #54677f;outline-offset:2px}
+.name-editor-save{background:#252a32;border-color:#252a32;color:#fff}.name-editor-save:hover{background:#404854;color:#fff}.name-editor-save:disabled{opacity:.6;cursor:wait}
 .admin-player-role{margin-top:8px;white-space:normal}
-:root[data-theme="dark"] .player-name-button{background:var(--theme-surface);color:var(--theme-text);border-color:var(--theme-border)}
-:root[data-theme="dark"] .player-name-button:hover{background:var(--theme-soft)}
-:root[data-theme="dark"] .player-name-save{background:#e3eaf6;border-color:#e3eaf6;color:#151922}
-:root[data-theme="dark"] .player-name-save:hover{background:#fff;color:#151922}
+:root[data-theme="dark"] .name-editor-button{background:var(--theme-surface);color:var(--theme-text);border-color:var(--theme-border)}
+:root[data-theme="dark"] .name-editor-button:hover{background:var(--theme-soft)}
+:root[data-theme="dark"] .name-editor-save{background:#e3eaf6;border-color:#e3eaf6;color:#151922}
+:root[data-theme="dark"] .name-editor-save:hover{background:#fff;color:#151922}
 :root{color-scheme:light;--theme-page:#151922;--theme-surface:#202630;--theme-soft:#2b3340;--theme-text:#f1f4f9;--theme-muted:#c0c7d3;--theme-border:#748197}
 :root[data-theme="dark"]{color-scheme:dark;--paper:var(--theme-page);--ink:var(--theme-text);--muted:var(--theme-muted);--line:var(--theme-border)}
 .theme-toggle{width:40px;height:40px;display:inline-grid;place-items:center;padding:0;flex-shrink:0;border:1px solid #c9c9c9;border-radius:9px;background:#fff;color:#242424;cursor:pointer}

@@ -27,8 +27,8 @@ for (const form of document.querySelectorAll('form[data-confirm]')) {
   });
 }
 
-// Player names remain profile links until the administrator opens the editor.
-for (const form of document.querySelectorAll('[data-player-name-editor]')) {
+// Names remain profile links until the administrator opens the editor.
+for (const form of document.querySelectorAll('[data-name-editor]')) {
   const input = form.querySelector('[data-name-input]');
   const link = form.querySelector('[data-name-link]');
   const edit = form.querySelector('[data-name-edit]');

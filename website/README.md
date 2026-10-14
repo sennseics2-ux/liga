@@ -1,3 +1,7 @@
+## v114 inline administrator team-name editing
+
+/admin/teams now uses the same pencil/floppy-disk inline editor as players. Enter saves and Escape restores the original name; closed editors retain team-profile links. A shared template and controller keep both editors consistent in English/Portuguese and light/dark themes. Team name changes require admin access, CSRF and 3–45 characters; existing case-insensitive uniqueness and stale-name checks prevent duplicate names and lost updates. Changes are audited. Only the team name changes: IDs, profile URLs, captains, squads, budgets, pictures and league records remain intact. Assets use v114; schema remains v108_unregistered_player_fide.
+
 ## v113 inline administrator player-name editing
 
 Registered players on /admin/players replaces the Edit country link with a pencil control. Clicking it reveals an inline name field and a floppy disk save button; Enter saves and Escape discards the draft. Names still link to player profiles outside editing. Server-side authorization, CSRF, 2–80 character validation and a stale-name guard protect the mutation. Linked user display names update in the same transaction while usernames, profile URLs, countries, ratings, roles and game records are preserved. Changes are audited. The responsive editor supports light/dark themes, English/Portuguese labels and saving without JavaScript. Existing country editing remains on player profiles. Assets use v113; schema remains v108_unregistered_player_fide.
