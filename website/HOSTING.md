@@ -6,7 +6,7 @@ and downloads are public for visible games.
 
 ## Club landing page at www.sx-aac.com
 
-The v110 release includes a static Portuguese landing page in `landing/`. Its
+The v111 release includes a static Portuguese landing page in `landing/`. Its
 League button opens `https://liga.sx-aac.com/`. Caddy serves the landing page at
 `www.sx-aac.com` and redirects `sx-aac.com` to the www address, while retaining
 the existing League configuration.
@@ -40,7 +40,7 @@ instead of using the shared VM.
 For later changes affecting only the landing page, copy just the release's
 `landing/` directory into `/opt/clubdraft/landing/`. The existing Caddy directory
 mount serves the changed files immediately; the League does not need to stop or
-rebuild. The v110 landing page is centered, monochrome and has no chessboard.
+rebuild. The v111 landing page is centered, monochrome and has no chessboard.
 
 ## Upgrade an existing server
 
@@ -65,7 +65,7 @@ instructions, not evidence that this workspace has changed the live website.
    sudo docker compose down
    sudo rsync -a --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
      --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
-     ~/chess-fantasy-league-v110/ /opt/clubdraft/
+     ~/chess-fantasy-league-v111/ /opt/clubdraft/
    sudo mkdir -p data backups
    sudo chown -R 10001:10001 data backups
    sudo chmod 700 data backups
@@ -88,7 +88,7 @@ instructions, not evidence that this workspace has changed the live website.
 
 ## V35 release extraction and configuration
 
-The standalone release ZIP has `chess-fantasy-league-v110/` at its root. GitHub's
+The standalone release ZIP has `chess-fantasy-league-v111/` at its root. GitHub's
 Download ZIP instead contains `liga-main/website/` (or `liga-COMMIT/website/`
 for a commit archive). Copy the directory containing
 `main.py`, `compose.yaml`, and `league_migrations.py`; copying `liga-main/` directly
@@ -99,10 +99,10 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 ```bash
 (
   set -e
-  ZIP="$HOME/chess-fantasy-league-v110.zip"
-  RELEASE_DIR="$(mktemp -d "$HOME/liga-v110-release.XXXXXX")"
+  ZIP="$HOME/chess-fantasy-league-v111.zip"
+  RELEASE_DIR="$(mktemp -d "$HOME/liga-v111-release.XXXXXX")"
   unzip -q "$ZIP" -d "$RELEASE_DIR"
-  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v110"
+  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v111"
   if [ ! -f "$SOURCE_DIR/main.py" ]; then
     for CANDIDATE in "$RELEASE_DIR"/liga-*/website; do
       if [ -f "$CANDIDATE/main.py" ]; then
@@ -539,7 +539,7 @@ sudo env CHESS_USE_OFFSITE_COMPOSE=1 bash deploy/reset_database.sh --keep-admin-
 
 ## Import the requested AA Coimbra players
 
-After installing and rebuilding v110, run inside the live web container:
+After installing and rebuilding v111, run inside the live web container:
 
 ```bash
 cd /opt/clubdraft
@@ -565,7 +565,7 @@ rating or nationality is inferred from the PDF.
 
 ## Refresh all FIDE ratings immediately
 
-After deploying and rebuilding v110, run:
+After deploying and rebuilding v111, run:
 
 ```bash
 cd /opt/clubdraft
@@ -610,3 +610,30 @@ linked player records, unregistered players, and forced inactive-account refresh
 The monthly worker repeats the same country lookup automatically. Shared IDs use
 one pair of lookups per run, and every HTTP request is paced. Allow a few minutes
 for the full roster; per-record output includes the country or `country unchanged`.
+
+## Fill only missing countries
+
+After deploying v111, run this country-only command:
+
+```bash
+cd /opt/clubdraft
+sudo docker compose exec -T web python -m deploy.fill_missing_countries
+```
+
+A consistent backup is created under `/backups/missing-countries-<timestamp>/`
+before the first update. Only blank, NULL or whitespace-only country fields with
+a FIDE ID are candidates. Registered accounts (including inactive accounts) and
+player records are checked independently. Linked player records use the account's
+FIDE ID. Existing countries on either record are preserved; an already-filled
+account country does not prevent filling its blank player record, and vice versa.
+
+The script requests only the federation profile, caches shared FIDE IDs, and uses
+the same federation mapping, pacing and short HTTP 429 retries as the combined
+refresh. It updates only `country`: ratings, publication months, rating-check
+and retry schedules, accounts, teams and match results remain unchanged. Unknown
+or neutral codes and missing provider profiles remain blank. Network/provider
+failures are reported without changing data; rerun this command to retry.
+Concurrent country, FIDE ID or account-link changes are skipped. A summary reports
+countries filled, unknown federations, failures and changed/skipped records.
+The country-only command is safe to rerun and does not change the normal combined
+refresh command or monthly worker's behavior.

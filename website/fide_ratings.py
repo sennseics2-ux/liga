@@ -122,23 +122,28 @@ def fetch_standard_rating(fide_id):
 
 def fetch_player_details(fide_id):
     """Keep current-rating semantics and fetch the profile's federation code."""
+    rating,month=fetch_standard_rating(fide_id)
+    return rating,month,fetch_federation_country(fide_id)
+
+
+def fetch_federation_country(fide_id):
+    """Look up the federation without requesting or changing a rating."""
     from database import validate_player_fide_id
     from countries import federation_country
     fide_id=validate_player_fide_id(fide_id)
-    rating,month=fetch_standard_rating(fide_id)
     try:
         payload=_fetch_payload(fide_id,PROFILE_URL)
     except HTTPError as error:
         if error.code!=404:
             raise
-        # The current endpoint can return an unrated snapshot for an ID with no
-        # profile in the provider's registry. No country can be inferred.
+        # Some IDs, especially unrated players, have no provider profile.
+        # No country can be inferred from a missing registry entry.
         error.close()
-        return rating,month,None
+        return None
     if not isinstance(payload,dict) or str(payload.get('fideid'))!=fide_id:
         raise ValueError('FIDE API returned an unexpected player profile.')
     country=federation_country(payload.get('federation_code') or payload.get('country') or payload.get('federation'))
-    return rating,month,country
+    return country
 
 
 def next_success(now, month):
