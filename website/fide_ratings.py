@@ -4,7 +4,9 @@ import json
 import os
 import re
 import threading
+import time
 from urllib.parse import urlsplit
+from urllib.error import HTTPError
 from urllib.request import Request, build_opener, HTTPRedirectHandler
 
 
@@ -16,12 +18,23 @@ class ProviderRedirects(HTTPRedirectHandler):
         return super().redirect_request(req,fp,code,msg,headers,newurl)
 
 
+_request_lock=threading.Lock()
+_last_request=None
+
+
 def urlopen(request,timeout):
+    # Both rating and federation requests share the public API pacing budget.
+    global _last_request
+    with _request_lock:
+        if _last_request is not None:
+            time.sleep(max(0,1-(time.monotonic()-_last_request)))
+        _last_request=time.monotonic()
     return build_opener(ProviderRedirects()).open(request,timeout=timeout)
 from zoneinfo import ZoneInfo
 
 _wake=threading.Event()
 DEFAULT_URL='https://fideratings.com/api/player/{fide_id}/current'
+PROFILE_URL='https://fideratings.com/api/player/{fide_id}/profile'
 DEFAULT_RATING_FIELD='current.standard.rating'
 DEFAULT_MONTH_FIELD='current.standard.date'
 
@@ -47,12 +60,11 @@ def _field(payload, path):
     return payload
 
 
-def fetch_standard_rating(fide_id):
+def _fetch_payload(fide_id,template):
     from database import validate_player_fide_id
     fide_id=validate_player_fide_id(fide_id)
     if fide_id is None:
         raise ValueError('FIDE ID is required for rating lookup.')
-    template=os.getenv('CHESS_FIDE_API_URL_TEMPLATE') or DEFAULT_URL
     if not template or '{fide_id}' not in template:
         raise ValueError('FIDE API configuration is missing.')
     url=template.replace('{fide_id}',fide_id)
@@ -73,7 +85,14 @@ def fetch_standard_rating(fide_id):
         data=response.read(262145)
         if len(data)>262144:
             raise ValueError('FIDE API response is too large.')
-        payload=json.loads(data)
+        return json.loads(data)
+
+
+def fetch_standard_rating(fide_id):
+    from database import validate_player_fide_id
+    fide_id=validate_player_fide_id(fide_id)
+    template=os.getenv('CHESS_FIDE_API_URL_TEMPLATE') or DEFAULT_URL
+    payload=_fetch_payload(fide_id,template)
     rating_path=os.getenv('CHESS_FIDE_RATING_FIELD') or DEFAULT_RATING_FIELD
     month_path=os.getenv('CHESS_FIDE_MONTH_FIELD',DEFAULT_MONTH_FIELD)
     if template==DEFAULT_URL:
@@ -101,6 +120,27 @@ def fetch_standard_rating(fide_id):
     return rating,month
 
 
+def fetch_player_details(fide_id):
+    """Keep current-rating semantics and fetch the profile's federation code."""
+    from database import validate_player_fide_id
+    from countries import federation_country
+    fide_id=validate_player_fide_id(fide_id)
+    rating,month=fetch_standard_rating(fide_id)
+    try:
+        payload=_fetch_payload(fide_id,PROFILE_URL)
+    except HTTPError as error:
+        if error.code!=404:
+            raise
+        # The current endpoint can return an unrated snapshot for an ID with no
+        # profile in the provider's registry. No country can be inferred.
+        error.close()
+        return rating,month,None
+    if not isinstance(payload,dict) or str(payload.get('fideid'))!=fide_id:
+        raise ValueError('FIDE API returned an unexpected player profile.')
+    country=federation_country(payload.get('federation_code') or payload.get('country') or payload.get('federation'))
+    return rating,month,country
+
+
 def next_success(now, month):
     local=now.astimezone(ZoneInfo('Europe/Lisbon'))
     if month and month < local.strftime('%Y-%m'):
@@ -120,7 +160,7 @@ def sync_ratings(*, fetcher=None, limit=10, force=False, report=None):
     if limit is not None and (not isinstance(limit,int) or limit<0):
         raise ValueError('Rating limit must be nonnegative or None.')
     now=store.now_utc()
-    fetcher=fetcher or fetch_standard_rating
+    fetcher=fetcher or fetch_player_details
     due='' if force else ' AND (fide_next_attempt IS NULL OR fide_next_attempt<=?)'
     active='' if force else 'account_active=1 AND '
     params=() if force else (store.iso(now),)
@@ -139,11 +179,16 @@ def sync_ratings(*, fetcher=None, limit=10, force=False, report=None):
         fide_id=user['fide_id']
         if fide_id not in lookups:
             try:
-                rating,month=fetcher(fide_id)
-                lookups[fide_id]=(rating,month,None)
+                details=fetcher(fide_id)
+                if len(details)==2:
+                    rating,month=details
+                    country=None
+                else:
+                    rating,month,country=details
+                lookups[fide_id]=(rating,month,country,None)
             except Exception:
-                lookups[fide_id]=(None,None,'Rating lookup failed; retry scheduled.')
-        rating,month,error=lookups[fide_id]
+                lookups[fide_id]=(None,None,None,'Rating/country lookup failed; retry scheduled.')
+        rating,month,country,error=lookups[fide_id]
         if error is None:
             error=None;attempts=0;next_time=next_success(now,month)
         else:
@@ -167,9 +212,13 @@ def sync_ratings(*, fetcher=None, limit=10, force=False, report=None):
                 db.execute(f'UPDATE {table} SET {rating_field}=?,fide_rating_month=? WHERE id=?',(rating,month,user['id']))
                 if user['kind']=='user':
                     db.execute('UPDATE players SET rating=? WHERE user_id=?',(rating,user['id']))
+                if country is not None:
+                    db.execute(f'UPDATE {table} SET country=? WHERE id=?',(country,user['id']))
+                    if user['kind']=='user':
+                        db.execute('UPDATE players SET country=? WHERE user_id=?',(country,user['id']))
                 completed+=1
             db.execute(f"""UPDATE {table} SET fide_checked_at=?,fide_next_attempt=?,fide_error=?,fide_attempts=? WHERE id=?""",
                        (store.iso(now),store.iso(next_time),error,attempts,user['id']))
         if report:
-            report({**user,'status':status,'rating':rating,'month':month})
+            report({**user,'status':status,'rating':rating,'month':month,'country':country})
     return completed

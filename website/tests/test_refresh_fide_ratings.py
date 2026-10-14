@@ -11,7 +11,7 @@ from test_league import client
 
 def test_force_refresh_covers_all_players_shared_ids_and_inactive_accounts(client):
     uid=store.create_account('rating_member','PasswordLong123!','manager')
-    accounts.update_profile(uid,'Registered Player','Portugal','1959506')
+    accounts.update_profile(uid,'Registered Player','Spain','1959506')
     shared=store.create_player('Shared FIDE player',fide_id='1959506')
     others=[store.create_player(f'Player {i}',fide_id=str(555014240+i)) for i in range(12)]
     blank=store.create_player('No FIDE ID',rating=1500)
@@ -20,12 +20,14 @@ def test_force_refresh_covers_all_players_shared_ids_and_inactive_accounts(clien
         db.execute('UPDATE users SET account_active=0,fide_next_attempt=? WHERE id=?',(future,uid))
         db.execute('UPDATE players SET fide_next_attempt=?',(future,))
     calls=[];output=[]
-    totals=refresh_all(fetcher=lambda fid:(calls.append(fid) or (1870,'2026-10')),output=output.append)
+    totals=refresh_all(fetcher=lambda fid:(calls.append(fid) or (1870,'2026-10','Portugal')),output=output.append)
     assert totals=={'updated':14,'failed':0,'skipped':0,'unrated':0}
     assert len(calls)==13 and calls.count('1959506')==1
     with store.read_db() as db:
         assert db.execute('SELECT fide_rating,account_active FROM users WHERE id=?',(uid,)).fetchone()[:]==(1870,0)
         assert db.execute('SELECT count(*) FROM players WHERE rating=1870').fetchone()[0]==14
+        assert db.execute('SELECT country FROM users WHERE id=?',(uid,)).fetchone()[0]=='Portugal'
+        assert db.execute("SELECT count(*) FROM players WHERE country='Portugal'").fetchone()[0]==14
         assert db.execute('SELECT rating,fide_checked_at FROM players WHERE id=?',(blank,)).fetchone()[:]==(1500,None)
     assert 'Updated: 14' in output[-1]
 
@@ -51,14 +53,15 @@ def test_failed_lookups_keep_ratings_and_unrated_response_is_not_a_failure(clien
 
 
 def test_force_refresh_skips_a_fide_id_changed_during_lookup(client):
-    player=store.create_player('Changed ID',rating=1700,fide_id='1959506')
+    player=store.create_player('Changed ID',rating=1700,fide_id='1959506',country='Spain')
     def changed(_):
         with store.transaction() as db:
             db.execute('UPDATE players SET fide_id=? WHERE id=?',('555014240',player))
-        return 1900,'2026-10'
+        return 1900,'2026-10','Portugal'
     assert refresh_all(fetcher=changed,output=lambda _:None)['skipped']==1
     with store.read_db() as db:
         assert db.execute('SELECT rating FROM players WHERE id=?',(player,)).fetchone()[0]==1700
+        assert db.execute('SELECT country FROM players WHERE id=?',(player,)).fetchone()[0]=='Spain'
 
 
 def test_normal_worker_still_respects_batch_limit(client):

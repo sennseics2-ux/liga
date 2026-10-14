@@ -6,7 +6,7 @@ and downloads are public for visible games.
 
 ## Club landing page at www.sx-aac.com
 
-The v109 release includes a static Portuguese landing page in `landing/`. Its
+The v110 release includes a static Portuguese landing page in `landing/`. Its
 League button opens `https://liga.sx-aac.com/`. Caddy serves the landing page at
 `www.sx-aac.com` and redirects `sx-aac.com` to the www address, while retaining
 the existing League configuration.
@@ -40,7 +40,7 @@ instead of using the shared VM.
 For later changes affecting only the landing page, copy just the release's
 `landing/` directory into `/opt/clubdraft/landing/`. The existing Caddy directory
 mount serves the changed files immediately; the League does not need to stop or
-rebuild. The v109 landing page is centered, monochrome and has no chessboard.
+rebuild. The v110 landing page is centered, monochrome and has no chessboard.
 
 ## Upgrade an existing server
 
@@ -65,7 +65,7 @@ instructions, not evidence that this workspace has changed the live website.
    sudo docker compose down
    sudo rsync -a --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
      --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
-     ~/chess-fantasy-league-v109/ /opt/clubdraft/
+     ~/chess-fantasy-league-v110/ /opt/clubdraft/
    sudo mkdir -p data backups
    sudo chown -R 10001:10001 data backups
    sudo chmod 700 data backups
@@ -88,7 +88,7 @@ instructions, not evidence that this workspace has changed the live website.
 
 ## V35 release extraction and configuration
 
-The standalone release ZIP has `chess-fantasy-league-v109/` at its root. GitHub's
+The standalone release ZIP has `chess-fantasy-league-v110/` at its root. GitHub's
 Download ZIP instead contains `liga-main/website/` (or `liga-COMMIT/website/`
 for a commit archive). Copy the directory containing
 `main.py`, `compose.yaml`, and `league_migrations.py`; copying `liga-main/` directly
@@ -99,10 +99,10 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 ```bash
 (
   set -e
-  ZIP="$HOME/chess-fantasy-league-v109.zip"
-  RELEASE_DIR="$(mktemp -d "$HOME/liga-v109-release.XXXXXX")"
+  ZIP="$HOME/chess-fantasy-league-v110.zip"
+  RELEASE_DIR="$(mktemp -d "$HOME/liga-v110-release.XXXXXX")"
   unzip -q "$ZIP" -d "$RELEASE_DIR"
-  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v109"
+  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v110"
   if [ ! -f "$SOURCE_DIR/main.py" ]; then
     for CANDIDATE in "$RELEASE_DIR"/liga-*/website; do
       if [ -f "$CANDIDATE/main.py" ]; then
@@ -539,7 +539,7 @@ sudo env CHESS_USE_OFFSITE_COMPOSE=1 bash deploy/reset_database.sh --keep-admin-
 
 ## Import the requested AA Coimbra players
 
-After installing and rebuilding v109, run inside the live web container:
+After installing and rebuilding v110, run inside the live web container:
 
 ```bash
 cd /opt/clubdraft
@@ -565,7 +565,7 @@ rating or nationality is inferred from the PDF.
 
 ## Refresh all FIDE ratings immediately
 
-After deploying and rebuilding v109, run:
+After deploying and rebuilding v110, run:
 
 ```bash
 cd /opt/clubdraft
@@ -574,7 +574,7 @@ sudo docker compose exec -T web python -m deploy.refresh_fide_ratings
 
 The command creates a consistent backup under `/backups/fide-refresh-<timestamp>/`
 before changing ratings. It looks up every distinct FIDE ID using the configured
-FIDE API and applies the standard rating to every matching record, including
+FIDE API and applies the standard rating and federation country to every matching record, including
 unregistered players and inactive accounts. Registered profiles use the account's
 FIDE ID and update the linked player rating as well. Players with no FIDE ID are
 skipped. Existing accounts, teams, games and scores are preserved.
@@ -586,7 +586,27 @@ second apart, retrying short HTTP 429 rate limits up to twice. Allow a few minut
 for a full roster. The command prints individual outcomes and an
 `Updated / Failed / Changed/skipped` summary. Updated includes confirmed
 unrated players, shown separately as `unrated`; their rating is cleared rather
-than invented. A failed lookup preserves its previous rating and schedules a
+than invented. A failed lookup preserves its previous rating and country and schedules a
 retry. A profile changed during lookup is skipped. Failures or changed/skipped
 records cause a nonzero exit status; rerun the command after resolving the issue.
 The background monthly refresh continues normally afterward.
+
+As of v110, each distinct FIDE ID uses the `/current` rating endpoint and the
+`/profile` federation endpoint. No `.env` changes are required. `federation_code`
+(or the provider's country/federation code field) is converted from FIDE's
+three-letter codes to the site's country names, so existing profile flags work:
+for example POR → Portugal and GER → Germany. FIDE/IOC codes are mapped explicitly
+where they differ from ISO codes, including NGR → Nigeria and NIG → Niger.
+England, Scotland and Wales use the United Kingdom country choice. Kosovo is
+included as a country choice with its flag.
+
+The refresh replaces manually entered countries when the provider supplies a
+recognized federation; this field therefore follows FIDE representation.
+Unknown/missing or neutral codes (FID/NON) preserve the existing country. A
+provider profile returning 404 also leaves the country unchanged while allowing
+the current rating to update. Other profile lookup failures preserve both fields
+and schedule a retry. Country updates apply to registered accounts and their
+linked player records, unregistered players, and forced inactive-account refreshes.
+The monthly worker repeats the same country lookup automatically. Shared IDs use
+one pair of lookups per run, and every HTTP request is paced. Allow a few minutes
+for the full roster; per-record output includes the country or `country unchanged`.

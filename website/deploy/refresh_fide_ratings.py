@@ -1,4 +1,4 @@
-"""Back up the league and refresh every FIDE standard rating immediately."""
+"""Back up the league and refresh every FIDE standard rating and country."""
 import argparse
 from datetime import datetime,timezone
 from pathlib import Path
@@ -47,12 +47,13 @@ def refresh_all(*,fetcher=None,output=print):
             detail=str(record['rating']) if record['rating'] is not None else 'unrated'
             if record['month']:
                 detail+=f" ({record['month']})"
+            detail+=f"; country: {record['country']}" if record.get('country') else '; country unchanged'
         elif status=='failed':
-            detail='lookup failed; previous rating preserved; retry scheduled'
+            detail='lookup failed; previous rating and country preserved; retry scheduled'
         else:
             detail='record changed during lookup; not updated'
         output(f"{record['kind']} {record['id']}, FIDE {record['fide_id']}: {detail}")
-    fide_ratings.sync_ratings(fetcher=fetcher or paced_fetcher(fide_ratings.fetch_standard_rating),
+    fide_ratings.sync_ratings(fetcher=fetcher or paced_fetcher(fide_ratings.fetch_player_details),
                               limit=None,force=True,report=report)
     output(f"Updated: {totals['updated']} (unrated: {totals['unrated']}). "
            f"Failed: {totals['failed']}. Changed/skipped: {totals['skipped']}.")

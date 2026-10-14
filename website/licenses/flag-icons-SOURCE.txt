@@ -1,5 +1,5 @@
 Country flag SVGs from https://github.com/lipis/flag-icons, release v7.5.0.
 Source: https://github.com/lipis/flag-icons/archive/refs/tags/v7.5.0.tar.gz
 Archive SHA-256: 5502d1bb0bda9f258d726d3c084a2d57a07cfdfa6d2ed18cbb5a1ee11b307778
-Only the 249 ISO 3166-1 country flags in flags/4x3 are included.
+The 249 ISO 3166-1 country flags plus Kosovo (xk.svg) in flags/4x3 are included.
 Licence: MIT; see flag-icons-MIT.txt.

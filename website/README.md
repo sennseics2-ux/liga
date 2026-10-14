@@ -1,3 +1,7 @@
+## v110 federation countries in the FIDE refresh
+
+The existing immediate refresh command and monthly worker now fetch each FIDE profile's federation alongside its current standard rating. FIDE/IOC federation codes map to stored country names and existing flags, including POR, GER, NGR/NIG and the KOS federation. Kosovo is added to country choices with a bundled flag. Registered accounts and linked player records update together; unregistered records update directly. Neutral or unknown codes and absent provider profiles preserve existing countries. Provider failures preserve both stored rating and country and schedule a retry. Current-rating semantics and custom rating endpoint settings remain unchanged. All API requests share pacing; the CLI reports country updates. Assets use v110; schema remains v108_unregistered_player_fide.
+
 ## v109 immediate whole-roster FIDE rating refresh
 
 `python -m deploy.refresh_fide_ratings` backs up the installed database and refreshes every FIDE standard rating, including unregistered players and inactive accounts. It ignores existing refresh deadlines, fetches each shared FIDE ID once, spaces public API requests and retries short rate limits, updates linked player records, and reports rated/unrated successes, failures and changed records. Failed lookups preserve previous ratings and schedule retries; changed IDs are never overwritten. Players without FIDE IDs are untouched. The normal monthly worker retains its batch limit and schedule. Assets use v109; schema remains v108_unregistered_player_fide.
