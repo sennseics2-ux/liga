@@ -1,3 +1,7 @@
+## v105 cohesive profile summary
+
+Player identity sits alongside a single shared facts panel for current team, FIDE rating and career results. Aligned typography, subtle dividers and consistent spacing replace separate nested cards. Tablets place facts beneath identity; phones stack career results beneath team and rating. All profile data, status badges and account controls remain available. Assets use v105; schema remains v103_player_countries.
+
 ## v104 inactive-player badge
 
 Active player badges are hidden on member profiles. Inactive player roles display a red Inactive Player badge (Jogador inativo in Portuguese), with accessible colors in both themes. Captain badges are preserved. Assets use v104; schema remains v103_player_countries.
