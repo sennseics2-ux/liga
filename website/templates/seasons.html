@@ -36,7 +36,7 @@
     {% endfor %}</div>
   </nav>
   {% endif %}
-  <div class="competition-section-heading"><div><p class="competition-eyebrow" data-i18n="The competition">The competition</p><h2 data-i18n="Fixtures & results">Fixtures &amp; results</h2></div><p data-i18n="Four boards. Two teams. Every point counts.">Four boards. Two teams. Every point counts.</p></div>
+  <div class="competition-section-heading"><div><p class="competition-eyebrow" data-i18n="The competition">The competition</p><h2 data-i18n="Fixtures & results">Fixtures &amp; results</h2></div><p data-i18n="Two teams. Four boards. Every point counts.">Two teams. Four boards. Every point counts.</p></div>
   {% if season.status=='draft' and user and user.role=='admin' and matches %}<p class="competition-draft-note" data-i18n="Draft preview. Fixtures are visible to administrators until the schedule is published.">Draft preview. Fixtures are visible to administrators until the schedule is published.</p>{% endif %}
   {% for round in rounds %}
   <section class="round-section{% if round.completed %} round-complete{% endif %}" aria-labelledby="round-{{ round.number }}">

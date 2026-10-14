@@ -60,11 +60,12 @@ def test_country_profile_must_belong_to_requested_fide_id(monkeypatch):
             fide_ratings.fetch_player_details('1959506')
 
 
-def test_missing_provider_profile_keeps_rating_without_inventing_country(monkeypatch):
+def test_missing_provider_profile_keeps_rating_and_uses_official_country(monkeypatch):
     from urllib.error import HTTPError
     monkeypatch.setattr(fide_ratings,'fetch_standard_rating',lambda _:(None,None))
+    monkeypatch.setattr('fide_official.fetch_official_country',lambda _:'Egypt')
     with patch('fide_ratings.urlopen',side_effect=HTTPError('https://fideratings.com/',404,'Not found',{},None)):
-        assert fide_ratings.fetch_player_details('555014356')==(None,None,None)
+        assert fide_ratings.fetch_player_details('555014356')==(None,None,'Egypt')
 
 
 def test_federation_failure_is_not_hidden_and_preserves_stored_values(client,monkeypatch):

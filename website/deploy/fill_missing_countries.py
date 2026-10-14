@@ -34,7 +34,7 @@ def fill_missing(*,fetcher=None,output=print):
         if failed:
             status='failed';detail='lookup failed; country unchanged; rerun to retry'
         elif country is None:
-            status='unknown';detail='no recognized federation country; left blank'
+            status='unknown';detail='country unresolved after provider and official FIDE checks; needs review'
         else:
             with store.transaction() as db:
                 if record['kind']=='user':
@@ -67,7 +67,7 @@ def main():
     print(f'Original database backup: {snapshot}',flush=True)
     store.init_db()
     totals=fill_missing(output=lambda line:print(line,flush=True))
-    return 1 if totals['failed'] or totals['skipped'] else 0
+    return 1 if totals['unknown'] or totals['failed'] or totals['skipped'] else 0
 
 
 if __name__=='__main__':

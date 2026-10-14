@@ -13,7 +13,8 @@ from urllib.request import Request, build_opener, HTTPRedirectHandler
 class ProviderRedirects(HTTPRedirectHandler):
     def redirect_request(self,req,fp,code,msg,headers,newurl):
         target=urlsplit(newurl)
-        if target.scheme!='https' or target.hostname not in ('fideratings.com','www.fideratings.com'):
+        allowed=('ratings.fide.com',) if urlsplit(req.full_url).hostname=='ratings.fide.com' else ('fideratings.com','www.fideratings.com')
+        if target.scheme!='https' or target.hostname not in allowed:
             raise ValueError('Unexpected FIDE API redirect.')
         return super().redirect_request(req,fp,code,msg,headers,newurl)
 
@@ -136,14 +137,16 @@ def fetch_federation_country(fide_id):
     except HTTPError as error:
         if error.code!=404:
             raise
-        # Some IDs, especially unrated players, have no provider profile.
-        # No country can be inferred from a missing registry entry.
         error.close()
-        return None
+        from fide_official import fetch_official_country
+        return fetch_official_country(fide_id)
     if not isinstance(payload,dict) or str(payload.get('fideid'))!=fide_id:
         raise ValueError('FIDE API returned an unexpected player profile.')
     country=federation_country(payload.get('federation_code') or payload.get('country') or payload.get('federation'))
-    return country
+    if country is not None:
+        return country
+    from fide_official import fetch_official_country
+    return fetch_official_country(fide_id)
 
 
 def next_success(now, month):

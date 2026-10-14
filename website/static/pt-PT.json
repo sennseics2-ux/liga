@@ -1293,7 +1293,6 @@
   "Scheduled matches": "Encontros agendados",
   "The competition": "A competição",
   "Fixtures & results": "Calendário e resultados",
-  "Four boards. Two teams. Every point counts.": "Quatro tabuleiros. Duas equipas. Cada ponto conta.",
   "Draft preview. Fixtures are visible to administrators until the schedule is published.": "Pré-visualização do rascunho. Os encontros só são visíveis aos administradores até à publicação do calendário.",
   "Partial results": "Resultados parciais",
   "Upcoming": "Por disputar",
@@ -1814,5 +1813,6 @@
   "Inactive Player": "Jogador inativo",
   "SCORE / MATCHES": "PONTOS / PARTIDAS",
   "SCORE": "PONTOS",
-  "Kosovo": "Kosovo"
+  "Kosovo": "Kosovo",
+  "Two teams. Four boards. Every point counts.": "Duas equipas. Quatro tabuleiros. Cada ponto conta."
 }
