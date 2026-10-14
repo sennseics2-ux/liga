@@ -5,7 +5,7 @@
   <div class="container">
       <div class="eyebrow" data-i18n="Seasons">Seasons</div>
       <h1 data-no-i18n>{{ season.name }}</h1>
-      <div class="season-description"><span class="competition-status" data-i18n="{{ season_state }}">{{ season_state }}</span>{% if season.start_year == current_year %}<span data-i18n="Current season">Current season</span>{% endif %}</div>
+      <div class="season-description"><span class="competition-status" data-i18n="{{ season_state }}">{{ season_state }}</span></div>
       {% if season.start_date %}<p class="season-dates"><span data-i18n="Season dates">Season dates</span> <span data-no-i18n>{{ season.start_date }} — {{ season.end_date }}</span></p>{% endif %}
   </div>
 </section>

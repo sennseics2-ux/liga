@@ -1,6 +1,6 @@
 # Liga SX-AAC
 
-This repository contains the **v96 league website** and the **1.1.0 mobile apps** for https://liga.sx-aac.com.
+This repository contains the **v97 league website** and the **1.1.0 mobile apps** for https://liga.sx-aac.com.
 
 ## Club landing page
 
@@ -8,7 +8,7 @@ The centered black-and-white page for **www.sx-aac.com** is in [`website/landing
 
 [Desktop preview](docs/previews/sx-aac-landing-desktop.png) · [Mobile preview](docs/previews/sx-aac-landing-mobile.png)
 
-## Website — v96
+## Website — v97
 
 The website source is in [`website/`](website/). V35 adds round filtering, explicit home-versus-away fixture headings, and season league standings using 3/1/0 match points; fantasy-point displays and adjustment controls are removed. V34 adds current team affiliation and join dates to profile headers, final match winner/draw highlights, a round schedule in Results, and corrected responsive dark backgrounds. V33 introduces captain terminology, compact profile-header career results, clearer seasonal squad cards with join/leave dates, simpler team sorting and stronger dark-mode section contrast. V32 permits shared FIDE IDs, adds all-season player wins/draws/losses, introduces persistent site-wide dark mode, renames the season calendar Results, and shows each archived squad member’s chess score/games played. V31 adds direct invitation cancellation in team management, a red remove-manager icon, and automatic availability after an administrator removes a manager, allowing reinvitation to the same team. Before kickoff, lineups are visible only within their own team; board pairings and associated game/PGN pages remain hidden from every viewer until kickoff. V30 adds team profile pictures uploaded, replaced and removed by the currently assigned manager. Pictures also appear in the directory, standings, fixtures and match scoreboards, and are included in SQLite backups. V29 adds a redesigned administration dashboard with dedicated management workspaces, the ♔ transfer-currency symbol, and green/red/grey results on player profiles. V28 adds gold, silver and bronze team-profile medals engraved with the season year. Completed seasons use 3/1/0 team-match points and head-to-head tiebreaks. V27 opens Seasons on the current season even before publication, adds a season dropdown, and redesigns round results and match scoreboards for desktop and mobile. V26 requires both username and email for password recovery, improves the recovery page, explains deactivated-account login failures, and renders Criar conta on Portuguese registration. A private VM generator adds two completed six-round demonstration seasons using current teams and rosters while retaining accounts. Account settings, automatic FIDE standard ratings, season scheduling, lineups, auctions, scoring, backups and public PGN replay remain available. Keep SMTP credentials private on the VM; the default public FIDE lookup needs no API key. See the hosting guide for upgrades and database generation.
 

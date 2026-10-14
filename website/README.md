@@ -1,3 +1,7 @@
+## v97 season banner label
+
+Removed the Current season label from the Seasons page banner. Season status, dates and selection remain available. Database schema remains v32.
+
 ## v96 focused profile summary
 
 Removed the Chess Player card. Current Team and FIDE Rating are centered in two equal columns. Career statistics use a prominent games-played total above three aligned, labeled result counts with subtle outcome indicators. Responsive layouts and both themes are supported. Assets use v96; database schema remains v32.
