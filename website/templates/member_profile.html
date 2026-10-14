@@ -14,7 +14,7 @@
   <div class="member-profile-identity{% if profile %} has-player-summary{% endif %}">
     {% if member.photo_updated_at %}<img src="/users/{{ member.username|urlencode }}/photo" class="member-photo" alt="Photo of {{ member.username }}" width="112" height="112">
     {% else %}<div class="member-photo photo-placeholder" aria-hidden="true">♞</div>{% endif %}
-    <div class="identity-details"><h2><span data-no-i18n>{{ member.username }}</span></h2>{% if not standalone_player or profile.club %}<p class="profile-identity-meta"><span data-no-i18n>{{ profile.club if standalone_player else member.name }}</span>{% if member.country %}<span aria-hidden="true">·</span><span class="profile-country">{% if country_flag_code %}<img class="profile-country-flag" src="/static/flags/countries/{{ country_flag_code }}.svg" width="24" height="18" alt="" aria-hidden="true">{% endif %}<span data-no-i18n>{{ member.country }}</span></span>{% endif %}</p>{% endif %}{% if member.fide_id %}<p><span data-i18n="FIDE ID">FIDE ID</span>: <span data-no-i18n>{{ member.fide_id }}</span></p>{% endif %}
+    <div class="identity-details"><h2><span data-no-i18n>{{ member.username }}</span></h2>{% if not standalone_player or profile.club or member.country %}<p class="profile-identity-meta"><span data-no-i18n>{{ profile.club if standalone_player else member.name }}</span>{% if member.country %}{% if not standalone_player or profile.club %}<span aria-hidden="true">·</span>{% endif %}<span class="profile-country">{% if country_flag_code %}<img class="profile-country-flag" src="/static/flags/countries/{{ country_flag_code }}.svg" width="24" height="18" alt="" aria-hidden="true">{% endif %}<span data-no-i18n>{{ member.country }}</span></span>{% endif %}</p>{% endif %}{% if member.fide_id %}<p><span data-i18n="FIDE ID">FIDE ID</span>: <span data-no-i18n>{{ member.fide_id }}</span></p>{% endif %}
       {% if affiliation %}<p class="profile-affiliation"><a href="/teams/{{ affiliation.team_id }}"><span data-i18n="{{ affiliation.role }} for">{{ affiliation.role }} for</span> <strong data-no-i18n>{{ affiliation.team_name }}</strong>{% if affiliation.joined_at %} <span data-i18n="since">since</span> <time datetime="{{ affiliation.joined_at }}" data-no-i18n>{{ affiliation.joined_at|local_date }}</time>{% endif %}</a></p>{% endif %}
       {% if not member.account_active %}<p class="notice notice-error" data-i18n="Account deactivated">Account deactivated</p>{% endif %}
       {% if not standalone_player %}<div class="role-indicators" aria-label="Member role status">
@@ -39,6 +39,7 @@
   {% else %}
     <div class="profile-captain-content">{% include 'member_manager_section.html' %}</div>
   {% endif %}
+  {% if standalone_player and user and user.role=='admin' %}{% include 'player_country_settings.html' %}{% endif %}
   {% if owner %}{% include 'member_role_settings.html' %}{% endif %}
 </section>
 {% endblock %}

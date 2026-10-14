@@ -41,7 +41,7 @@ def test_v31_migration_drops_unique_index_without_changing_profiles_or_photos(cl
     a=store.create_account('LegacyFide','SharedPassword123!','player',email='legacy@example.com')
     accounts.update_profile(a,'Existing Name','Portugal','123456')
     with store.transaction() as db:
-        db.execute("DELETE FROM schema_migrations WHERE version='v32_shared_fide_ids'")
+        db.execute("DELETE FROM schema_migrations WHERE version IN ('v32_shared_fide_ids','v103_player_countries')")
         db.execute('DROP INDEX users_fide_lookup')
         db.execute('CREATE UNIQUE INDEX users_fide_unique ON users(fide_id) WHERE fide_id IS NOT NULL')
         before=tuple(db.execute('SELECT username,email,name,country,fide_id,auth_version FROM users WHERE id=?',(a,)).fetchone())

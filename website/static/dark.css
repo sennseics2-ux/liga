@@ -181,7 +181,6 @@
 :root[data-theme="dark"] .role-settings-content p{color:var(--theme-muted)}
 :root[data-theme="dark"] .language-toggle{border:1px solid var(--theme-border);background:var(--theme-surface)}
 :root[data-theme="dark"] .language-toggle:focus-visible,:root[data-theme="dark"] .language-menu button:focus-visible{outline:2px solid var(--theme-border)}
-:root[data-theme="dark"] .language-arrow{color:var(--theme-muted)}
 :root[data-theme="dark"] .language-menu{background:var(--theme-surface);border:1px solid var(--theme-border)}
 :root[data-theme="dark"] .language-menu button{color:var(--theme-text)}
 :root[data-theme="dark"] .language-menu button:hover,:root[data-theme="dark"] .language-menu button[aria-pressed="true"]{background:var(--theme-soft)}

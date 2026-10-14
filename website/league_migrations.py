@@ -7,7 +7,8 @@ LEDGER_VERSION = 'v24_reliability_ledger'
 ATTRIBUTION_VERSION = 'v24_historical_attribution'
 ACCOUNTS_VERSION = 'v25_accounts_seasons'
 TEAM_PHOTOS_VERSION = 'v30_team_photos'
-SCHEMA_VERSION = 'v32_shared_fide_ids'
+SHARED_FIDE_VERSION = 'v32_shared_fide_ids'
+SCHEMA_VERSION = 'v103_player_countries'
 
 
 def apply(db, applied_at):
@@ -16,6 +17,7 @@ def apply(db, applied_at):
     _apply_v25(db, applied_at)
     _apply_team_photos(db, applied_at)
     _apply_shared_fide_ids(db, applied_at)
+    _apply_player_countries(db, applied_at)
 
 
 def _apply_ledger(db, applied_at):
@@ -169,8 +171,17 @@ def _apply_team_photos(db, applied_at):
 
 
 def _apply_shared_fide_ids(db, applied_at):
-    if db.execute('SELECT 1 FROM schema_migrations WHERE version=?', (SCHEMA_VERSION,)).fetchone():
+    if db.execute('SELECT 1 FROM schema_migrations WHERE version=?', (SHARED_FIDE_VERSION,)).fetchone():
         return
     db.execute('DROP INDEX IF EXISTS users_fide_unique')
     db.execute('CREATE INDEX IF NOT EXISTS users_fide_lookup ON users(fide_id) WHERE fide_id IS NOT NULL')
+    db.execute('INSERT INTO schema_migrations(version,applied_at) VALUES(?,?)', (SHARED_FIDE_VERSION,applied_at))
+
+
+def _apply_player_countries(db, applied_at):
+    if db.execute('SELECT 1 FROM schema_migrations WHERE version=?', (SCHEMA_VERSION,)).fetchone():
+        return
+    fields = {row[1] for row in db.execute('PRAGMA table_info(players)')}
+    if 'country' not in fields:
+        db.execute("ALTER TABLE players ADD COLUMN country TEXT NOT NULL DEFAULT ''")
     db.execute('INSERT INTO schema_migrations(version,applied_at) VALUES(?,?)', (SCHEMA_VERSION,applied_at))

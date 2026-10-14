@@ -1,0 +1,14 @@
+<details class="role-settings" id="player-country">
+  <summary data-i18n="Edit country">Edit country</summary>
+  <div class="role-settings-content"><form class="stack-form" method="post" action="/admin/players/{{ profile.id }}/country">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label for="player-country-select"><span data-i18n="Country">Country</span>
+      <select id="player-country-select" class="country-select" name="country">
+        <option value="" data-i18n="Select a country">Select a country</option>
+        {% if legacy_country %}<option value="{{ legacy_country }}" selected data-no-i18n data-current-country>{{ legacy_country }}</option>{% endif %}
+        {% for country in countries %}<option value="{{ country }}" {% if country==selected_country %}selected{% endif %} data-i18n="{{ country }}">{{ country }}</option>{% endfor %}
+      </select>
+    </label>
+    <button class="btn btn-primary" data-i18n="Save profile">Save profile</button>
+  </form></div>
+</details>

@@ -199,6 +199,7 @@ def expected_form_fields(path):
     if path in fields:
         return fields[path]
     patterns = (
+        (r'/admin/players/\d+/country', ('country',)),
         (r'/admin/users/\d+/profile', ('name','country','fide_id','fide_id_locked')),
         (r'/admin/users/\d+/activation', ('active','confirmation')),
         (r'/admin/seasons/\d+/edit', ('start_year','start_date','end_date','round_count')),
@@ -666,11 +667,26 @@ def player_profile(request: Request, player_id: int):
             term = next((row for row in past_teams if row['team_id']==profile['owner_team_id'] and not row['ended_at']), None)
             affiliation = {'role':'Player','team_id':profile['owner_team_id'],
                            'team_name':profile['team_name'],'joined_at':term['started_at'] if term else None}
-    member = {'username':profile['name'],'name':profile['name'],'country':'','fide_id':'',
+    member = {'username':profile['name'],'name':profile['name'],'country':profile['country'],'fide_id':'',
               'account_active':True,'player_active':True,'manager_active':False,'photo_updated_at':None}
     return view(request,'member_profile.html',member=member,profile=profile,standalone_player=True,
                 owner=False,selected_tab='player',career=career,past_teams=past_teams,
-                member_games=games,affiliation=affiliation,country_flag_code=None)
+                member_games=games,affiliation=affiliation,country_flag_code=country_code(profile['country']),
+                **country_field(profile['country']))
+
+
+@app.post('/admin/players/{player_id}/country')
+async def admin_player_country(request: Request, player_id: int):
+    administrator = await run_in_threadpool(auth, request, 'admin')
+    data = await form_data(request)
+    if not 0 < player_id < 2**63:
+        raise HTTPException(404, 'Player not found')
+    try:
+        await run_in_threadpool(store.update_player_country,player_id,data.get('country',''),administrator['id'])
+        flash(request,'Player country updated.','success')
+    except ValueError as exc:
+        flash(request,str(exc),'error')
+    return redirect(f'/players/{player_id}#player-country')
 
 
 @app.get('/users/{username}', response_class=HTMLResponse)

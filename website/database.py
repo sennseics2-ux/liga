@@ -242,7 +242,12 @@ def init_db():
             if not backup_file.exists():
                 with sqlite3.connect(backup_file) as backup_db:
                     db.backup(backup_db)
-        for suffix in ('.pre-v2.bak', '.pre-v3.bak', '.pre-v4.bak', '.pre-v9.bak', '.pre-v25.bak', '.pre-v30.bak', '.pre-v32.bak'):
+        if legacy and not upgraded:
+            backup_file = DB_PATH.with_name(DB_PATH.name + '.pre-v103.bak')
+            if not backup_file.exists():
+                with sqlite3.connect(backup_file) as backup_db:
+                    db.backup(backup_db)
+        for suffix in ('.pre-v2.bak', '.pre-v3.bak', '.pre-v4.bak', '.pre-v9.bak', '.pre-v25.bak', '.pre-v30.bak', '.pre-v32.bak', '.pre-v103.bak'):
             backup_file = DB_PATH.with_name(DB_PATH.name + suffix)
             if backup_file.exists():
                 backup_file.chmod(0o600)
@@ -824,7 +829,32 @@ def _activate_manager_player(db, team_id, manager_id):
             _start_player_term(db,player_id,team_id,manager_player=True)
 
 
-def create_player(name, club='', rating=None, user_id=None):
+def normalize_player_country(value):
+    from countries import country_field
+    selected = country_field(value)
+    if selected['legacy_country']:
+        raise ValueError('Select a country from the list.')
+    return selected['selected_country']
+
+
+def update_player_country(player_id, country, actor_id):
+    country = normalize_player_country(country)
+    with transaction() as db:
+        actor = db.execute("SELECT role,account_active FROM users WHERE id=?",(actor_id,)).fetchone()
+        if not actor or actor['role']!='admin' or not actor['account_active']:
+            raise PermissionError('Administrator access required.')
+        player = db.execute('SELECT user_id,country FROM players WHERE id=?',(player_id,)).fetchone()
+        if player is None:
+            raise ValueError('Player not found')
+        if player['user_id'] is not None:
+            raise ValueError('Edit the linked account country in Member accounts.')
+        db.execute('UPDATE players SET country=? WHERE id=?',(country,player_id))
+        _audit(db,'player_country_updated','player',player_id,actor_id,'Player country updated',
+               before={'country':player['country']},after={'country':country})
+
+
+def create_player(name, club='', rating=None, user_id=None, *, country=''):
+    country = normalize_player_country(country)
     name = name.strip()
     club = club.strip()
     if not 2 <= len(name) <= 80:
@@ -844,8 +874,8 @@ def create_player(name, club='', rating=None, user_id=None):
             db.execute('UPDATE users SET name=? WHERE id=?',(name,user_id))
             rating = account['fide_rating'] if account['fide_rating'] is not None else rating
         try:
-            return db.execute('INSERT INTO players(name,club,rating,user_id,created_at) VALUES (?,?,?,?,?)',
-                              (name, club, rating, user_id, iso(now_utc()))).lastrowid
+            return db.execute('INSERT INTO players(name,club,rating,user_id,created_at,country) VALUES (?,?,?,?,?,?)',
+                              (name, club, rating, user_id, iso(now_utc()),country)).lastrowid
         except sqlite3.IntegrityError:
             raise ValueError('Could not create player; account may already be linked.') from None
 

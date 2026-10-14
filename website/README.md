@@ -1,3 +1,7 @@
+## v103 countries for unregistered players
+
+Unregistered player profiles display a country and flag when set. Administrators can choose or clear the country on the numeric player profile through Edit country; the admin player list links to this editor. Existing player records start with an unknown country. The automatic, backed-up v103_player_countries migration adds a country column; names, records and account country settings are preserved. Assets use v103.
+
 ## v102 public profiles for every player record
 
 Every player has a stable numeric /players/<id> URL. Unlinked players have a read-only profile with team membership history, recent games and career totals. Linked records resolve to existing member profiles. Player names link from directories, team rosters, transfers, auctions, games, match boards and admin player/game listings. Card navigation remains available through independent sibling links. Full game history uses player IDs so namesakes remain distinct. Assets use v102; database schema remains v32.
