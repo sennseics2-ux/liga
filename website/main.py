@@ -1233,7 +1233,7 @@ async def admin_create_game(request: Request):
         return redirect(f'/games/{game_id}')
     except ValueError as exc:
         flash(request,str(exc),'error')
-        return redirect('/admin/games')
+        return redirect('/games')
 
 
 async def upload_pgn_field(file):
@@ -1304,10 +1304,15 @@ def standings(request: Request, season: str='current', round_number: str=Query('
     return view(request,'standings.html',standings=rows,round_selection=round_number,**context)
 
 
+@app.get('/admin/games', include_in_schema=False)
+def retired_admin_games(request: Request):
+    auth(request, 'admin')
+    return redirect('/games')
+
+
 @app.get('/admin/teams', response_class=HTMLResponse)
 @app.get('/admin/roles', response_class=HTMLResponse)
 @app.get('/admin/players', response_class=HTMLResponse)
-@app.get('/admin/games', response_class=HTMLResponse)
 @app.get("/admin", response_class=HTMLResponse)
 def admin(request: Request):
     auth(request, "admin")

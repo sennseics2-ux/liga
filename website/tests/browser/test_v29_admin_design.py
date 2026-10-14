@@ -19,7 +19,7 @@ def test_administration_workspaces_and_results(chromium,league_server,width):
         page.goto(league.base+'/login')
         page.locator('input[name=username]').fill('BrowserAdmin');page.locator('input[name=password]').fill(PASSWORD)
         page.locator('form.stack-form button[type=submit]').click();page.wait_for_url(league.base+'/admin')
-        expect(page.locator('.admin-workspace-card')).to_have_count(6)
+        expect(page.locator('.admin-workspace-card')).to_have_count(5)
         expect(page.locator('.admin-summary-card')).to_have_count(4)
         expect(page.locator('.admin-attention h2')).to_have_text('A precisar de atenção')
         assert_fits_phone(page)

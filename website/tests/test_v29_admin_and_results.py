@@ -35,7 +35,12 @@ def test_result_colours_and_labels_follow_player_for_either_piece_colour(client)
 def test_admin_overview_links_to_workspaces_and_actions_stay_in_context(client):
     seed_admin();login_admin(client)
     assert 'admin-dashboard-grid' in client.get('/admin').text
-    for path in ['/admin/teams','/admin/roles','/admin/players','/admin/games','/admin/seasons','/admin/accounts']:
+    overview=client.get('/admin').text
+    assert 'href="/admin/games"' not in overview and 'value="/admin/games"' not in overview
+    retired=client.get('/admin/games',follow_redirects=False)
+    assert retired.status_code==303 and retired.headers['location']=='/games'
+    assert 'action="/admin/games"' not in overview
+    for path in ['/admin/teams','/admin/roles','/admin/players','/admin/seasons','/admin/accounts']:
         assert f'href="{path}"' in client.get('/admin').text
         assert client.get(path).status_code==200
     response=post(client,'/admin/teams',name='New Dashboard Team')

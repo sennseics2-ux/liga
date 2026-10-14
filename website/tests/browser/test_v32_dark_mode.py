@@ -83,7 +83,7 @@ def test_theme_across_public_member_admin_and_replay_pages(chromium,league_serve
         expect(page.locator('[data-board] [role=gridcell]')).to_have_count(64)
         page.screenshot(path=str(directory/f'dark-replay-{width}.png'),full_page=True)
         sign_in(page,league.base,'BrowserAdmin')
-        for path in ['/admin','/admin/teams','/admin/roles','/admin/players','/admin/games','/admin/seasons','/admin/accounts']:
+        for path in ['/admin','/admin/teams','/admin/roles','/admin/players','/admin/seasons','/admin/accounts']:
             review(path)
             if path=='/admin':page.screenshot(path=str(directory/f'dark-admin-{width}.png'),full_page=True)
         (directory/f'contrast-{width}.json').write_text(json.dumps(failures,indent=2))

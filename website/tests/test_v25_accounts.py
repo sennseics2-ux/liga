@@ -136,10 +136,10 @@ def test_recovery_request_generic_and_all_admin_pages_authorized(client):
         result=post(client,'/forgot-password',email='unknown@example.com')
         assert 'If the username and email match an active account' in result.text
         sender.assert_called_once_with('', 'unknown@example.com')
-    for url in ['/admin/accounts','/admin/seasons','/admin/teams','/admin/roles','/admin/players','/admin/games']:
+    for url in ['/admin/accounts','/admin/seasons','/admin/teams','/admin/roles','/admin/players']:
         assert client.get(url,headers={'Accept':'application/json'}).status_code==401
     seed_admin();post(client,'/login',username='commissioner',password='adminpass123!')
-    for url in ['/admin/accounts','/admin/seasons','/admin/teams','/admin/roles','/admin/players','/admin/games']:
+    for url in ['/admin/accounts','/admin/seasons','/admin/teams','/admin/roles','/admin/players']:
         assert client.get(url).status_code==200
     assert 'Activate a player' in client.get('/admin/players').text
     assert 'Role activation requests' not in client.get('/admin/teams').text.split('</nav>',2)[-1] # section is separate

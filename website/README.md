@@ -1,3 +1,7 @@
+## v85 remove admin Games workspace
+
+The dedicated /admin/games page and its navigation entry are removed. Old admin bookmarks redirect to /games. Match scheduling links open Season setup, and result/PGN controls remain on individual game pages. Assets use v85; database schema remains v32.
+
 ## v84 centered language flags
 
 The League language selector centers the Portuguese and English flags in an accessible click target, without the surrounding bubble or arrow. Light, dark and mobile replay layouts share the same treatment. Assets use v84; database schema remains v32.
