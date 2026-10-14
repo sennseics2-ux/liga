@@ -110,34 +110,56 @@ def next_success(now, month):
     return datetime(local.year+int(local.month==12),local.month%12+1,1,3,tzinfo=ZoneInfo('Europe/Lisbon')).astimezone(timezone.utc)
 
 
-def sync_ratings(*, fetcher=None, limit=10):
+def sync_ratings(*, fetcher=None, limit=10, force=False, report=None):
+    """Refresh due ratings, or the entire roster with force=True, limit=None.
+
+    Shared FIDE IDs use one lookup per run. Network calls happen outside write
+    transactions; changed IDs are rechecked before applying a response.
+    """
     import database as store
+    if limit is not None and (not isinstance(limit,int) or limit<0):
+        raise ValueError('Rating limit must be nonnegative or None.')
     now=store.now_utc()
     fetcher=fetcher or fetch_standard_rating
+    due='' if force else ' AND (fide_next_attempt IS NULL OR fide_next_attempt<=?)'
+    active='' if force else 'account_active=1 AND '
+    params=() if force else (store.iso(now),)
+    cap=-1 if limit is None else limit
     with store.read_db() as db:
-        users=[{**dict(row),'kind':'user'} for row in db.execute('''SELECT id,fide_id,fide_attempts FROM users
-            WHERE account_active=1 AND fide_id IS NOT NULL AND (fide_next_attempt IS NULL OR fide_next_attempt<=?)
-            ORDER BY fide_next_attempt,id LIMIT ?''',(store.iso(now),limit))]
-        players=[{**dict(row),'kind':'player'} for row in db.execute('''SELECT id,fide_id,fide_attempts FROM players
-            WHERE user_id IS NULL AND fide_id IS NOT NULL AND (fide_next_attempt IS NULL OR fide_next_attempt<=?)
-            ORDER BY fide_next_attempt,id LIMIT ?''',(store.iso(now),max(0,limit-len(users))))]
+        users=[{**dict(row),'kind':'user'} for row in db.execute(f'''SELECT id,fide_id,fide_attempts FROM users
+            WHERE {active}fide_id IS NOT NULL AND fide_id!=''{due}
+            ORDER BY fide_next_attempt,id LIMIT ?''',(*params,cap))]
+        remaining=-1 if limit is None else max(0,limit-len(users))
+        players=[{**dict(row),'kind':'player'} for row in db.execute(f'''SELECT id,fide_id,fide_attempts FROM players
+            WHERE user_id IS NULL AND fide_id IS NOT NULL AND fide_id!=''{due}
+            ORDER BY fide_next_attempt,id LIMIT ?''',(*params,remaining))]
     completed=0
+    lookups={}
     for user in users+players:
-        try:
-            rating,month=fetcher(user['fide_id'])
+        fide_id=user['fide_id']
+        if fide_id not in lookups:
+            try:
+                rating,month=fetcher(fide_id)
+                lookups[fide_id]=(rating,month,None)
+            except Exception:
+                lookups[fide_id]=(None,None,'Rating lookup failed; retry scheduled.')
+        rating,month,error=lookups[fide_id]
+        if error is None:
             error=None;attempts=0;next_time=next_success(now,month)
-        except Exception:
-            rating=month=None;error='Rating lookup failed; retry scheduled.'
+        else:
             attempts=user['fide_attempts']+1
             next_time=now+timedelta(minutes=min(360,5*2**min(attempts-1,7)))
+        status='failed' if error else 'updated'
         with store.transaction() as db:
             if user['kind']=='user':
                 current=db.execute('SELECT fide_id,account_active FROM users WHERE id=?',(user['id'],)).fetchone()
-                valid=current and current['account_active']
+                valid=current and (force or current['account_active'])
             else:
                 current=db.execute('SELECT fide_id,user_id FROM players WHERE id=?',(user['id'],)).fetchone()
                 valid=current and current['user_id'] is None
             if not valid or current['fide_id']!=user['fide_id']:
+                if report:
+                    report({**user,'status':'skipped','rating':None,'month':None})
                 continue
             table='users' if user['kind']=='user' else 'players'
             rating_field='fide_rating' if user['kind']=='user' else 'rating'
@@ -148,4 +170,6 @@ def sync_ratings(*, fetcher=None, limit=10):
                 completed+=1
             db.execute(f"""UPDATE {table} SET fide_checked_at=?,fide_next_attempt=?,fide_error=?,fide_attempts=? WHERE id=?""",
                        (store.iso(now),store.iso(next_time),error,attempts,user['id']))
+        if report:
+            report({**user,'status':status,'rating':rating,'month':month})
     return completed

@@ -1,3 +1,7 @@
+## v109 immediate whole-roster FIDE rating refresh
+
+`python -m deploy.refresh_fide_ratings` backs up the installed database and refreshes every FIDE standard rating, including unregistered players and inactive accounts. It ignores existing refresh deadlines, fetches each shared FIDE ID once, spaces public API requests and retries short rate limits, updates linked player records, and reports rated/unrated successes, failures and changed records. Failed lookups preserve previous ratings and schedule retries; changed IDs are never overwritten. Players without FIDE IDs are untouched. The normal monthly worker retains its batch limit and schedule. Assets use v109; schema remains v108_unregistered_player_fide.
+
 ## v108 AA Coimbra player import
 
 An optional backed-up importer adds exactly the requested 128 FPX entries as player records with no accounts or team assignments. 87 FIDE IDs are preserved, including nine-digit IDs; 41 missing IDs remain NULL. FPX record keys prevent duplicates on rerun without merging namesakes. Unregistered profiles display their FIDE IDs and share the rating worker's monthly/retry scheduling. Migration v108_unregistered_player_fide adds player FIDE metadata and the import registry; existing data is preserved. Assets use v108.
