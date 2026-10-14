@@ -7,7 +7,7 @@
   <p>{% if owner %}Your public member page, chess profile and management history.{% else %}<span data-i18n="Chess player information and management record for {name}." data-i18n-vars="{{ {'name': member.username}|tojson|forceescape }}">Chess player information and management record for <span data-no-i18n>{{ member.username }}</span>.</span>{% endif %}</p>
 </div></div>
 <section class="section container">
-  <div class="member-profile-identity">
+  <div class="member-profile-identity{% if profile %} has-player-summary{% endif %}">
     {% if member.photo_updated_at %}<img src="/users/{{ member.username|urlencode }}/photo" class="member-photo" alt="Photo of {{ member.username }}" width="112" height="112">
     {% else %}<div class="member-photo photo-placeholder" aria-hidden="true">♞</div>{% endif %}
     <div class="identity-details"><h2><span data-no-i18n>{{ member.username }}</span></h2><p class="profile-identity-meta"><span data-no-i18n>{{ member.name }}</span>{% if member.country %}<span aria-hidden="true">·</span><span class="profile-country">{% if country_flag_code %}<img class="profile-country-flag" src="/static/flags/countries/{{ country_flag_code }}.svg" width="24" height="18" alt="" aria-hidden="true">{% endif %}<span data-no-i18n>{{ member.country }}</span></span>{% endif %}</p>{% if member.fide_id %}<p><span data-i18n="FIDE ID">FIDE ID</span>: <span data-no-i18n>{{ member.fide_id }}</span></p>{% endif %}
@@ -18,6 +18,7 @@
         {% if member.manager_active %}<span class="role-indicator role-active"><span class="role-dot" aria-hidden="true"></span><span data-i18n="Captain">Captain</span> · <span data-i18n="Active">Active</span></span>{% endif %}
       </div>
     </div>
+    {% if profile %}{% include 'member_player_summary.html' %}{% endif %}
     {% if career %}
   <section class="career-record career-record-compact" aria-label="All-season chess record">
     <h3 class="career-games-heading"><span data-i18n="Games played">Games played</span><strong data-no-i18n>{{ career.played }}</strong></h3>

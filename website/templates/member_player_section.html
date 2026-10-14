@@ -1,12 +1,4 @@
-{% if profile %}
-  <div class="metric-grid player-profile-summary">
-    <div class="metric-card"><span>CHESS PLAYER</span><strong class="profile-summary-value"><span data-no-i18n>{{ profile.name }}</span></strong></div>
-
-    <div class="metric-card"><span>CURRENT TEAM</span><strong class="profile-summary-value">{% if not member.player_active %}<span data-i18n="Not playing">Not playing</span>{% elif profile.team_name %}<span data-no-i18n>{{ profile.team_name }}</span>{% else %}<span data-i18n="Free agent">Free agent</span>{% endif %}</strong>{% if profile.is_manager_player %}<small>Team Captain</small>{% endif %}</div>
-    <div class="metric-card"><span>FIDE RATING</span><strong class="profile-summary-value">{{ profile.rating or '—' }}</strong></div>
-  </div>
-
-{% else %}
+{% if not profile %}
   <div class="empty-state"><div class="empty-icon">♟</div><h3>No chess player profile yet</h3>
     <p>{% if owner %}Waiting for your chess profile. The administrator must activate and link your chess player record before you can enter the transfer market.{% else %}The administrator has not linked a chess player record to this account.{% endif %}</p>
     <a class="btn btn-outline-dark" href="/players">Browse club players →</a>

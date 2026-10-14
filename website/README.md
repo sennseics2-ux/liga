@@ -1,3 +1,7 @@
+## v93 player summary in the identity panel
+
+Chess Player, Current Team and FIDE Rating now appear inside the upper profile panel below the member identity, before the profile tabs. The compact centered cards are shared across player and captain views and retain responsive placement of the career summary. Assets use v93; database schema remains v32.
+
 ## v92 compact player summary cards
 
 The Chess Player, Current Team and FIDE Rating cards use larger centered text, tighter spacing and a centered three-column desktop layout. Phones show the name across the row with team and rating beneath it. Long names wrap without clipping. Other metric cards retain their existing layout. Assets use v92; database schema remains v32.

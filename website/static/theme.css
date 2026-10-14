@@ -286,3 +286,10 @@ body .language-toggle .flag-icon{display:block;margin:0}
 .player-profile-summary .metric-card>strong{width:100%;font:800 22px/1.3 Manrope,sans-serif;letter-spacing:-.3px;margin:0;overflow-wrap:anywhere}
 .player-profile-summary .metric-card>small{font-size:12px;line-height:1.4}
 @media(max-width:600px){.player-profile-summary{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:26px}.player-profile-summary .metric-card{min-height:88px;padding:14px 12px;gap:6px}.player-profile-summary .metric-card:first-child{grid-column:1/-1;min-height:80px}.player-profile-summary .metric-card>span{font-size:11px}.player-profile-summary .metric-card>strong{font-size:22px}}
+
+/* V93: place the player summary within the upper identity panel. */
+.member-profile-identity.has-player-summary{grid-template-areas:"photo details career" "summary summary summary"}
+.has-player-summary>.member-photo{grid-area:photo}.has-player-summary>.identity-details{grid-area:details}
+.member-profile-identity.has-player-summary>.player-profile-summary{grid-area:summary;justify-self:center;margin:0}
+.member-profile-identity.has-player-summary>.career-record-compact{grid-area:career}
+@media(max-width:1000px){.member-profile-identity.has-player-summary{grid-template-areas:"photo details" "summary summary" "career career"}}
