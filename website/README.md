@@ -1,3 +1,7 @@
+## v96 focused profile summary
+
+Removed the Chess Player card. Current Team and FIDE Rating are centered in two equal columns. Career statistics use a prominent games-played total above three aligned, labeled result counts with subtle outcome indicators. Responsive layouts and both themes are supported. Assets use v96; database schema remains v32.
+
 ## v95 player profile presentation
 
 Profile pages gain a compact navigation toolbar, refined identity and career summary, grouped membership and game-history panels, and clearer responsive tables. Player and captain features, role controls, result colors and public profile data remain available. Light and dark themes are supported. Assets use v95; database schema remains v32.

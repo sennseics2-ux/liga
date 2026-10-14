@@ -354,3 +354,24 @@ body .language-toggle .flag-icon{display:block;margin:0}
 }
 .member-profile-page .member-photo.photo-placeholder{display:grid;place-items:center;font-size:44px;line-height:1;overflow:hidden}
 @media(max-width:600px){.member-profile-page .member-photo.photo-placeholder{font-size:34px}.member-profile-page .profile-history-panel .mobile-cards tbody tr{border:0;border-radius:0;box-shadow:none;margin:0}.member-profile-page .profile-history-panel .mobile-cards tbody tr+tr{border-top:2px solid var(--profile-border)}}
+
+/* V96: two balanced profile cards and a unified career record. */
+.member-profile-page .member-profile-identity>.player-profile-summary{grid-template-columns:repeat(2,minmax(0,1fr));max-width:420px;gap:12px;justify-self:center;align-self:center}
+.member-profile-page .player-profile-summary .metric-card{grid-column:auto;min-height:100px;padding:16px 12px}
+.member-profile-page .member-profile-identity>.career-record-compact{padding:16px;border:1px solid var(--profile-border);border-radius:12px;background:var(--profile-soft);align-self:center}
+.member-profile-page .career-games-heading{justify-content:center;gap:10px;margin:0 0 14px;padding:0 0 12px;border-bottom:1px solid var(--profile-border);font-size:12px;color:var(--profile-muted)}
+.member-profile-page .career-games-heading strong{padding:0;min-width:0;background:transparent;color:var(--ink);font-size:30px;line-height:1;font-weight:800}
+.member-profile-page .career-record-compact .career-stats{gap:0;margin:0}
+.member-profile-page .career-record-compact .career-stat{display:flex;flex-direction:column;gap:7px;padding:0 6px;background:transparent;color:var(--ink);border-radius:0}
+.member-profile-page .career-record-compact .career-stat+.career-stat{border-left:1px solid var(--profile-border)}
+.member-profile-page .career-record-compact .career-stat dt{order:2;min-height:0;gap:5px;font-size:11px;color:var(--profile-muted);line-height:1.4;flex-wrap:wrap}
+.member-profile-page .career-record-compact .career-stat dt:before{content:'';width:5px;height:5px;border-radius:50%;background:#707070;flex:none}
+.member-profile-page .career-record-compact .career-wins dt:before{background:#267445}
+.member-profile-page .career-record-compact .career-losses dt:before{background:#b43c3c}
+.member-profile-page .career-record-compact .career-stat dd{order:1;font-size:24px;line-height:1.2;margin:0;overflow-wrap:anywhere}
+:root[data-theme="dark"] .member-profile-page .career-wins dt:before{background:#86dca3}
+:root[data-theme="dark"] .member-profile-page .career-losses dt:before{background:#ff9d9d}
+:root[data-theme="dark"] .member-profile-page .career-draws dt:before{background:#bec7d3}
+@media(min-width:1001px){.member-profile-page .member-profile-identity.has-player-summary{grid-template-columns:72px minmax(140px,1fr) minmax(260px,1.3fr) 230px}}
+@media(max-width:600px){.member-profile-page .member-profile-identity>.player-profile-summary{max-width:none;gap:10px}.member-profile-page .player-profile-summary .metric-card{min-height:92px;padding:14px 10px}.member-profile-page .career-games-heading{font-size:13px}.member-profile-page .career-record-compact .career-stat dt{font-size:12px}}
+.member-profile-page .career-record-compact .career-stat dt{flex-direction:column;flex-wrap:nowrap}
