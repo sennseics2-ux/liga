@@ -640,6 +640,39 @@ def member_player_redirect(request: Request, username: str):
     return redirect(f"/users/{quote(member['username'], safe='')}")
 
 
+@app.get('/players/{player_id}', response_class=HTMLResponse)
+def player_profile(request: Request, player_id: int):
+    """Every player record has a stable public identity independent of its name."""
+    if not 0 < player_id < 2**63:
+        raise HTTPException(404, 'Player not found')
+    with store.read_db() as db:
+        profile = db.execute("""SELECT p.*,t.name AS team_name,u.username
+            FROM players p LEFT JOIN teams t ON t.id=p.owner_team_id
+            LEFT JOIN users u ON u.id=p.user_id AND u.role!='admin' WHERE p.id=?""",
+            (player_id,)).fetchone()
+        if profile is None:
+            raise HTTPException(404, 'Player not found')
+        if profile['username']:
+            return RedirectResponse('/users/' + quote(profile['username'], safe=''), status_code=307)
+        past_teams = db.execute("""SELECT term.*,t.name AS team_name
+            FROM player_team_terms term JOIN teams t ON t.id=term.team_id
+            WHERE term.player_id=? ORDER BY term.started_at DESC,term.id DESC""", (player_id,)).fetchall()
+        games = game_rows(db, where='g.white_player_id=? OR g.black_player_id=?',
+                          values=(player_id,player_id), limit=8)
+        visible, values = public_game_visibility()
+        career = player_totals(db, player_id, visible, values)
+        affiliation = None
+        if profile['owner_team_id']:
+            term = next((row for row in past_teams if row['team_id']==profile['owner_team_id'] and not row['ended_at']), None)
+            affiliation = {'role':'Player','team_id':profile['owner_team_id'],
+                           'team_name':profile['team_name'],'joined_at':term['started_at'] if term else None}
+    member = {'username':profile['name'],'name':profile['name'],'country':'','fide_id':'',
+              'account_active':True,'player_active':True,'manager_active':False,'photo_updated_at':None}
+    return view(request,'member_profile.html',member=member,profile=profile,standalone_player=True,
+                owner=False,selected_tab='player',career=career,past_teams=past_teams,
+                member_games=games,affiliation=affiliation,country_flag_code=None)
+
+
 @app.get('/users/{username}', response_class=HTMLResponse)
 @app.get('/users/{username}/manager', response_class=HTMLResponse)
 def member_profile(request: Request, username: str):
@@ -696,7 +729,7 @@ def member_profile(request: Request, username: str):
             request_rows=db.execute("SELECT * FROM role_requests WHERE user_id=? AND status='pending' ORDER BY id DESC",(member_id,)).fetchall()
             if team:
                 bids=db.execute("""
-                    SELECT a.id AS auction_id, p.name AS player_name, a.ends_at, b.amount,
+                    SELECT a.id AS auction_id, p.id AS player_id, p.name AS player_name, a.ends_at, b.amount,
                       (SELECT team_id FROM bids WHERE auction_id=a.id ORDER BY amount DESC,id ASC LIMIT 1) AS leader_id
                     FROM bids b JOIN auctions a ON a.id=b.auction_id JOIN players p ON p.id=a.player_id
                     WHERE b.team_id=? AND a.status='open' AND b.id=(
@@ -819,9 +852,8 @@ def auction_detail(request: Request, auction_id: int):
     with store.read_db() as db:
         auction = db.execute("""
             SELECT a.*, p.name AS player_name, p.club, p.rating, p.points,
-              pu.username AS player_username, st.name AS seller_name, wt.name AS winner_name
+              st.name AS seller_name, wt.name AS winner_name
             FROM auctions a JOIN players p ON p.id=a.player_id
-            LEFT JOIN users pu ON pu.id=p.user_id
             LEFT JOIN teams st ON st.id=a.seller_team_id
             LEFT JOIN teams wt ON wt.id=a.winner_team_id WHERE a.id=?
         """, (auction_id,)).fetchone()
@@ -1126,7 +1158,7 @@ def game_rows(db, *, where='1=1', values=(), limit=200, offset=0, order='newest'
 
 @app.get('/games', response_class=HTMLResponse)
 def games_directory(request: Request, q: str = '', status: str = 'all', season: str = 'all',
-                    page: str = '1', sort: str = '', white_player: str = 'all', black_player: str = 'all'):
+                    page: str = '1', sort: str = '', white_player: str = 'all', black_player: str = 'all', player: str = 'all'):
     if status not in ('all', 'scheduled', 'finished'):
         status = 'all'
     q = q[:100]
@@ -1143,6 +1175,10 @@ def games_directory(request: Request, q: str = '', status: str = 'all', season: 
             search = '%' + q.strip()[:100].replace('\\','\\\\').replace('%','\\%').replace('_','\\_') + '%'
             clauses[-1] = clauses[-1].replace('LIKE ?', "LIKE ? ESCAPE '\\'")
             args.extend([search] * 3)
+        any_player_id = parse_optional_int(player[:20], minimum=1, maximum=9223372036854775807)
+        if any_player_id is not None:
+            clauses.append('(g.white_player_id=? OR g.black_player_id=?)')
+            args.extend((any_player_id,any_player_id))
         white_id = parse_optional_int(white_player[:20], minimum=1, maximum=9223372036854775807)
         black_id = parse_optional_int(black_player[:20], minimum=1, maximum=9223372036854775807)
         for column, player_id in (('white_player_id', white_id), ('black_player_id', black_id)):
@@ -1175,6 +1211,7 @@ def games_directory(request: Request, q: str = '', status: str = 'all', season: 
                            if int(year) not in {row['start_year'] for row in configured}]
         finished = db.execute(f"SELECT COUNT(*) FROM games g WHERE g.result!='*' AND {visible}", visibility_values).fetchone()[0]
     filters = {'q':q,'status':status,'season':season,'sort':sort,
+               'player':str(any_player_id) if any_player_id else 'all',
                'white_player':str(white_id) if white_id else 'all',
                'black_player':str(black_id) if black_id else 'all'}
     page_url = lambda number: '/games?' + urlencode({**filters, 'page':number})

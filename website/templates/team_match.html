@@ -34,7 +34,7 @@
         {% endif %}
         {% for board in range(1,5) %}
         {% set game=board_games|selectattr('board','equalto',board)|first %}
-        {% if game %}<a class="match-board-row board-result-card" href="/games/{{ game.id }}">{% else %}<article class="match-board-row">{% endif %}
+        <article class="match-board-row{% if game %} board-result-card{% endif %}">{% if game %}<a class="match-board-target" href="/games/{{ game.id }}"><span class="sr-only"><span data-i18n="Board">Board</span> {{ board }}</span></a>{% endif %}
           <h3 class="match-board-number"><span data-i18n="Board">Board</span> <span data-no-i18n>{{ board }}</span>{% if game %}<svg class="board-open-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10"/></svg>{% endif %}</h3>
           {% for team_id in [match.home_team_id,match.away_team_id] %}
           {% set player=lineups|selectattr('team_id','equalto',team_id)|selectattr('board','equalto',board)|first %}
@@ -42,7 +42,7 @@
           <div class="match-board-player{% if player_outcome %} {{ player_outcome }}{% endif %}{% if team_id==match.away_team_id %} match-board-away{% endif %}">
             {% if player %}
             {% if game %}<span class="piece-dot {{ 'piece-white' if game.white_team_id==team_id else 'piece-black' }}" role="img" aria-label="{{ 'White' if game.white_team_id==team_id else 'Black' }}" data-i18n-aria-label="{{ 'White' if game.white_team_id==team_id else 'Black' }}"></span>{% endif %}
-            <div>{% if game %}<strong class="match-lineup-player" data-no-i18n>{{ player.name }}</strong>{% else %}<a href="/players/{{ player.player_id }}" class="match-lineup-player" data-no-i18n>{{ player.name }}</a>{% endif %}<small><span data-i18n="FIDE Rating">FIDE Rating</span> <span data-no-i18n>{{ player.rating if player.rating else '—' }}</span></small></div>
+            <div><a href="/players/{{ player.player_id }}" class="match-lineup-player player-record-link" data-no-i18n>{{ player.name }}</a><small><span data-i18n="FIDE Rating">FIDE Rating</span> <span data-no-i18n>{{ player.rating if player.rating else '—' }}</span></small></div>
             {% elif team_id not in visible_lineup_team_ids %}<span class="match-player-pending" aria-label="This lineup is private until the match starts." data-i18n-aria-label="This lineup is private until the match starts." data-no-i18n>—</span>
             {% else %}<span class="match-player-pending" data-i18n="Lineup not submitted">Lineup not submitted</span>{% endif %}
           </div>
@@ -57,7 +57,7 @@
             <span class="match-board-status" data-i18n="{{ 'Completed' if game.result!='*' else 'Awaiting results' }}">{{ 'Completed' if game.result!='*' else 'Awaiting results' }}</span>
             {% else %}<strong class="match-board-score" data-no-i18n>— : —</strong>{% endif %}
           </div>
-        {% if game %}</a>{% else %}</article>{% endif %}
+        </article>
         {% endfor %}
       </div>
       {% if not board_games %}<p class="match-board-waiting">{% if not deadline_passed %}<span data-i18n="Board pairings are revealed when the match starts.">Board pairings are revealed when the match starts.</span>{% else %}<span data-i18n="The four board pairings will appear when both captains submit their lineups.">The four board pairings will appear when both captains submit their lineups.</span>{% endif %}</p>{% endif %}

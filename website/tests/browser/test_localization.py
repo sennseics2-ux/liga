@@ -139,9 +139,9 @@ def test_real_directories_and_auction_cards_keep_user_supplied_names(client, pag
     assert page.locator("h1").inner_text() == "Teams."
     assert page.title() == "Teams · Team"
     page.goto("http://liga.test/")
-    assert page.locator(f'.market-card[href="/auctions/{auction}"] h3').inner_text() == "Players"
+    assert page.locator(f'.market-card[data-auction-id="{auction}"] h3').inner_text() == "Players"
     page.evaluate("LigaI18n.setLanguage('en')")
-    assert page.locator(f'.market-card[href="/auctions/{auction}"] h3').inner_text() == "Players"
+    assert page.locator(f'.market-card[data-auction-id="{auction}"] h3').inner_text() == "Players"
 
 
 def test_language_picker_keyboard_focus_and_escape(page):

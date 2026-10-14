@@ -37,7 +37,7 @@ def test_game_directory(chromium,client,width,theme):
     try:
         page.goto('http://liga.test/games')
         expect(page.locator('.game-list-card')).to_have_count(25)
-        for selector in ['.game-player-identity strong','.game-result-score>span:not(.game-score-divider)']:
+        for selector in ['.game-player-identity .player-record-link','.game-result-score>span:not(.game-score-divider)']:
             styles=page.locator(selector).evaluate_all('(els)=>els.map(el=>({color:getComputedStyle(el).color,bg:getComputedStyle(el).backgroundColor}))')
             assert len({style['color'] for style in styles})==1
             assert all(style['bg']=='rgba(0, 0, 0, 0)' for style in styles)
@@ -67,10 +67,10 @@ def test_game_directory(chromium,client,width,theme):
         expect(reversed_card.locator('.game-player-white .game-team-venue')).to_have_text('(away)')
         expect(reversed_card.locator('.game-player-black .game-team-venue')).to_have_text('(home)')
         assert page.locator('.game-team-venue').count()==8
-        for selector in ['.game-player-identity strong','.game-player-identity small','.game-result-caption','.game-date time','.game-round-link']:
+        for selector in ['.game-player-identity .player-record-link','.game-player-identity small','.game-result-caption','.game-date time','.game-round-link']:
             box=card.locator(selector).first.bounding_box()
             href=page.evaluate('([x,y])=>document.elementFromPoint(x,y).closest("a")?.getAttribute("href")',[box['x']+box['width']/2,box['y']+box['height']/2])
-            assert href==(f'/matches/{match}' if selector=='.game-round-link' else f'/games/{games[0]}')
+            assert href==(f'/players/{rosters[0][0]}' if selector=='.game-player-identity .player-record-link' else (f'/matches/{match}' if selector=='.game-round-link' else f'/games/{games[0]}'))
         if width>700:
             white=card.locator('.game-player-white').bounding_box();score=card.locator('.game-result-summary').bounding_box();black=card.locator('.game-player-black').bounding_box()
             assert white['x']+white['width']<=score['x']<black['x']

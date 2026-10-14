@@ -18,9 +18,9 @@
 </section>
 {% endif %}
 {% if profile %}
-<section class="profile-history-panel"><div class="section-heading history-heading"><div><div class="eyebrow dark">GAME RECORD</div><h2>Recent chess games</h2><p>Fixtures and results for this chess player.</p></div><a class="text-link" href="/games?q={{ profile.name|urlencode }}">Browse games ↗</a></div>
+<section class="profile-history-panel"><div class="section-heading history-heading"><div><div class="eyebrow dark">GAME RECORD</div><h2>Recent chess games</h2><p>Fixtures and results for this chess player.</p></div><a class="text-link" href="/games?player={{ profile.id }}">Browse games ↗</a></div>
 {% if member_games %}<div class="table-scroll"><table class="data-table mobile-cards"><thead><tr><th>DATE</th><th>WHITE</th><th>BLACK</th><th>RESULT</th><th>GAME</th></tr></thead><tbody>
-{% for g in member_games %}<tr><td data-label="DATE"><time datetime="{{ g.scheduled_at }}" data-no-i18n>{{ g.scheduled_at|local_time }}</time></td><td data-label="WHITE"><span data-no-i18n>{{ g.white_name }}</span></td><td data-label="BLACK"><span data-no-i18n>{{ g.black_name }}</span></td><td data-label="RESULT">
+{% for g in member_games %}<tr><td data-label="DATE"><time datetime="{{ g.scheduled_at }}" data-no-i18n>{{ g.scheduled_at|local_time }}</time></td><td data-label="WHITE"><a class="strong-link" href="/players/{{ g.white_player_id }}"><span data-no-i18n>{{ g.white_name }}</span></a></td><td data-label="BLACK"><a class="strong-link" href="/players/{{ g.black_player_id }}"><span data-no-i18n>{{ g.black_name }}</span></a></td><td data-label="RESULT">
 {% if g.result=='*' %}{% set outcome='upcoming' %}{% set label='Upcoming' %}
 {% elif g.result=='1/2-1/2' %}{% set outcome='draw' %}{% set label='Draw' %}
 {% elif (g.result=='1-0' and g.white_player_id==profile.id) or (g.result=='0-1' and g.black_player_id==profile.id) %}{% set outcome='win' %}{% set label='Won' %}

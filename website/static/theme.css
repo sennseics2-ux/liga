@@ -392,3 +392,19 @@ body .language-toggle .flag-icon{display:block;margin:0}
 /* V101: the profile knight fallback at compact squad-avatar sizes. */
 .team-player-placeholder.photo-placeholder{display:inline-grid;place-items:center;flex:none;background:#eee;border:1px solid #dedede;border-radius:8px;font-size:23px;line-height:1;overflow:hidden}
 :root[data-theme="dark"] .team-player-placeholder.photo-placeholder{background:var(--theme-soft);border-color:var(--theme-border);color:var(--theme-muted)}
+
+/* V102: independent profile links inside clickable game and market cards. */
+.player-record-link{position:relative;z-index:2;color:inherit;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#aaa}
+.player-record-link:hover{text-decoration-thickness:2px}
+.player-record-link:focus-visible,.market-card-target:focus-visible,.match-board-target:focus-visible{outline:2px solid currentColor;outline-offset:3px;border-radius:4px}
+.market-card,.match-board-row{position:relative}
+.market-card-target,.match-board-target{position:absolute;inset:0;z-index:1;border-radius:inherit}
+.admin-game-record{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0}
+.admin-game-record time{display:block;font-size:11px;color:var(--muted);margin-bottom:6px}
+.admin-game-record strong{font-size:13px}
+.admin-game-target{position:absolute;inset:0;z-index:1}
+.admin-game-target:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.admin-game-list .admin-game-record{padding:16px 20px;border-bottom:1px solid var(--line)}
+.admin-game-list .admin-game-record a.player-record-link{display:inline;padding:0;border:0;background:transparent;color:inherit}
+.admin-game-list .admin-game-record a.admin-game-target{padding:0;border:0;background:transparent}
+@media(max-width:540px){.admin-game-list .admin-game-record{padding:14px 16px}}

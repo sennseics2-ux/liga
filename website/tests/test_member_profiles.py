@@ -53,7 +53,9 @@ def test_public_profiles_without_private_actions_or_invitations(client):
     player_page = client.get(f'/users/{mid}').text
     assert 'Quit player role' not in player_page
     assert 'Request player activation' not in player_page
-    assert 'href="/users/managerjoe"' in client.get('/players').text
+    with store.read_db() as db:
+        pid = db.execute('SELECT id FROM players WHERE user_id=?',(mid,)).fetchone()[0]
+    assert f'href="/players/{pid}"' in client.get('/players').text
     assert 'data-label="CAPTAIN"' not in client.get('/standings').text
     logout(client)
     assert client.get(f'/users/{mid}/manager').status_code == 200

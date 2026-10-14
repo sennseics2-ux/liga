@@ -93,10 +93,10 @@ def test_match_scores_follow_teams_across_alternating_colours_and_draws(client):
     assert 'match-board-game-link' not in page.text
     # Scores follow home/away teams, even when colours alternate by board.
     import re
-    rows=re.findall(r'<a class="match-board-row board-result-card"[^>]*>(.*?)</a>',page.text,re.S)
+    rows=re.findall(r'<article class="match-board-row board-result-card"[^>]*>(.*?)</article>',page.text,re.S)
     scores=[re.search(r'<strong class="match-board-score" data-no-i18n>(.*?)</strong>',row,re.S).group(1) for row in rows]
     assert [re.sub(r'<[^>]+>','',score).strip() for score in scores]==['1 : 0','1 : 0','½ : ½','0 : 1']
-    assert all(row.count('class="match-lineup-player"')==2 for row in rows)
+    assert all(row.count('class="match-lineup-player player-record-link"')==2 for row in rows)
     for row,winning_side in zip(rows,['home','home',None,'away']):
         values=re.findall(r'<span class="match-board-score-value([^"]*)">(.*?)</span>',row)
         if winning_side is None:

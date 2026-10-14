@@ -1,3 +1,7 @@
+## v102 public profiles for every player record
+
+Every player has a stable numeric /players/<id> URL. Unlinked players have a read-only profile with team membership history, recent games and career totals. Linked records resolve to existing member profiles. Player names link from directories, team rosters, transfers, auctions, games, match boards and admin player/game listings. Card navigation remains available through independent sibling links. Full game history uses player IDs so namesakes remain distinct. Assets use v102; database schema remains v32.
+
 ## v101 consistent team player placeholders
 
 Players without photos use the same knight placeholder as member profiles in both Current squad and Squad by season. Uploaded player photos remain in use. Assets use v101; database schema remains v32.

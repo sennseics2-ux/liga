@@ -71,17 +71,19 @@ def test_current_season_dropdown_and_completed_match(chromium,league_server,widt
         expect(page.locator('.board-result-card')).to_have_count(4)
         expect(page.locator('.match-board-row')).to_have_count(4)
         expect(page.locator('.match-board-game-link')).to_have_count(0)
-        assert page.locator('.match-board-row a').count()==0
+        assert page.locator('.match-board-target').count()==4
+        assert page.locator('.match-board-row .player-record-link').count()==8
         if width>1020:
             assert page.evaluate('document.documentElement.scrollHeight')<=height+2
             table=page.locator('.match-board-table')
             assert table.evaluate('(el)=>el.scrollHeight<=el.clientHeight+2')
         first_board=page.locator('.match-board-row').first
-        destination=first_board.get_attribute('href')
+        destination=first_board.locator('.match-board-target').get_attribute('href')
+        profile_destination=first_board.locator('.match-lineup-player').first.get_attribute('href')
         first_board.locator('.match-lineup-player').first.click()
-        page.wait_for_url(league.base+destination)
+        page.wait_for_url(lambda url: str(url)==league.base+profile_destination or '/users/' in str(url))
         page.go_back()
-        page.locator('.match-board-row').first.focus()
+        page.locator('.match-board-target').first.focus()
         page.keyboard.press('Enter')
         page.wait_for_url(league.base+destination)
         page.go_back()
