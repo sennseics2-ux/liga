@@ -1,3 +1,7 @@
+## v117 Portuguese captain introduction
+
+The homepage Portuguese captain description now reads Constrói o plantel no mercado de transferências e gere a tua equipa para lutares pelos primeiros lugares da classificação. English copy is unchanged. Assets use v117; schema remains v108_unregistered_player_fide.
+
 ## v116 transfer-market empty-state wording
 
 The homepage empty market now says No players are listed for transfer. The transfer market is currently closed., with the corresponding Portuguese translation. Assets use v116; schema remains v108_unregistered_player_fide.
