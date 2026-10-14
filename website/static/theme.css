@@ -293,3 +293,15 @@ body .language-toggle .flag-icon{display:block;margin:0}
 .member-profile-identity.has-player-summary>.player-profile-summary{grid-area:summary;justify-self:center;margin:0}
 .member-profile-identity.has-player-summary>.career-record-compact{grid-area:career}
 @media(max-width:1000px){.member-profile-identity.has-player-summary{grid-template-areas:"photo details" "summary summary" "career career"}}
+
+/* V94: use the space between identity details and career totals on desktop. */
+@media(min-width:1001px){
+ .member-profile-identity.has-player-summary{grid-template-columns:80px minmax(150px,1fr) minmax(330px,1.5fr) 200px;grid-template-areas:"photo details summary career";gap:14px}
+ .has-player-summary>.member-photo{width:80px;height:80px}
+ .member-profile-identity.has-player-summary>.player-profile-summary{max-width:none;gap:8px}
+ .has-player-summary .player-profile-summary .metric-card{min-height:88px;padding:12px 8px;gap:6px}
+ .has-player-summary .player-profile-summary .metric-card>span{font-size:11px;letter-spacing:.3px}
+ .has-player-summary .player-profile-summary .metric-card>strong{font-size:20px}
+ .has-player-summary .player-profile-summary .metric-card>small{font-size:11px}
+ .member-profile-identity.has-player-summary>.career-record-compact{width:100%;max-width:none;padding-left:14px}
+}

@@ -1,3 +1,7 @@
+## v94 inline desktop profile summary
+
+Desktop profiles place Chess Player, Current Team and FIDE Rating between the member identity and the games-played summary in a single row. Cards and the avatar are resized to fit this space. Tablet/mobile layouts retain their stacked arrangement. Assets use v94; database schema remains v32.
+
 ## v93 player summary in the identity panel
 
 Chess Player, Current Team and FIDE Rating now appear inside the upper profile panel below the member identity, before the profile tabs. The compact centered cards are shared across player and captain views and retain responsive placement of the career summary. Assets use v93; database schema remains v32.
