@@ -1,3 +1,7 @@
+## v104 inactive-player badge
+
+Active player badges are hidden on member profiles. Inactive player roles display a red Inactive Player badge (Jogador inativo in Portuguese), with accessible colors in both themes. Captain badges are preserved. Assets use v104; schema remains v103_player_countries.
+
 ## v103 countries for unregistered players
 
 Unregistered player profiles display a country and flag when set. Administrators can choose or clear the country on the numeric player profile through Edit country; the admin player list links to this editor. Existing player records start with an unknown country. The automatic, backed-up v103_player_countries migration adds a country column; names, records and account country settings are preserved. Assets use v103.
