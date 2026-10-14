@@ -1,3 +1,7 @@
+## v100 auction team navigation and closing time
+
+Team names in bid history link to their public team profiles. The exact scheduled closing date and time in the league timezone appears beneath the countdown, with responsive wrapping. Assets use v100; database schema remains v32.
+
 ## v99 minimum bid increment
 
 The first bid can equal the administrator starting price. Later bids must increase the highest bid by at least 50 credits. A shared calculation drives transaction validation, the auction form and live snapshots. Existing bids remain intact. Transfer rules are updated in English and Portuguese. Assets use v99; database schema remains v32.

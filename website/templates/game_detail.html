@@ -18,8 +18,8 @@
       </div>
     </div>
     <script type="application/json" id="replay-data">{{ replay|tojson }}</script>
-    <script defer src="/static/chess-replay.js?v=99"></script>
-    <script defer src="/static/board-resize.js?v=99"></script>
+    <script defer src="/static/chess-replay.js?v=100"></script>
+    <script defer src="/static/board-resize.js?v=100"></script>
   {% elif pgn_available %}
   <div class="game-matchup">
     <div class="game-side"><div class="game-piece-token white" aria-hidden="true">♔</div><span>WHITE</span><strong data-no-i18n>{% if game.white_user_id %}<a href="/users/{{ game.white_username|urlencode }}">{{ game.white_name }}</a>{% else %}{{ game.white_name }}{% endif %}</strong>{% if game.white_team_name %}<small><span>Team at match:</span> <span data-no-i18n>{{ game.white_team_name }}</span></small>{% endif %}</div>

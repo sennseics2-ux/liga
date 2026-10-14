@@ -381,3 +381,10 @@ body .language-toggle .flag-icon{display:block;margin:0}
 .auction-detail-page .auction-player-link{color:inherit;text-decoration:underline;text-decoration-color:#aaa;text-underline-offset:5px;text-decoration-thickness:1px}
 .auction-detail-page .auction-player-link:hover{text-decoration-thickness:2px}
 .auction-detail-page .auction-player-link:focus-visible{outline:2px solid currentColor;outline-offset:4px;border-radius:3px}
+
+/* V100: auction history navigation and an explicit countdown deadline. */
+.auction-detail-page .auction-team-link{color:inherit;text-decoration:underline;text-underline-offset:3px;text-decoration-color:#aaa}
+.auction-detail-page .auction-team-link:hover{text-decoration-thickness:2px}
+.auction-detail-page .auction-team-link:focus-visible{outline:2px solid currentColor;outline-offset:3px;border-radius:2px}
+.auction-detail-page .auction-closing-time{display:block;margin-top:8px;color:var(--muted);font-size:11px;line-height:1.6;overflow-wrap:anywhere}
+:root[data-theme="dark"] .auction-detail-page .auction-closing-time{color:var(--theme-muted)}
