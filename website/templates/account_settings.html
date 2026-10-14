@@ -17,7 +17,9 @@
 <label><span data-i18n="Current password (required to change email)">Current password (required to change email)</span><input type="password" name="current_password" autocomplete="current-password" maxlength="256"></label>
 <button class="btn btn-primary" data-i18n="Save settings">Save settings</button></form>
 <p><a href="/account/security" data-i18n="Password & security">Password &amp; security</a></p>
-</div><div class="form-card account-security-card"><h2 data-i18n="Deactivate account">Deactivate account</h2><p data-i18n="Deactivation signs you out. Only an administrator can reactivate your account.">Deactivation signs you out. Only an administrator can reactivate your account.</p>
+</div>
+{% include 'account_photo_settings.html' %}
+<div class="form-card account-security-card"><h2 data-i18n="Deactivate account">Deactivate account</h2><p data-i18n="Deactivation signs you out. Only an administrator can reactivate your account.">Deactivation signs you out. Only an administrator can reactivate your account.</p>
 <form method="post" action="/account/deactivate" class="stack-form" data-confirm="Deactivate your account?"><input type="hidden" name="csrf" value="{{ csrf }}">
 <label><span data-i18n="Current password">Current password</span><input name="current_password" type="password" required autocomplete="current-password" maxlength="256"></label>
 <label><span data-i18n="Type DEACTIVATE to confirm">Type DEACTIVATE to confirm</span><input name="confirmation" pattern="DEACTIVATE" required></label>

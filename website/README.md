@@ -1,3 +1,7 @@
+## v90 profile cleanup and account photo settings
+
+Public player profiles remove the Registered identity and Standard FIDE rating captions. The player photo editor is now in Account settings, with a current-photo preview. Upload, replacement, removal and validation messages return to settings; existing photo permissions and public image URLs remain in effect. Assets use v90; database schema remains v32.
+
 ## v89 grouped games-played total
 
 The profile career summary places the games-played total directly beside its label in a compact neutral badge, rather than against the far edge. The heading aligns vertically above the wins/draws/losses grid and adapts to both themes. Assets use v89; database schema remains v32.

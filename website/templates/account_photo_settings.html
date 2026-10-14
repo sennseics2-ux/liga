@@ -1,0 +1,18 @@
+{% if profile.player_active and profile.role!='admin' %}
+<section class="form-card account-security-card photo-editor" aria-labelledby="profile-photo-title">
+  <div class="settings-photo-heading">
+    {% if profile.photo_updated_at %}<img class="settings-photo-preview" src="/users/{{ profile.username|urlencode }}/photo" width="64" height="64" alt="">{% endif %}
+    <h2 id="profile-photo-title" data-i18n="My player photo">My player photo</h2>
+  </div>
+  <p data-i18n="Upload a photo that will appear on your public profile and in team and player listings. JPG, PNG or WebP, maximum 5 MB. Photos are cropped to a square.">Upload a photo that will appear on your public profile and in team and player listings. JPG, PNG or WebP, maximum 5 MB. Photos are cropped to a square.</p>
+  <form method="post" action="/my/player/photo" enctype="multipart/form-data" class="photo-upload-form">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <label for="profile-photo" data-i18n="Choose photo">Choose photo</label>
+    <input id="profile-photo" type="file" name="photo" accept="image/jpeg,image/png,image/webp" required>
+    <button class="btn btn-primary" type="submit" data-i18n="{{ 'Replace photo' if profile.photo_updated_at else 'Upload photo' }}">{{ 'Replace photo' if profile.photo_updated_at else 'Upload photo' }}</button>
+  </form>
+  {% if profile.photo_updated_at %}<form method="post" action="/my/player/photo/remove" data-confirm="Remove your current profile photo?" class="photo-remove-form">
+    <input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn btn-quiet" type="submit" data-i18n="Remove photo">Remove photo</button>
+  </form>{% endif %}
+</section>
+{% endif %}

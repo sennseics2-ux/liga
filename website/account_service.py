@@ -38,7 +38,7 @@ def account(user_id):
     import database as store
     with store.read_db() as db:
         row = db.execute('''SELECT id,username,role,email,name,country,fide_id,fide_id_locked,
-            account_active,fide_rating,fide_rating_month,fide_checked_at,fide_error
+            account_active,player_active,photo_updated_at,fide_rating,fide_rating_month,fide_checked_at,fide_error
             FROM users WHERE id=?''', (user_id,)).fetchone()
     if not row:
         raise ValueError('Account not found.')

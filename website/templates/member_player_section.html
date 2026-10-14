@@ -1,23 +1,9 @@
-{% if owner and member.player_active %}
-<div class="profile-status photo-editor">
-  <div><h3>My player photo</h3><p>Upload a photo that will appear on your public profile and in team and player listings. JPG, PNG or WebP, maximum 5 MB. Photos are cropped to a square.</p></div>
-  <form method="post" action="/my/player/photo" enctype="multipart/form-data" class="photo-upload-form">
-    <input type="hidden" name="csrf" value="{{ csrf }}">
-    <label for="profile-photo">Choose photo</label>
-    <input id="profile-photo" type="file" name="photo" accept="image/jpeg,image/png,image/webp" required>
-    <button class="btn btn-primary" type="submit">{{ 'Replace photo' if member.photo_updated_at else 'Upload photo' }}</button>
-  </form>
-  {% if member.photo_updated_at %}<form method="post" action="/my/player/photo/remove" data-confirm="Remove your current profile photo?" class="photo-remove-form">
-    <input type="hidden" name="csrf" value="{{ csrf }}"><button class="btn btn-quiet" type="submit">Remove photo</button>
-  </form>{% endif %}
-</div>
-{% endif %}
 {% if profile %}
   <div class="metric-grid">
-    <div class="metric-card"><span>CHESS PLAYER</span><strong class="small-stat"><span data-no-i18n>{{ profile.name }}</span></strong><small>Registered identity</small></div>
+    <div class="metric-card"><span>CHESS PLAYER</span><strong class="small-stat"><span data-no-i18n>{{ profile.name }}</span></strong></div>
 
     <div class="metric-card"><span>CURRENT TEAM</span><strong class="small-stat">{% if not member.player_active %}<span data-i18n="Not playing">Not playing</span>{% elif profile.team_name %}<span data-no-i18n>{{ profile.team_name }}</span>{% else %}<span data-i18n="Free agent">Free agent</span>{% endif %}</strong><small>{% if profile.is_manager_player %}Team Captain{% else %}Chess player{% endif %}</small></div>
-    <div class="metric-card"><span>FIDE RATING</span><strong>{{ profile.rating or '—' }}</strong><small>Standard FIDE rating</small></div>
+    <div class="metric-card"><span>FIDE RATING</span><strong>{{ profile.rating or '—' }}</strong></div>
   </div>
 
 {% else %}

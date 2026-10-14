@@ -26,11 +26,15 @@ def test_photo_upload_public_display_and_replace(client):
     with store.read_db() as db:
         uid = db.execute("SELECT id FROM users WHERE username='rookie'").fetchone()[0]
     profile_page = f'/users/{uid}'
-    assert 'Upload photo' in client.get(profile_page).text
+    assert 'Upload photo' in client.get('/account/settings').text
+    assert 'My player photo' not in client.get(profile_page).text
+    assert 'Registered identity' not in client.get(profile_page).text
+    assert 'Standard FIDE rating' not in client.get(profile_page).text
     assert client.get(f'{profile_page}/photo').status_code == 404
-    csrf = client.get(profile_page).text.split('name="csrf" value="')[1].split('"')[0]
+    csrf = client.get('/account/settings').text.split('name="csrf" value="')[1].split('"')[0]
     response = upload(client, csrf, make_image())
     assert response.status_code == 200
+    assert response.url.path == '/account/settings'
     assert 'Your profile photo has been updated' in response.text
     assert 'Replace photo' in response.text
     assert '/users/rookie/photo' in response.text
@@ -52,6 +56,7 @@ def test_photo_upload_public_display_and_replace(client):
     # User can remove the photo using CSRF, and it disappears publicly.
     result = post(client, '/my/player/photo/remove')
     assert 'Your profile photo was removed' in result.text
+    assert result.url.path == '/account/settings'
     assert client.get(f'{profile_page}/photo').status_code == 404
 
 
@@ -59,7 +64,7 @@ def test_photo_validation_and_old_image_untouched(client):
     register(client, 'photographer', 'player')
     with store.read_db() as db:
         uid = db.execute("SELECT id FROM users WHERE username='photographer'").fetchone()[0]
-    csrf = client.get(f'/users/{uid}').text.split('name="csrf" value="')[1].split('"')[0]
+    csrf = client.get('/account/settings').text.split('name="csrf" value="')[1].split('"')[0]
     upload(client, csrf, make_image())
     before = client.get(f'/users/{uid}/photo').content
     for name, body in [

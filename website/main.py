@@ -555,7 +555,7 @@ async def upload_member_photo(request: Request):
     uploaded = data.get('photo')
     if not isinstance(uploaded, UploadFile) or not uploaded.filename:
         flash(request, 'Choose a JPG, PNG or WebP file.', 'error')
-        return redirect(f"/users/{quote(user['username'], safe='')}")
+        return redirect('/account/settings')
     try:
         contents = await uploaded.read(MAX_PHOTO_BYTES + 1)
         photo = await run_in_threadpool(normalize_photo, contents)
@@ -565,7 +565,7 @@ async def upload_member_photo(request: Request):
         flash(request, str(exc), 'error')
     finally:
         await uploaded.close()
-    return redirect(f"/users/{quote(user['username'], safe='')}")
+    return redirect('/account/settings')
 
 
 @app.post('/my/player/photo/remove')
@@ -574,7 +574,7 @@ async def remove_member_photo(request: Request):
     await form_data(request)
     await run_in_threadpool(store.remove_profile_photo, user['id'])
     flash(request, 'Your profile photo was removed.', 'success')
-    return redirect(f"/users/{quote(user['username'], safe='')}")
+    return redirect('/account/settings')
 
 
 @app.get('/teams/{team_id}/photo')
