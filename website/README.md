@@ -1,3 +1,7 @@
+## v92 compact player summary cards
+
+The Chess Player, Current Team and FIDE Rating cards use larger centered text, tighter spacing and a centered three-column desktop layout. Phones show the name across the row with team and rating beneath it. Long names wrap without clipping. Other metric cards retain their existing layout. Assets use v92; database schema remains v32.
+
 ## v91 simplify Current Team caption
 
 The Current Team card on player profiles no longer shows the Chess player caption. The captain caption remains for captain-players. Assets use v91; database schema remains v32.
