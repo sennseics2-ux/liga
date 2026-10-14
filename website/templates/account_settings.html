@@ -4,7 +4,11 @@
 {% if error %}<div class="notice notice-error" role="alert" data-i18n="{{ error }}">{{ error }}</div>{% endif %}
 <form method="post" action="/account/settings" class="stack-form"><input type="hidden" name="csrf" value="{{ csrf }}">
 <label><span data-i18n="Name">Name</span><input name="name" value="{{ profile.name }}" minlength="2" maxlength="80" autocomplete="name" required></label>
-<label><span data-i18n="Country">Country</span><input name="country" value="{{ profile.country }}" maxlength="80" autocomplete="country-name"></label>
+<label><span data-i18n="Country">Country</span><select name="country" class="country-select" autocomplete="country-name">
+<option value="" data-i18n="Select a country">Select a country</option>
+{% if legacy_country %}<option value="{{ legacy_country }}" selected data-no-i18n data-current-country>{{ legacy_country }}</option>{% endif %}
+{% for country in countries %}<option value="{{ country }}"{% if country==selected_country %} selected{% endif %} data-i18n="{{ country }}">{{ country }}</option>{% endfor %}
+</select></label>
 <label><span data-i18n="FIDE ID">FIDE ID</span><input name="fide_id" value="{{ profile.fide_id or '' }}" pattern="[0-9]{6,8}" inputmode="numeric" minlength="6" maxlength="8" {% if profile.fide_id_locked %}readonly{% endif %}></label>
 {% if profile.fide_id_locked %}<p class="form-hint" data-i18n="Your FIDE ID is locked by the administrator.">Your FIDE ID is locked by the administrator.</p>{% endif %}
 <p><span data-i18n="FIDE Rating">FIDE Rating</span>: <strong data-no-i18n>{{ profile.fide_rating if profile.fide_rating is not none else '—' }}</strong>{% if profile.fide_rating_month %} · <span data-no-i18n>{{ profile.fide_rating_month }}</span>{% endif %}</p>

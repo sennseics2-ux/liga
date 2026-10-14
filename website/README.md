@@ -1,3 +1,7 @@
+## v87 country dropdown
+
+Account settings offers all 249 ISO 3166-1 countries and territories in a native dropdown, translated and alphabetically ordered for Portuguese/English. Existing names/codes are matched where possible; unrecognized legacy values remain selectable. Blank country remains optional. The bundled country list is derived from Debian iso-codes. Assets use v87; database schema remains v32.
+
 ## v86 consistent admin workspace banners
 
 Member accounts and Season setup now share the Players administration banner, including typography, background, decoration and dimensions. A shared template keeps the banners consistent. Section titles and navigation appear beneath the banner. Assets use v86; database schema remains v32.

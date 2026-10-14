@@ -184,3 +184,16 @@ document.querySelectorAll('[data-player-profile]').forEach(row => {
     window.location.assign(row.dataset.playerProfile);
   });
 });
+
+// Keep the native country dropdown alphabetical after translating its labels.
+function sortCountryOptions() {
+  document.querySelectorAll('.country-select').forEach(select => {
+    const selected = select.value;
+    const collator = new Intl.Collator(document.documentElement.lang);
+    const options = [...select.options].filter(option => option.value && !option.hasAttribute('data-current-country'));
+    select.append(...options.sort((a, b) => collator.compare(a.textContent, b.textContent)));
+    select.value = selected;
+  });
+}
+document.addEventListener('DOMContentLoaded', sortCountryOptions);
+document.addEventListener('liga:languagechange', sortCountryOptions);

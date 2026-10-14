@@ -30,6 +30,7 @@ from web_security import (BoundedRequestBodyMiddleware, parse_secure_form,
 from web_queries import authenticate_account, team_for_member, close_auction_safely, AccountDeactivated
 
 import database as store
+from countries import country_field
 import account_service as accounts
 import league_seasons as seasons
 from league_honours import season_honours
@@ -1516,7 +1517,8 @@ async def admin_update_points(request: Request, player_id: int):
 @app.get('/account/settings', response_class=HTMLResponse)
 def account_settings(request: Request):
     user=auth(request)
-    return view(request,'account_settings.html',profile=accounts.account(user['id']),error=None)
+    profile=accounts.account(user['id'])
+    return view(request,'account_settings.html',profile=profile,error=None,**country_field(profile['country']))
 
 
 @app.post('/account/settings', response_class=HTMLResponse)
@@ -1532,7 +1534,8 @@ async def save_account_settings(request: Request):
         flash(request,'Account settings saved.','success')
         return redirect('/account/settings')
     except ValueError as exc:
-        return await run_in_threadpool(view,request,'account_settings.html',profile=await run_in_threadpool(accounts.account,user['id']),error=str(exc))
+        profile=await run_in_threadpool(accounts.account,user['id'])
+        return await run_in_threadpool(view,request,'account_settings.html',profile=profile,error=str(exc),**country_field(profile['country']))
 
 
 @app.post('/account/deactivate')

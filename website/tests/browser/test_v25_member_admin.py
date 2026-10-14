@@ -26,7 +26,7 @@ def test_registration_settings_recovery_and_admin_lock(chromium,league_server,wi
         page.wait_for_url(league.base+f'/users/{username}/manager')
         page.goto(league.base+'/account/settings')
         page.locator('input[name=name]').fill('Maria Silva')
-        page.locator('input[name=country]').fill('Portugal')
+        page.locator('select[name=country]').select_option('Portugal')
         page.locator('input[name=fide_id]').fill('12345')
         assert not page.locator('input[name=fide_id]').evaluate('(el)=>el.checkValidity()')
         page.locator('input[name=fide_id]').fill('123456')
@@ -83,7 +83,7 @@ def test_manager_four_board_submission_on_mobile(chromium,league_server):
             page.locator(f'select[name=player_{board}]').select_option(str(player))
         page.locator(f'form[action="/matches/{match}/lineup"] button').click()
         page.wait_for_url(league.base+f'/matches/{match}')
-        assert page.locator('li').filter(has_text='manager_home').count()==1
+        assert page.locator('.match-lineup-player').filter(has_text='manager_home').count()==1
         assert_fits_phone(page)
     finally:
         context.close()
