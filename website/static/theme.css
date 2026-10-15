@@ -496,3 +496,8 @@ body.standings-page .standings-content option:checked{background:#dedede;color:#
  .player-country-cell .player-country-flag{margin-left:auto}
  .data-table .player-country-column+th,.data-table .player-country-cell+td{padding-left:8px}
 }
+
+/* V132: match the season shortcut to the other dark admin panels. */
+:root[data-theme="dark"] .admin-season-shortcut{background:var(--theme-surface);color:var(--theme-text);border:1px solid var(--theme-border)}
+:root[data-theme="dark"] .admin-season-shortcut>span:first-child{color:var(--theme-muted)}
+:root[data-theme="dark"] .admin-season-shortcut .admin-workspace-link{border-color:var(--theme-border)}

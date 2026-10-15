@@ -1,3 +1,7 @@
+## v132 consistent dark admin season shortcut
+
+The admin-season-shortcut uses the shared blue dark-mode panel surface, light text, muted icon and theme border. Light mode is unchanged. Assets use v132; schema remains v108_unregistered_player_fide.
+
 ## v131 tighter player flag spacing
 
 The player directory country column fits its contents, with reduced padding and a 16px gap between each flag and player identity in the desktop table. Mobile cards retain their layout. Assets use v131; schema remains v108_unregistered_player_fide.
