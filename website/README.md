@@ -1,3 +1,7 @@
+## v130 player countries and flags
+
+The player directory adds a flag column before player names and an All countries filter populated from visible players, including players without accounts. Country aliases share a filter option; linked account country takes precedence. Existing filters combine with the country filter. Missing countries show a dash, and unknown legacy country text is preserved without a broken flag image. English and Portuguese labels are included. Assets use v130; schema remains v108_unregistered_player_fide.
+
 ## v128 blue dark-mode counter and account button
 
 The completed-games counter and account button use shared blue dark-mode surfaces and readable light text. The account button uses a lighter blue when hovered or open on every page. Light mode and account menu items are preserved. Assets use v128; schema remains v108_unregistered_player_fide.

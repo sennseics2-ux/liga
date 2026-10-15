@@ -485,3 +485,7 @@ body.standings-page .standings-content option:checked{background:#dedede;color:#
 :root[data-theme="dark"] body .nav-actions :is(.account-toggle,.account-settings-toggle){background:var(--theme-surface);color:var(--theme-text);border-color:var(--theme-border)}
 :root[data-theme="dark"] body .nav-actions .account-toggle:is(:hover,[aria-expanded="true"]){background:var(--theme-soft);color:var(--theme-text);border-color:var(--theme-border)}
 :root[data-theme="dark"] body .nav-actions .account-toggle:focus-visible{outline-color:var(--theme-border)}
+
+/* V130: country flags in the player directory. */
+.player-country-column{width:84px}.player-country-flag{display:block;width:28px;height:21px;object-fit:contain;border-radius:2px;box-shadow:0 0 0 1px #80808050}
+.player-country-cell{vertical-align:middle}

@@ -973,7 +973,8 @@ async def bid(request: Request, auction_id: int):
 
 @app.get("/players", response_class=HTMLResponse)
 def players(request: Request, q: str = '', team: str = 'all', status: str = 'all',
-            club: str = 'all', min_rating: str | None = None, sort: str = 'rating_desc'):
+            club: str = 'all', min_rating: str | None = None, sort: str = 'rating_desc',
+            country: str = 'all'):
     """Search, filter and sort the public player pool with SQL allowlisted ordering."""
     order_options = {
         'rating_desc': 'p.rating IS NULL, p.rating DESC, p.name COLLATE NOCASE ASC',
@@ -988,7 +989,9 @@ def players(request: Request, q: str = '', team: str = 'all', status: str = 'all
     min_rating_value = parse_optional_int(min_rating, minimum=0, maximum=3500)
     if len(q) > 120:
         q = q[:120]
-    clauses = ['(p.user_id IS NULL OR (u.account_active=1 AND u.player_active=1))']
+    visible_players = '(p.user_id IS NULL OR (u.account_active=1 AND u.player_active=1))'
+    country_value = "TRIM(COALESCE(NULLIF(TRIM(u.country),''),p.country,''))"
+    clauses = [visible_players]
     params = []
     if q.strip():
         clauses.append('(p.name LIKE ? OR u.username LIKE ?)')
@@ -1019,13 +1022,36 @@ def players(request: Request, q: str = '', team: str = 'all', status: str = 'all
     with store.read_db() as db:
         teams = db.execute('SELECT id,name FROM teams ORDER BY name COLLATE NOCASE').fetchall()
         clubs = [r[0] for r in db.execute("SELECT DISTINCT club FROM players WHERE club!='' ORDER BY club COLLATE NOCASE")]
-        rows = db.execute(f"""SELECT p.*, t.name AS owner_name, u.username, u.photo_updated_at,
+        # Options describe the entire visible player pool, independent of other filters.
+        country_groups = {}
+        for row in db.execute(f'''SELECT DISTINCT {country_value} AS country
+                FROM players p LEFT JOIN users u ON u.id=p.user_id WHERE {visible_players}'''):
+            if row['country']:
+                name = country_field(row['country'])['selected_country']
+                if name:
+                    country_groups.setdefault(name, []).append(row['country'])
+        country = country_field(country)['selected_country']
+        if country not in country_groups:
+            country = 'all'
+        if country != 'all':
+            values = country_groups[country]
+            clauses.append(f"{country_value} IN ({','.join('?' for _ in values)})")
+            params.extend(values)
+        rows = db.execute(f"""SELECT p.*, {country_value} AS directory_country,
+            t.name AS owner_name, u.username, u.photo_updated_at,
             EXISTS(SELECT 1 FROM auctions a WHERE a.player_id=p.id AND a.status='open') AS listed
             FROM players p LEFT JOIN teams t ON t.id=p.owner_team_id
             LEFT JOIN users u ON u.id=p.user_id
             WHERE {' AND '.join(clauses)} ORDER BY {order_options[sort]}""",params).fetchall()
-    return view(request,'players.html',players=rows,teams=teams,clubs=clubs,
-                filters={'q':q,'team':team,'status':status,'club':club,
+    player_rows = []
+    for row in rows:
+        player = dict(row)
+        player['directory_country'] = country_field(player['directory_country'])['selected_country']
+        player['country_flag_code'] = country_code(player['directory_country'])
+        player_rows.append(player)
+    return view(request,'players.html',players=player_rows,teams=teams,clubs=clubs,
+                country_options=sorted(country_groups, key=str.casefold),
+                filters={'q':q,'team':team,'status':status,'club':club,'country':country,
                          'min_rating':min_rating_value,'sort':sort})
 
 

@@ -30,7 +30,10 @@ def test_player_search_filters_and_safe_sort(client):
     page=client.get('/players',params={'q':'ana','team':str(knights)})
     assert 'Ana Example' in page.text and 'Bea Example' not in page.text
     page=client.get('/players',params={'q':'knightmgr'})
-    assert '/users/knightmgr' in page.text and 'Ana Example' not in page.text
+    with store.read_db() as db:
+        captain_player=db.execute('SELECT p.id FROM players p JOIN users u ON u.id=p.user_id WHERE u.username=?',('knightmgr',)).fetchone()[0]
+    assert f'data-player-profile="/players/{captain_player}"' in page.text and 'Ana Example' not in page.text
+    assert client.get(f'/players/{captain_player}',follow_redirects=False).headers['location']=='/users/knightmgr'
     page=client.get('/players',params={'q':'Club'})
     assert 'No matching players' in page.text
     assert all(name not in page.text for name in ('Ana Example','Bea Example','Zoe Example'))
