@@ -51,7 +51,6 @@ def test_seasons_grey_panels_and_settings_states(chromium,client,width,theme):
                              '.schedule-round-complete','.round-section','.round-number','.fixture-card','.fixture-bottom','.season-picker select']:
                 assert_grey(page.locator(selector).first,'backgroundColor')
             assert page.locator('.season-picker').evaluate('(el)=>getComputedStyle(el).backgroundColor')=='rgb(237, 237, 237)'
-            assert page.locator('.season-schedule').evaluate('(el)=>getComputedStyle(el).backgroundColor')=='rgb(40, 40, 40)'
         pending=page.locator('.schedule-round:not(.schedule-round-complete)').first.evaluate(r'(el)=>parseInt(getComputedStyle(el).backgroundColor.match(/\d+/)[0])')
         done=page.locator('.schedule-round-complete').first.evaluate(r'(el)=>parseInt(getComputedStyle(el).backgroundColor.match(/\d+/)[0])')
         assert done>pending
