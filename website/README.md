@@ -1,3 +1,7 @@
+## v123 clearer grey player-row highlights
+
+Player directory rows use a more noticeable neutral grey on hover and focus-within: #e5e5e5 in light mode and #505050 in dark mode. Layout, links and row navigation are unchanged. Assets use v123; schema remains v108_unregistered_player_fide.
+
 ## v122 neutral Standings accents
 
 Standings now uses the same light-grey season/round filter panel as Seasons, with grey league-point badges, neutral borders and keyboard focus. Dark-mode content surfaces, table headers, avatars, controls and empty-state action use neutral greys. Palette overrides stay within the standings content so the shared banner styling is preserved. Rankings, round filtering, scoring, links and layout remain unchanged. Assets use v122; schema remains v108_unregistered_player_fide.
