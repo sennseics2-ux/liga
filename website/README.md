@@ -1,3 +1,7 @@
+## v118 shorter Portuguese captain introduction
+
+The homepage Portuguese captain description now reads Constrói o teu plantel e gere a tua equipa para lutares pelos primeiros lugares da classificação. English copy is unchanged. Assets use v118; schema remains v108_unregistered_player_fide.
+
 ## v117 Portuguese captain introduction
 
 The homepage Portuguese captain description now reads Constrói o plantel no mercado de transferências e gere a tua equipa para lutares pelos primeiros lugares da classificação. English copy is unchanged. Assets use v117; schema remains v108_unregistered_player_fide.
