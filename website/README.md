@@ -1,3 +1,7 @@
+## v133 blue dark-mode admin attention counter
+
+The admin-attention-total counter uses the shared soft blue surface, light text and theme border in dark mode. Light mode is unchanged. Assets use v133; schema remains v108_unregistered_player_fide.
+
 ## v132 consistent dark admin season shortcut
 
 The admin-season-shortcut uses the shared blue dark-mode panel surface, light text, muted icon and theme border. Light mode is unchanged. Assets use v132; schema remains v108_unregistered_player_fide.
