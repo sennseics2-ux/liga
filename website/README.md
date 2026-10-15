@@ -1,3 +1,7 @@
+## v125 shared blue Standings dark theme
+
+Standings inherits the shared blue page, table, field and mobile-card surfaces in dark mode. The shared banner, grey picker panel and point badges remain unchanged. Assets use v125; schema remains v108_unregistered_player_fide.
+
 ## v124 lighter blue player highlights in dark mode
 
 Player directory rows use #425e7c on hover and focus-within in dark mode. The light-mode grey highlight is unchanged. Assets use v124; schema remains v108_unregistered_player_fide.
