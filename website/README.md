@@ -1,3 +1,7 @@
+## v122 neutral Standings accents
+
+Standings now uses the same light-grey season/round filter panel as Seasons, with grey league-point badges, neutral borders and keyboard focus. Dark-mode content surfaces, table headers, avatars, controls and empty-state action use neutral greys. Palette overrides stay within the standings content so the shared banner styling is preserved. Rankings, round filtering, scoring, links and layout remain unchanged. Assets use v122; schema remains v108_unregistered_player_fide.
+
 ## v121 restore Seasons banner and neutral season picker
 
 Removed the v120 Seasons-specific banner overrides so its styling matches the shared page banner again. The season picker form now uses the former light-grey fill (#ededed in light mode, #dedede in dark mode), with dark labels and neutral borders. Dark content palette variables are scoped below the banner to keep its original colours. Other grey Seasons accents and the neutral settings button remain. Assets use v121; schema remains v108_unregistered_player_fide.

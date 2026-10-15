@@ -467,3 +467,21 @@ body.seasons-page main option:checked{background:#dedede;color:#252525}
 body.seasons-page .results-controls .season-picker{background:#ededed;color:#252525;border-color:#c5c5c5}
 body.seasons-page .results-controls .season-picker label{color:#444444}
 :root[data-theme="dark"] body.seasons-page .results-controls .season-picker{background:#dedede;color:#252525;border-color:#999999}
+
+/* V122: Standings shares the neutral Seasons content palette, not its banner. */
+body.standings-page .standings-toolbar .season-picker{background:#ededed;color:#252525;border-color:#c5c5c5}
+body.standings-page .standings-toolbar .season-picker label{color:#444444}
+body.standings-page .standings-table .score{background:#e3e3e3;color:#333333;border-color:#b9b9b9}
+body.standings-page .standings-content .table-scroll{border-color:#c5c5c5}
+body.standings-page .standings-content :is(a,select,button,input):focus-visible{outline-color:#888888}
+body.standings-page .standings-content select{accent-color:#888888}
+body.standings-page .standings-content option:checked{background:#dedede;color:#252525}
+:root[data-theme="dark"] body.standings-page{background:#181818}
+:root[data-theme="dark"] body.standings-page main{background:#181818}
+:root[data-theme="dark"] body.standings-page .standings-content{--theme-surface:#282828;--theme-soft:#393939;--theme-text:#f2f2f2;--theme-muted:#c9c9c9;--theme-border:#858585;--muted:#c9c9c9;--line:#858585}
+:root[data-theme="dark"] body.standings-page .standings-toolbar .season-picker{background:#dedede;color:#252525;border-color:#999999}
+:root[data-theme="dark"] body.standings-page .standings-table .score{background:#d5d5d5;color:#252525;border-color:#aaaaaa}
+:root[data-theme="dark"] body.standings-page .standings-content :is(input,select,textarea){background:#333333;color:#f2f2f2;border-color:#999999}
+:root[data-theme="dark"] body.standings-page .standings-content :is(a,select,button,input):focus-visible{outline-color:#aaaaaa}
+:root[data-theme="dark"] body.standings-page .standings-content .btn-primary{background:#dedede;color:#252525;border-color:#bbbbbb}
+:root[data-theme="dark"] body.standings-page .standings-content .btn-primary:hover{background:#eeeeee}
