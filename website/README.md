@@ -1,3 +1,7 @@
+## v128 blue dark-mode counter and account button
+
+The completed-games counter and account button use shared blue dark-mode surfaces and readable light text. The account button uses a lighter blue when hovered or open on every page. Light mode and account menu items are preserved. Assets use v128; schema remains v108_unregistered_player_fide.
+
 ## v127 shared blue Seasons dark theme
 
 Seasons uses the shared blue page, picker, schedule and fixture surfaces in dark mode. Completed rounds remain lighter; the shared banner, light mode and result accents are preserved. Assets use v127; schema remains v108_unregistered_player_fide.

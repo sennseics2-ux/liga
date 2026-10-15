@@ -59,16 +59,28 @@ def test_seasons_grey_panels_and_settings_states(chromium,client,width,theme):
         assert issues==[],issues
         page.locator('#season-select').focus()
         assert_grey(page.locator('#season-select'),'outlineColor')
-        for path in [f'/seasons?season={season}','/']:
+        for path in [f'/seasons?season={season}','/','/games','/players','/standings',f'/matches/{match}',f'/games/{games[0]}','/account/settings','/admin/players']:
             page.goto('http://liga.test'+path)
+            page.mouse.move(0,0)
             settings=page.locator('#account-toggle')
             for state in ['normal','hover','open','focus']:
                 if state=='hover':settings.hover()
                 if state=='open':settings.click();expect(settings).to_have_attribute('aria-expanded','true')
-                if state=='focus':page.keyboard.press('Escape');settings.focus()
-                for prop in ['backgroundColor','color','borderTopColor']:
-                    assert_grey(settings,prop)
-                if state=='focus':assert_grey(settings,'outlineColor')
+                if state=='focus':page.keyboard.press('Escape');page.mouse.move(0,0);settings.focus()
+                if theme=='dark':
+                    expected='rgb(44, 60, 80)' if state in ['hover','open'] else 'rgb(32, 44, 59)'
+                    page.wait_for_function('(expected)=>getComputedStyle(document.querySelector("#account-toggle")).backgroundColor===expected',arg=expected)
+                    assert settings.evaluate('(el)=>getComputedStyle(el).color')=='rgb(242, 245, 250)'
+                    assert settings.evaluate('(el)=>getComputedStyle(el).borderTopColor')=='rgb(113, 132, 158)'
+                    if state=='focus':assert settings.evaluate('(el)=>getComputedStyle(el).outlineColor')=='rgb(113, 132, 158)'
+                    if path=='/games':
+                        counter=page.locator('.games-count-completed')
+                        assert counter.evaluate('(el)=>getComputedStyle(el).backgroundColor')=='rgb(44, 60, 80)'
+                        assert counter.evaluate('(el)=>getComputedStyle(el).color')=='rgb(242, 245, 250)'
+                else:
+                    for prop in ['backgroundColor','color','borderTopColor']:
+                        assert_grey(settings,prop)
+                    if state=='focus':assert_grey(settings,'outlineColor')
         for game in games:store.update_game_result(game,'1/2-1/2',actor_id=admin,reason='Drawn match')
         page.goto(f'http://liga.test/seasons?season={season}')
         expect(page.locator('.fixture-team-draw')).to_have_count(2)

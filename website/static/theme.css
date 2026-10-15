@@ -480,3 +480,8 @@ body.standings-page .standings-content option:checked{background:#dedede;color:#
 :root[data-theme="dark"] body.standings-page .standings-content :is(a,select,button,input):focus-visible{outline-color:#aaaaaa}
 :root[data-theme="dark"] body.standings-page .standings-content .btn-primary{background:#dedede;color:#252525;border-color:#bbbbbb}
 :root[data-theme="dark"] body.standings-page .standings-content .btn-primary:hover{background:#eeeeee}
+
+/* V128: shared blue dark-mode account button on every page. */
+:root[data-theme="dark"] body .nav-actions :is(.account-toggle,.account-settings-toggle){background:var(--theme-surface);color:var(--theme-text);border-color:var(--theme-border)}
+:root[data-theme="dark"] body .nav-actions .account-toggle:is(:hover,[aria-expanded="true"]){background:var(--theme-soft);color:var(--theme-text);border-color:var(--theme-border)}
+:root[data-theme="dark"] body .nav-actions .account-toggle:focus-visible{outline-color:var(--theme-border)}
