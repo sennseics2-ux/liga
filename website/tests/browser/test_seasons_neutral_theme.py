@@ -1,4 +1,4 @@
-"""Neutral Seasons panels and settings controls retain contrast and navigation."""
+"""Seasons shares blue dark surfaces and retains contrast and navigation."""
 import os
 import pytest
 from urllib.parse import urlsplit
@@ -43,11 +43,14 @@ def test_seasons_grey_panels_and_settings_states(chromium,client,width,theme):
         shared_banner=page.locator('.page-banner').evaluate('(el)=>({bg:getComputedStyle(el).backgroundColor,color:getComputedStyle(el).color})')
         assert banner==shared_banner,(banner,shared_banner)
         page.goto(f'http://liga.test/seasons?season={season}')
-        for selector in ['.season-picker','.season-schedule','.schedule-round:not(.schedule-round-complete)',
-                         '.schedule-round-complete','.round-section','.round-number','.fixture-card','.fixture-bottom','.season-picker select']:
-            assert_grey(page.locator(selector).first,'backgroundColor')
-        expected_picker='rgb(222, 222, 222)' if theme=='dark' else 'rgb(237, 237, 237)'
-        assert page.locator('.season-picker').evaluate('(el)=>getComputedStyle(el).backgroundColor')==expected_picker
+        if theme=='dark':
+            for selector,expected in [('body','rgb(16, 21, 29)'),('.season-picker','rgb(44, 60, 80)'),('.season-schedule','rgb(32, 44, 59)'),('.schedule-round:not(.schedule-round-complete)','rgb(44, 60, 80)'),('.schedule-round-complete','rgb(59, 80, 106)'),('.round-section.round-complete','rgb(39, 54, 74)'),('.fixture-card','rgb(32, 44, 59)'),('.fixture-bottom','rgb(32, 44, 59)'),('.season-picker select','rgb(32, 44, 59)')]:
+                assert page.locator(selector).first.evaluate('(el)=>getComputedStyle(el).backgroundColor')==expected,selector
+        else:
+            for selector in ['.season-picker','.season-schedule','.schedule-round:not(.schedule-round-complete)',
+                             '.schedule-round-complete','.round-section','.round-number','.fixture-card','.fixture-bottom','.season-picker select']:
+                assert_grey(page.locator(selector).first,'backgroundColor')
+            assert page.locator('.season-picker').evaluate('(el)=>getComputedStyle(el).backgroundColor')=='rgb(237, 237, 237)'
         pending=page.locator('.schedule-round:not(.schedule-round-complete)').first.evaluate(r'(el)=>parseInt(getComputedStyle(el).backgroundColor.match(/\d+/)[0])')
         done=page.locator('.schedule-round-complete').first.evaluate(r'(el)=>parseInt(getComputedStyle(el).backgroundColor.match(/\d+/)[0])')
         assert done>pending

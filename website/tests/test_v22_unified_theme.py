@@ -26,4 +26,4 @@ def test_shared_monochrome_rules_on_other_pages(client):
     assert '.btn-primary{background:#1d1e1f' in css
     assert '.replay-square.light{background:#efefef' in css
     assert '.replay-square.dark{background:#949494' in css
-    assert 'style.css?v=126' in client.get('/players').text
+    assert 'style.css?v=127' in client.get('/players').text

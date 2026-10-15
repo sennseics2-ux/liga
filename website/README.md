@@ -1,3 +1,7 @@
+## v127 shared blue Seasons dark theme
+
+Seasons uses the shared blue page, picker, schedule and fixture surfaces in dark mode. Completed rounds remain lighter; the shared banner, light mode and result accents are preserved. Assets use v127; schema remains v108_unregistered_player_fide.
+
 ## v126 blue Standings filter panel
 
 The Standings season-picker panel uses the shared blue soft surface, light labels and theme border in dark mode. Light-mode styling and point badges are unchanged. Assets use v126; schema remains v108_unregistered_player_fide.
