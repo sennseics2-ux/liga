@@ -1,3 +1,7 @@
+## v124 lighter blue player highlights in dark mode
+
+Player directory rows use #425e7c on hover and focus-within in dark mode. The light-mode grey highlight is unchanged. Assets use v124; schema remains v108_unregistered_player_fide.
+
 ## v123 clearer grey player-row highlights
 
 Player directory rows use a more noticeable neutral grey on hover and focus-within: #e5e5e5 in light mode and #505050 in dark mode. Layout, links and row navigation are unchanged. Assets use v123; schema remains v108_unregistered_player_fide.
