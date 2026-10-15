@@ -1,3 +1,7 @@
+## v134 landing page dark mode
+
+The club landing page adds a Portuguese-labelled theme toggle, saved browser preference, device-theme default and blue dark palette with readable logos, links and button contrast. Without JavaScript it follows the device theme. Preference storage is local to the landing page origin. Assets use v134; schema remains v108_unregistered_player_fide.
+
 ## v133 blue dark-mode admin attention counter
 
 The admin-attention-total counter uses the shared soft blue surface, light text and theme border in dark mode. Light mode is unchanged. Assets use v133; schema remains v108_unregistered_player_fide.

@@ -38,3 +38,22 @@ footer{display:flex;align-items:center;justify-content:space-between;gap:16px;pa
 @media(max-height:570px){main{gap:12px;padding:12px 0}.hero-emblem{width:32px;height:32px;margin-bottom:8px}.eyebrow{margin-bottom:10px}h1{font-size:50px;letter-spacing:-2px}h1 em{letter-spacing:-2px}.description{font-size:12px;margin-top:12px}.quick-links{margin-top:4px}}
 @media(max-height:450px){.page{padding-block:8px}.site-header{padding-bottom:8px}.brand{font-size:19px}.brand img{width:26px;height:26px}.hero-emblem{display:none}main{padding:10px 0;gap:10px}.eyebrow{margin-bottom:8px;font-size:8px}h1{font-size:42px;letter-spacing:-1.5px}h1 br{display:none}h1 em{letter-spacing:-2px}.description{font-size:11px;margin-top:8px}.description br{display:none}.league-button{min-height:56px;padding:18px 30px}.quick-links a{min-height:36px}footer{padding-top:8px;font-size:9px}.footer-motto{font-size:10px}}
 @media(prefers-reduced-motion:reduce){.league-button,.quick-links a{transition:none}}
+
+/* Theme controls and the League's shared blue dark palette. */
+:root{--control-bg:#fff;--control-hover:#eee;--focus:#686868;--button-bg:#191919;--button-text:#fff;--button-hover:#303030;--logo-bg:transparent;--logo-blend:multiply;--logo-padding:0}
+:root[data-theme="dark"]{color-scheme:dark;--paper:#10151d;--ink:#f2f5fa;--muted:#c3cede;--line:#71849e;--control-bg:#202c3b;--control-hover:#2c3c50;--focus:#adc9ff;--button-bg:#e3eaf6;--button-text:#151922;--button-hover:#fff;--logo-bg:#fff;--logo-blend:normal;--logo-padding:3px}
+@media(prefers-color-scheme:dark){:root:not([data-theme]){color-scheme:dark;--paper:#10151d;--ink:#f2f5fa;--muted:#c3cede;--line:#71849e;--control-bg:#202c3b;--control-hover:#2c3c50;--focus:#adc9ff;--button-bg:#e3eaf6;--button-text:#151922;--button-hover:#fff;--logo-bg:#fff;--logo-blend:normal;--logo-padding:3px}}
+.site-header{display:grid;grid-template-columns:auto minmax(0,1fr) auto}
+.theme-toggle{display:inline-grid;place-items:center;width:44px;height:44px;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--control-bg);color:var(--ink);cursor:pointer}
+.theme-toggle[hidden]{display:none}
+.theme-toggle:hover{background:var(--control-hover)}
+.theme-sun{display:none}
+:root[data-theme="dark"] .theme-sun{display:block}
+:root[data-theme="dark"] .theme-moon{display:none}
+a:focus-visible,.theme-toggle:focus-visible{outline:3px solid var(--focus);outline-offset:5px}
+.brand img,.hero-emblem{background:var(--logo-bg);mix-blend-mode:var(--logo-blend);padding:var(--logo-padding);border-radius:6px}
+.league-button{background:var(--button-bg);color:var(--button-text);border-color:var(--button-bg)}
+.league-button:hover{background:var(--button-hover)}
+.quick-links a{color:var(--muted)}
+.quick-links a:hover{background:var(--control-hover);color:var(--ink)}
+@media(max-width:650px){.site-header{gap:10px}}
