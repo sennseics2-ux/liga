@@ -1,3 +1,7 @@
+## v121 restore Seasons banner and neutral season picker
+
+Removed the v120 Seasons-specific banner overrides so its styling matches the shared page banner again. The season picker form now uses the former light-grey fill (#ededed in light mode, #dedede in dark mode), with dark labels and neutral borders. Dark content palette variables are scoped below the banner to keep its original colours. Other grey Seasons accents and the neutral settings button remain. Assets use v121; schema remains v108_unregistered_player_fide.
+
 ## v120 neutral Seasons accents and settings button
 
 Seasons uses light-grey schedule cards, round accents, draw highlights and banner styling, with neutral charcoal surfaces in dark mode. Completed rounds remain lighter than pending rounds. Local selectors preserve the rest of the site's palette and winner highlights. Season filters retain visible neutral keyboard focus. The global settings button replaces its green fill, border, icon, shadow and focus treatments with greys across normal, hover, open and focus states. Account-menu item hover colours remain unchanged. Assets use v120; schema remains v108_unregistered_player_fide.

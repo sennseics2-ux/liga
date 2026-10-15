@@ -432,9 +432,6 @@ body .language-toggle .flag-icon{display:block;margin:0}
 
 /* V120: neutral Seasons accents, with lighter completed rounds in both themes. */
 body.seasons-page main{--season-panel:#f3f3f3;--season-round:#e3e3e3;--season-done:#f8f8f8;--season-border:#c5c5c5;--season-section:#ececec;--season-section-done:#f7f7f7}
-body.seasons-page .seasons-banner{background:#ededed;color:#252525;border-color:#c5c5c5}
-body.seasons-page .seasons-banner :is(p,.eyebrow){color:#555555}
-body.seasons-page .seasons-banner .competition-status{background:#dedede;color:#353535;border-color:#b6b6b6}
 body.seasons-page .season-schedule{background:var(--season-panel);border-color:var(--season-border)}
 body.seasons-page .schedule-heading p{color:#555555}
 body.seasons-page .schedule-round{background:var(--season-round);color:#303030;border-color:#aaaaaa}
@@ -449,10 +446,7 @@ body.seasons-page .fixture-team-draw .fixture-score{background:#dedede;color:#33
 body.seasons-page main :is(a,select,button,input):focus-visible{outline-color:#888888}
 body.seasons-page main select{accent-color:#888888}
 body.seasons-page main option:checked{background:#dedede;color:#252525}
-:root[data-theme="dark"] body.seasons-page main{--theme-surface:#282828;--theme-soft:#393939;--theme-text:#f2f2f2;--theme-muted:#c9c9c9;--theme-border:#858585;--muted:#c9c9c9;--line:#858585;--season-panel:#282828;--season-round:#d5d5d5;--season-done:#ededed;--season-border:#999999;--season-section:#303030;--season-section-done:#414141}
-:root[data-theme="dark"] body.seasons-page .seasons-banner{background:#dedede;color:#252525;border-color:#999999}
-:root[data-theme="dark"] body.seasons-page .seasons-banner :is(p,.eyebrow){color:#4c4c4c}
-:root[data-theme="dark"] body.seasons-page .seasons-banner .competition-status{background:#cccccc;color:#303030;border-color:#888888}
+:root[data-theme="dark"] body.seasons-page :is(.competition-content,.results-controls){--theme-surface:#282828;--theme-soft:#393939;--theme-text:#f2f2f2;--theme-muted:#c9c9c9;--theme-border:#858585;--muted:#c9c9c9;--line:#858585;--season-panel:#282828;--season-round:#d5d5d5;--season-done:#ededed;--season-border:#999999;--season-section:#303030;--season-section-done:#414141}
 :root[data-theme="dark"] body.seasons-page .schedule-round{background:var(--season-round);color:#303030;border-color:#aaaaaa}
 :root[data-theme="dark"] body.seasons-page .schedule-round-complete{background:var(--season-done);color:#4c4c4c;border-color:#bbbbbb}
 :root[data-theme="dark"] body.seasons-page .round-number{background:#dedede;color:#333333;border-color:#aaaaaa}
@@ -468,3 +462,8 @@ body.seasons-page main option:checked{background:#dedede;color:#252525}
 :root[data-theme="dark"] body.seasons-page main :is(a,select,button,input):focus-visible{outline-color:#aaaaaa}
 :root[data-theme="dark"] body.seasons-page{background:#181818}
 :root[data-theme="dark"] body.seasons-page main{background:#181818}
+
+/* V121: retain the shared banner and apply the light grey to the season picker. */
+body.seasons-page .results-controls .season-picker{background:#ededed;color:#252525;border-color:#c5c5c5}
+body.seasons-page .results-controls .season-picker label{color:#444444}
+:root[data-theme="dark"] body.seasons-page .results-controls .season-picker{background:#dedede;color:#252525;border-color:#999999}

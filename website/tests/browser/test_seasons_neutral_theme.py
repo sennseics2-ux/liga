@@ -38,9 +38,16 @@ def test_seasons_grey_panels_and_settings_states(chromium,client,width,theme):
     try:
         page.goto(f'http://liga.test/seasons?season={season}')
         expect(page.locator('body')).to_have_class('seasons-page')
-        for selector in ['.seasons-banner','.season-schedule','.schedule-round:not(.schedule-round-complete)',
+        banner=page.locator('.seasons-banner').evaluate('(el)=>({bg:getComputedStyle(el).backgroundColor,color:getComputedStyle(el).color})')
+        page.goto('http://liga.test/teams')
+        shared_banner=page.locator('.page-banner').evaluate('(el)=>({bg:getComputedStyle(el).backgroundColor,color:getComputedStyle(el).color})')
+        assert banner==shared_banner,(banner,shared_banner)
+        page.goto(f'http://liga.test/seasons?season={season}')
+        for selector in ['.season-picker','.season-schedule','.schedule-round:not(.schedule-round-complete)',
                          '.schedule-round-complete','.round-section','.round-number','.fixture-card','.fixture-bottom','.season-picker select']:
             assert_grey(page.locator(selector).first,'backgroundColor')
+        expected_picker='rgb(222, 222, 222)' if theme=='dark' else 'rgb(237, 237, 237)'
+        assert page.locator('.season-picker').evaluate('(el)=>getComputedStyle(el).backgroundColor')==expected_picker
         pending=page.locator('.schedule-round:not(.schedule-round-complete)').first.evaluate(r'(el)=>parseInt(getComputedStyle(el).backgroundColor.match(/\d+/)[0])')
         done=page.locator('.schedule-round-complete').first.evaluate(r'(el)=>parseInt(getComputedStyle(el).backgroundColor.match(/\d+/)[0])')
         assert done>pending
