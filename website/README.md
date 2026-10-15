@@ -1,3 +1,7 @@
+## v129 charcoal season schedule in light mode
+
+The light-mode season-schedule panel uses #282828 with light heading and help text. Round tiles and dark mode are unchanged. Assets use v129; schema remains v108_unregistered_player_fide.
+
 ## v128 blue dark-mode counter and account button
 
 The completed-games counter and account button use shared blue dark-mode surfaces and readable light text. The account button uses a lighter blue when hovered or open on every page. Light mode and account menu items are preserved. Assets use v128; schema remains v108_unregistered_player_fide.

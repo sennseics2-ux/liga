@@ -485,3 +485,8 @@ body.standings-page .standings-content option:checked{background:#dedede;color:#
 :root[data-theme="dark"] body .nav-actions :is(.account-toggle,.account-settings-toggle){background:var(--theme-surface);color:var(--theme-text);border-color:var(--theme-border)}
 :root[data-theme="dark"] body .nav-actions .account-toggle:is(:hover,[aria-expanded="true"]){background:var(--theme-soft);color:var(--theme-text);border-color:var(--theme-border)}
 :root[data-theme="dark"] body .nav-actions .account-toggle:focus-visible{outline-color:var(--theme-border)}
+
+/* V129: charcoal season schedule in light mode. */
+:root:not([data-theme="dark"]) body.seasons-page .season-schedule{background:#282828}
+:root:not([data-theme="dark"]) body.seasons-page .schedule-heading h2{color:#f2f2f2}
+:root:not([data-theme="dark"]) body.seasons-page .schedule-heading p{color:#c9c9c9}
