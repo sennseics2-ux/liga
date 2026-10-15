@@ -476,7 +476,8 @@ body.standings-page .standings-content .table-scroll{border-color:#c5c5c5}
 body.standings-page .standings-content :is(a,select,button,input):focus-visible{outline-color:#888888}
 body.standings-page .standings-content select{accent-color:#888888}
 body.standings-page .standings-content option:checked{background:#dedede;color:#252525}
-:root[data-theme="dark"] body.standings-page .standings-toolbar .season-picker{background:#dedede;color:#252525;border-color:#999999}
+:root[data-theme="dark"] body.standings-page .standings-toolbar .season-picker{background:var(--theme-soft);color:var(--theme-text);border-color:var(--theme-border)}
+:root[data-theme="dark"] body.standings-page .standings-toolbar .season-picker label{color:var(--theme-muted)}
 :root[data-theme="dark"] body.standings-page .standings-table .score{background:#d5d5d5;color:#252525;border-color:#aaaaaa}
 :root[data-theme="dark"] body.standings-page .standings-content :is(a,select,button,input):focus-visible{outline-color:#aaaaaa}
 :root[data-theme="dark"] body.standings-page .standings-content .btn-primary{background:#dedede;color:#252525;border-color:#bbbbbb}

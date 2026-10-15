@@ -1,3 +1,7 @@
+## v126 blue Standings filter panel
+
+The Standings season-picker panel uses the shared blue soft surface, light labels and theme border in dark mode. Light-mode styling and point badges are unchanged. Assets use v126; schema remains v108_unregistered_player_fide.
+
 ## v125 shared blue Standings dark theme
 
 Standings inherits the shared blue page, table, field and mobile-card surfaces in dark mode. The shared banner, grey picker panel and point badges remain unchanged. Assets use v125; schema remains v108_unregistered_player_fide.

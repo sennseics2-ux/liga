@@ -36,15 +36,15 @@ def test_standings_grey_palette_retains_banner_and_round_filter(chromium,client,
         page.goto(f'http://liga.test/standings?season={season}')
         banner=page.locator('.page-banner').evaluate('(el)=>({bg:getComputedStyle(el).backgroundColor,color:getComputedStyle(el).color})')
         assert banner==shared_banner
-        for selector in ['.season-picker','.standings-table .score']:
+        for selector in ['.standings-table .score']:
             assert_grey(page.locator(selector).first,'backgroundColor')
         if theme=='dark':
             for selector,expected_background in [('body','rgb(16, 21, 29)'),('.table-scroll','rgb(32, 44, 59)'),('.standings-table th','rgb(44, 60, 80)'),('.tiny-avatar','rgb(44, 60, 80)'),('.season-picker select','rgb(32, 44, 59)')]:
                 assert page.locator(selector).first.evaluate('(el)=>getComputedStyle(el).backgroundColor')==expected_background
         else:
-            for selector in ['.season-picker select','.standings-table th','.tiny-avatar']:
+            for selector in ['.season-picker','.season-picker select','.standings-table th','.tiny-avatar']:
                 assert_grey(page.locator(selector).first,'backgroundColor')
-        expected='rgb(222, 222, 222)' if theme=='dark' else 'rgb(237, 237, 237)'
+        expected='rgb(44, 60, 80)' if theme=='dark' else 'rgb(237, 237, 237)'
         assert page.locator('.season-picker').evaluate('(el)=>getComputedStyle(el).backgroundColor')==expected
         expect(page.locator('.standings-table .score')).to_have_text(['3','0'])
         assert_fits_phone(page)
