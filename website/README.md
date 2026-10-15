@@ -1,3 +1,7 @@
+## v119 shorter homepage statistics labels
+
+The homepage statistics strip uses CAPTAINS and PLAYERS, with CAPITÃES and JOGADORES in Portuguese. Counters and remaining labels are unchanged. Assets use v119; schema remains v108_unregistered_player_fide.
+
 ## v118 shorter Portuguese captain introduction
 
 The homepage Portuguese captain description now reads Constrói o teu plantel e gere a tua equipa para lutares pelos primeiros lugares da classificação. English copy is unchanged. Assets use v118; schema remains v108_unregistered_player_fide.
