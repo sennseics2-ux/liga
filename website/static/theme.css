@@ -191,11 +191,11 @@ body .nav-links .replay-mobile-auth{display:none}.replay-time-short{display:none
 .game-page .replay-controls svg{width:20px;height:20px;vertical-align:middle;pointer-events:none}
 
 /* V48: consistent settings artwork and clear account-menu states. */
-body .account-toggle{border-radius:11px;transition:background .15s,border-color .15s,color .15s;box-shadow:0 1px 2px #182b2010}
-body .account-settings-toggle{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;background:#eef5f0;border:1px solid #a9c6b3;color:#286947}
+body .account-toggle{border-radius:11px;transition:background .15s,border-color .15s,color .15s;box-shadow:0 1px 2px #00000010;background:#f2f2f2;color:#333333;border-color:#b9b9b9}
+body .account-settings-toggle{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;background:#f2f2f2;border:1px solid #b9b9b9;color:#333333}
 .account-settings-icon{flex-shrink:0;pointer-events:none;transition:transform .15s}.account-chevron{width:12px;height:12px;flex-shrink:0;transition:transform .15s}
-body .account-toggle:is(:hover,[aria-expanded="true"]){background:#d8efdf;color:#155832;border-color:#619b77}body .account-toggle[aria-expanded="true"] .account-chevron{transform:rotate(180deg)}body .account-toggle:is(:hover,[aria-expanded="true"]) .account-settings-icon{transform:rotate(15deg)}body .account-toggle:focus-visible{outline:3px solid #327451;outline-offset:3px}
-:root[data-theme="dark"] body .account-settings-toggle{background:#263c31;color:#c9ecd5;border-color:#678572}:root[data-theme="dark"] body .account-toggle:is(:hover,[aria-expanded="true"]){background:#214b34;color:#cff1da;border-color:#8ecaa4}:root[data-theme="dark"] body .account-toggle:focus-visible{outline-color:#a7dcbc}:root[data-theme="dark"] body .account-chevron{color:inherit}
+body .account-toggle:is(:hover,[aria-expanded="true"]){background:#e3e3e3;color:#242424;border-color:#888888}body .account-toggle[aria-expanded="true"] .account-chevron{transform:rotate(180deg)}body .account-toggle:is(:hover,[aria-expanded="true"]) .account-settings-icon{transform:rotate(15deg)}body .account-toggle:focus-visible{outline:3px solid #777777;outline-offset:3px}
+:root[data-theme="dark"] body :is(.account-toggle,.account-settings-toggle){background:#303030;color:#eeeeee;border-color:#888888}:root[data-theme="dark"] body .account-toggle:is(:hover,[aria-expanded="true"]){background:#444444;color:#ffffff;border-color:#aaaaaa}:root[data-theme="dark"] body .account-toggle:focus-visible{outline-color:#bbbbbb}:root[data-theme="dark"] body .account-chevron{color:inherit}
 @media(prefers-reduced-motion:reduce){body .account-toggle,.account-settings-icon,.account-chevron{transition:none}}
 
 /* V49: previews alongside every appearance choice. */
@@ -429,3 +429,42 @@ body .language-toggle .flag-icon{display:block;margin:0}
 /* V106: compact chess score and game-count totals in the current roster. */
 .current-squad-table .current-player-score{display:inline-block;padding:5px 9px;border-radius:6px;background:#eceef2;color:#293342;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
 :root[data-theme="dark"] .current-squad-table .current-player-score{background:var(--theme-soft);color:var(--theme-text)}
+
+/* V120: neutral Seasons accents, with lighter completed rounds in both themes. */
+body.seasons-page main{--season-panel:#f3f3f3;--season-round:#e3e3e3;--season-done:#f8f8f8;--season-border:#c5c5c5;--season-section:#ececec;--season-section-done:#f7f7f7}
+body.seasons-page .seasons-banner{background:#ededed;color:#252525;border-color:#c5c5c5}
+body.seasons-page .seasons-banner :is(p,.eyebrow){color:#555555}
+body.seasons-page .seasons-banner .competition-status{background:#dedede;color:#353535;border-color:#b6b6b6}
+body.seasons-page .season-schedule{background:var(--season-panel);border-color:var(--season-border)}
+body.seasons-page .schedule-heading p{color:#555555}
+body.seasons-page .schedule-round{background:var(--season-round);color:#303030;border-color:#aaaaaa}
+body.seasons-page .schedule-round-complete{background:var(--season-done);color:#4c4c4c;border-color:var(--season-border)}
+body.seasons-page .schedule-round[href]:hover{outline-color:#888888;box-shadow:0 4px 14px #00000014}
+body.seasons-page .round-section{background:var(--season-section);border-color:var(--season-border)}
+body.seasons-page .round-section.round-complete{background:var(--season-section-done);border-color:var(--season-border)}
+body.seasons-page .round-number{background:#f2f2f2;color:#4c4c4c;border-color:#bbbbbb}
+body.seasons-page .fixture-match-label{color:#444444}
+body.seasons-page .fixture-team-draw{background:#eeeeee;color:#444444;border-color:#c4c4c4}
+body.seasons-page .fixture-team-draw .fixture-score{background:#dedede;color:#333333}
+body.seasons-page main :is(a,select,button,input):focus-visible{outline-color:#888888}
+body.seasons-page main select{accent-color:#888888}
+body.seasons-page main option:checked{background:#dedede;color:#252525}
+:root[data-theme="dark"] body.seasons-page main{--theme-surface:#282828;--theme-soft:#393939;--theme-text:#f2f2f2;--theme-muted:#c9c9c9;--theme-border:#858585;--muted:#c9c9c9;--line:#858585;--season-panel:#282828;--season-round:#d5d5d5;--season-done:#ededed;--season-border:#999999;--season-section:#303030;--season-section-done:#414141}
+:root[data-theme="dark"] body.seasons-page .seasons-banner{background:#dedede;color:#252525;border-color:#999999}
+:root[data-theme="dark"] body.seasons-page .seasons-banner :is(p,.eyebrow){color:#4c4c4c}
+:root[data-theme="dark"] body.seasons-page .seasons-banner .competition-status{background:#cccccc;color:#303030;border-color:#888888}
+:root[data-theme="dark"] body.seasons-page .schedule-round{background:var(--season-round);color:#303030;border-color:#aaaaaa}
+:root[data-theme="dark"] body.seasons-page .schedule-round-complete{background:var(--season-done);color:#4c4c4c;border-color:#bbbbbb}
+:root[data-theme="dark"] body.seasons-page .round-number{background:#dedede;color:#333333;border-color:#aaaaaa}
+:root[data-theme="dark"] body.seasons-page .fixture-match-label{color:#dddddd}
+:root[data-theme="dark"] body.seasons-page .fixture-team-draw{background:#dedede;color:#333333;border-color:#aaaaaa}
+:root[data-theme="dark"] body.seasons-page .fixture-team-draw .fixture-score{background:#c9c9c9;color:#252525}
+:root[data-theme="dark"] body.seasons-page main :is(input,select,textarea){background:#333333;color:#f2f2f2;border-color:#999999}
+:root[data-theme="dark"] body.seasons-page .competition-section-heading{border-color:#858585}
+:root[data-theme="dark"] body.seasons-page .season-schedule{background:var(--season-panel);border-color:var(--season-border)}
+:root[data-theme="dark"] body.seasons-page .schedule-heading p{color:#c9c9c9}
+:root[data-theme="dark"] body.seasons-page .round-section{background:var(--season-section);border-color:var(--season-border)}
+:root[data-theme="dark"] body.seasons-page .round-section.round-complete{background:var(--season-section-done);border-color:var(--season-border)}
+:root[data-theme="dark"] body.seasons-page main :is(a,select,button,input):focus-visible{outline-color:#aaaaaa}
+:root[data-theme="dark"] body.seasons-page{background:#181818}
+:root[data-theme="dark"] body.seasons-page main{background:#181818}

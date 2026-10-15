@@ -1,3 +1,7 @@
+## v120 neutral Seasons accents and settings button
+
+Seasons uses light-grey schedule cards, round accents, draw highlights and banner styling, with neutral charcoal surfaces in dark mode. Completed rounds remain lighter than pending rounds. Local selectors preserve the rest of the site's palette and winner highlights. Season filters retain visible neutral keyboard focus. The global settings button replaces its green fill, border, icon, shadow and focus treatments with greys across normal, hover, open and focus states. Account-menu item hover colours remain unchanged. Assets use v120; schema remains v108_unregistered_player_fide.
+
 ## v119 shorter homepage statistics labels
 
 The homepage statistics strip uses CAPTAINS and PLAYERS, with CAPITÃES and JOGADORES in Portuguese. Counters and remaining labels are unchanged. Assets use v119; schema remains v108_unregistered_player_fide.
