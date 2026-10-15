@@ -1,3 +1,7 @@
+## v135 mobile player identity alignment
+
+Mobile player cards place the country flag, avatar and name on one identity row. Long names wrap alongside the avatar and captain badges sit below the name. Assets use v135; schema remains v108_unregistered_player_fide.
+
 ## v134 landing page dark mode
 
 The club landing page adds a Portuguese-labelled theme toggle, saved browser preference, device-theme default and blue dark palette with readable logos, links and button contrast. Without JavaScript it follows the device theme. Preference storage is local to the landing page origin. Assets use v134; schema remains v108_unregistered_player_fide.

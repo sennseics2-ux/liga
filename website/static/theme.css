@@ -504,3 +504,15 @@ body.standings-page .standings-content option:checked{background:#dedede;color:#
 
 /* V133: shared blue dark-mode attention counter. */
 :root[data-theme="dark"] .admin-attention-total{background:var(--theme-soft);color:var(--theme-text);border:1px solid var(--theme-border)}
+
+/* V135: keep the mobile flag, avatar and name on the same identity row. */
+@media(max-width:600px){
+ .mobile-cards .player-profile-row{grid-template-columns:28px minmax(0,1fr);column-gap:10px}
+ .mobile-cards .player-profile-row>td{grid-column:1/-1}
+ .mobile-cards .player-profile-row>.player-country-cell{grid-column:1;grid-row:1;display:flex;align-items:flex-start;padding-top:12px;border-top:0;overflow-wrap:anywhere}
+ .mobile-cards .player-profile-row>.player-identity-cell{grid-column:2;grid-row:1;display:block;border-top:0}
+ .mobile-cards .player-profile-row>:is(.player-country-cell,.player-identity-cell)::before{display:none}
+ .mobile-cards .player-identity-cell .table-person{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:7px;white-space:normal}
+ .player-identity-cell .table-person>a{min-width:0;overflow-wrap:anywhere}
+ .mobile-cards .player-identity-cell .table-person>.pill{grid-column:2;justify-self:start}
+}
