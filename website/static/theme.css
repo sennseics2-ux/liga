@@ -487,5 +487,12 @@ body.standings-page .standings-content option:checked{background:#dedede;color:#
 :root[data-theme="dark"] body .nav-actions .account-toggle:focus-visible{outline-color:var(--theme-border)}
 
 /* V130: country flags in the player directory. */
-.player-country-column{width:84px}.player-country-flag{display:block;width:28px;height:21px;object-fit:contain;border-radius:2px;box-shadow:0 0 0 1px #80808050}
+.player-country-column{width:1%}.player-country-flag{display:block;width:28px;height:21px;object-fit:contain;border-radius:2px;box-shadow:0 0 0 1px #80808050}
 .player-country-cell{vertical-align:middle}
+
+/* V131: keep flags close to the player identity in the desktop table. */
+@media(min-width:601px){
+ .data-table .player-country-column,.data-table .player-country-cell{padding-left:16px;padding-right:8px}
+ .player-country-cell .player-country-flag{margin-left:auto}
+ .data-table .player-country-column+th,.data-table .player-country-cell+td{padding-left:8px}
+}
