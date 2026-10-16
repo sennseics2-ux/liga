@@ -1,3 +1,7 @@
+## v138 home page without Transfer Window
+
+The home page ends after its role cards and statistics; the Transfer Window heading, auction cards and empty-market panel are removed. Auction listings remain at /auctions. Assets use v138; schema remains v108_unregistered_player_fide.
+
 ## v137 charcoal light-mode League header
 
 The League site-header uses #0d0e0f in light mode, with light navigation text, readable branding, a contrasting create-account button and a matching mobile menu. Assets use v137; schema remains v108_unregistered_player_fide.

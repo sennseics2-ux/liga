@@ -361,13 +361,12 @@ async def headers(request, call_next):
 def home(request: Request):
     store.settle_expired()
     with store.read_db() as db:
-        open_auctions = auction_rows(db)[:3]
         totals = {
             "managers": db.execute("SELECT COUNT(*) FROM users WHERE manager_active=1").fetchone()[0],
             "players": db.execute("SELECT COUNT(*) FROM players").fetchone()[0],
             "auctions": db.execute("SELECT COUNT(*) FROM auctions WHERE status='open'").fetchone()[0],
         }
-    return view(request, "home.html", auctions=open_auctions, totals=totals)
+    return view(request, "home.html", totals=totals)
 
 
 @app.get("/register", response_class=HTMLResponse)

@@ -63,7 +63,7 @@ def test_unlinked_names_link_from_directory_rosters_auctions_and_games(client):
         store._start_player_term(db,player,team)
     auction = store.create_auction(player,50,24)
     game = store.create_game(player,opponent,'2026-10-09T18:00:00+00:00')
-    for path in ['/players',f'/teams/{team}','/auctions',f'/auctions/{auction}','/', '/games',f'/games/{game}']:
+    for path in ['/players',f'/teams/{team}','/auctions',f'/auctions/{auction}', '/games',f'/games/{game}']:
         response = client.get(path)
         assert response.status_code == 200
         links = ProfileLinks(response.text).links

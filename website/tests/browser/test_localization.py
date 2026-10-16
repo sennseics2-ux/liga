@@ -130,15 +130,15 @@ def test_real_directories_and_auction_cards_keep_user_supplied_names(client, pag
 
     page.route("http://liga.test/**", application)
     page.goto("http://liga.test/players")
-    assert page.locator("tbody tr").first.locator("td").nth(0).locator("[data-no-i18n]").inner_text() == "Players"
-    assert page.locator("tbody tr").first.locator("td").nth(1).inner_text() == "2100"
+    assert page.locator(".player-identity-cell").first.locator("[data-no-i18n]").inner_text() == "Players"
+    assert page.locator('.player-identity-cell + td').first.inner_text() == "2100"
     assert page.locator('.nav-links a[href="/players"]').inner_text() == "Jogadores"
     page.goto("http://liga.test/teams")
     assert page.locator(".team-directory-copy h3").inner_text() == "Teams"
     page.goto(f"http://liga.test/teams/{team}")
     assert page.locator("h1").inner_text() == "Teams."
     assert page.title() == "Teams · Team"
-    page.goto("http://liga.test/")
+    page.goto("http://liga.test/auctions")
     assert page.locator(f'.market-card[data-auction-id="{auction}"] h3').inner_text() == "Players"
     page.evaluate("LigaI18n.setLanguage('en')")
     assert page.locator(f'.market-card[data-auction-id="{auction}"] h3').inner_text() == "Players"
