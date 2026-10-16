@@ -363,7 +363,7 @@ def home(request: Request):
     visible, visibility_values = public_game_visibility()
     with store.read_db() as db:
         totals = {
-            "managers": db.execute("SELECT COUNT(*) FROM users WHERE manager_active=1").fetchone()[0],
+            "teams": db.execute("SELECT COUNT(*) FROM teams").fetchone()[0],
             "players": db.execute("SELECT COUNT(*) FROM players").fetchone()[0],
             "games": db.execute(f"SELECT COUNT(*) FROM games g WHERE g.result!='*' AND {visible}", visibility_values).fetchone()[0],
         }

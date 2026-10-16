@@ -32,3 +32,14 @@ def test_completed_private_match_boards_wait_until_kickoff(client):
     with store.transaction() as db:
         db.execute('UPDATE team_matches SET scheduled_at=? WHERE id=?',(store.iso(store.now_utc()-timedelta(days=1)),match))
     assert game_count(client)==4
+
+
+def test_home_counts_teams_including_teams_without_captains(client):
+    def count():
+        strip=client.get('/').text.split('class="stats-strip"',1)[1].split('</section>',1)[0]
+        assert 'data-i18n="TEAMS"' in strip and 'CAPTAINS' not in strip
+        return int(re.findall(r'<strong>(.*?)</strong>',strip)[0])
+    assert count()==0
+    store.create_team('First Team')
+    store.create_team('Second Team')
+    assert count()==2

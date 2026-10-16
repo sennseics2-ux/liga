@@ -1,3 +1,7 @@
+## v141 home team statistic and top border
+
+The home statistics strip has a 1px #3d3e40 top border in both themes. Its first statistic counts all teams and displays Teams / Equipas, replacing Captains. Assets use v141; schema remains v108_unregistered_player_fide.
+
 ## v140 games played home statistic
 
 The home statistics strip displays Games played / Partidas jogadas in place of Active transfers, counting completed public board games across all seasons. Unplayed and embargoed match games are excluded. Assets use v140; schema remains v108_unregistered_player_fide.
