@@ -1,3 +1,7 @@
+## v137 charcoal light-mode League header
+
+The League site-header uses #0d0e0f in light mode, with light navigation text, readable branding, a contrasting create-account button and a matching mobile menu. Assets use v137; schema remains v108_unregistered_player_fide.
+
 ## v136 clearer vacant-team label
 
 The Teams directory displays No captain in English and Sem capitão in Portuguese for teams without an assigned captain. Assets use v136; schema remains v108_unregistered_player_fide.
