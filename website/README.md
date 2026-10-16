@@ -1,3 +1,7 @@
+## v143 Portuguese home link labels
+
+The Portuguese home page displays Ver equipas and Ver jogadores on its secondary links. Assets use v143; schema remains v108_unregistered_player_fide.
+
 ## v142 continuous footer background
 
 The document canvas and home-page body use #111213, matching the footer below short pages and during overscroll. Assets use v142; schema remains v108_unregistered_player_fide.
