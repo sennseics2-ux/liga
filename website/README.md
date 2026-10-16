@@ -1,3 +1,7 @@
+## v140 games played home statistic
+
+The home statistics strip displays Games played / Partidas jogadas in place of Active transfers, counting completed public board games across all seasons. Unplayed and embargoed match games are excluded. Assets use v140; schema remains v108_unregistered_player_fide.
+
 ## v139 charcoal home statistics strip
 
 The home stats-strip uses #0d0e0f in both themes, with light numbers and labels for contrast. Assets use v139; schema remains v108_unregistered_player_fide.
