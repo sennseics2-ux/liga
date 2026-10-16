@@ -1,3 +1,7 @@
+## v139 charcoal home statistics strip
+
+The home stats-strip uses #0d0e0f in both themes, with light numbers and labels for contrast. Assets use v139; schema remains v108_unregistered_player_fide.
+
 ## v138 home page without Transfer Window
 
 The home page ends after its role cards and statistics; the Transfer Window heading, auction cards and empty-market panel are removed. Auction listings remain at /auctions. Assets use v138; schema remains v108_unregistered_player_fide.
