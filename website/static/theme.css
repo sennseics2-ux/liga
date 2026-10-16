@@ -533,3 +533,7 @@ body.standings-page .standings-content option:checked{background:#dedede;color:#
 :root body.home-theme .stats-strip{background:#0d0e0f;border-top:1px solid #3d3e40}
 :root body.home-theme .stats-strip .stats-grid strong{color:#f5f5f5}
 :root body.home-theme .stats-strip .stats-grid span{color:#c7c9cc}
+
+/* V142: continue the footer colour through the page canvas and overscroll. */
+:root{background:#111213}
+:root body.home-theme,:root[data-theme="dark"] body.home-theme{background:#111213}

@@ -28,8 +28,8 @@ def test_casual_portuguese_but_english_templates_unchanged(client):
     assert cat['Represent your team on the chessboard and follow your achievements throughout the league.'].startswith('Representa a tua equipa')
     assert 'O administrador tem de' in cat['Your account is registered. The administrator must add a chess player and link it to your username before you appear in the player directory and can enter transfer auctions.']
     assert 'pelos seus jogadores' in next(v for k,v in cat.items() if k.startswith('Every point counts. The team with the most combined player fantasy points leads'))
-    assert 'src="/static/i18n.js?v=141"' in client.get('/').text
-    assert 'href="/static/style.css?v=141"' in client.get('/').text
+    assert 'src="/static/i18n.js?v=142"' in client.get('/').text
+    assert 'href="/static/style.css?v=142"' in client.get('/').text
     assert 'Play. Compete.' in client.get('/').text
     assert 'Lead your team.' in client.get('/').text
     js = (ROOT/'static/i18n.js').read_text()

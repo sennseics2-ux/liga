@@ -1,3 +1,7 @@
+## v142 continuous footer background
+
+The document canvas and home-page body use #111213, matching the footer below short pages and during overscroll. Assets use v142; schema remains v108_unregistered_player_fide.
+
 ## v141 home team statistic and top border
 
 The home statistics strip has a 1px #3d3e40 top border in both themes. Its first statistic counts all teams and displays Teams / Equipas, replacing Captains. Assets use v141; schema remains v108_unregistered_player_fide.
