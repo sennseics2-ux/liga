@@ -44,7 +44,7 @@ def test_seasons_grey_panels_and_settings_states(chromium,client,width,theme):
         assert banner==shared_banner,(banner,shared_banner)
         page.goto(f'http://liga.test/seasons?season={season}')
         if theme=='dark':
-            for selector,expected in [('body','rgb(16, 21, 29)'),('.season-picker','rgb(44, 60, 80)'),('.season-schedule','rgb(32, 44, 59)'),('.schedule-round:not(.schedule-round-complete)','rgb(44, 60, 80)'),('.schedule-round-complete','rgb(59, 80, 106)'),('.round-section.round-complete','rgb(39, 54, 74)'),('.fixture-card','rgb(32, 44, 59)'),('.fixture-bottom','rgb(32, 44, 59)'),('.season-picker select','rgb(32, 44, 59)')]:
+            for selector,expected in [('body','rgb(24, 34, 48)'),('.season-picker','rgb(44, 60, 80)'),('.season-schedule','rgb(32, 44, 59)'),('.schedule-round:not(.schedule-round-complete)','rgb(44, 60, 80)'),('.schedule-round-complete','rgb(59, 80, 106)'),('.round-section.round-complete','rgb(39, 54, 74)'),('.fixture-card','rgb(32, 44, 59)'),('.fixture-bottom','rgb(32, 44, 59)'),('.season-picker select','rgb(32, 44, 59)')]:
                 assert page.locator(selector).first.evaluate('(el)=>getComputedStyle(el).backgroundColor')==expected,selector
         else:
             for selector in ['.season-picker','.season-schedule','.schedule-round:not(.schedule-round-complete)',

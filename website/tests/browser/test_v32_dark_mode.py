@@ -69,7 +69,7 @@ def test_theme_across_public_member_admin_and_replay_pages(chromium,league_serve
             page.goto(league.base+path);expect(page.locator('html')).to_have_attribute('data-theme','dark')
             assert_fits_phone(page)
             failures.extend({'path':path,**item} for item in page.evaluate(CONTRAST))
-            assert page.locator('body').evaluate('(el)=>getComputedStyle(el).backgroundColor')=='rgb(16, 21, 29)'
+            assert page.locator('body').evaluate('(el)=>getComputedStyle(el).backgroundColor')=='rgb(24, 34, 48)'
         for path in ['/','/teams','/players','/standings','/seasons','/games','/forgot-password','/register','/login',
                      '/users/WhiteResults',f'/teams/{teams[0]}',f'/matches/{match}',f'/auctions/{league.auction}']:
             review(path)

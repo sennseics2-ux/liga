@@ -39,7 +39,7 @@ def test_standings_grey_palette_retains_banner_and_round_filter(chromium,client,
         for selector in ['.standings-table .score']:
             assert_grey(page.locator(selector).first,'backgroundColor')
         if theme=='dark':
-            for selector,expected_background in [('body','rgb(16, 21, 29)'),('.table-scroll','rgb(32, 44, 59)'),('.standings-table th','rgb(44, 60, 80)'),('.tiny-avatar','rgb(44, 60, 80)'),('.season-picker select','rgb(32, 44, 59)')]:
+            for selector,expected_background in [('body','rgb(24, 34, 48)'),('.table-scroll','rgb(32, 44, 59)'),('.standings-table th','rgb(44, 60, 80)'),('.tiny-avatar','rgb(44, 60, 80)'),('.season-picker select','rgb(32, 44, 59)')]:
                 assert page.locator(selector).first.evaluate('(el)=>getComputedStyle(el).backgroundColor')==expected_background
         else:
             for selector in ['.season-picker','.season-picker select','.standings-table th','.tiny-avatar']:

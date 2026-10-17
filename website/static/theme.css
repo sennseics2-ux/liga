@@ -537,3 +537,9 @@ body.standings-page .standings-content option:checked{background:#dedede;color:#
 /* V142: continue the footer colour through the page canvas and overscroll. */
 :root{background:#111213}
 :root body.home-theme,:root[data-theme="dark"] body.home-theme{background:#111213}
+
+/* V146: one dark page canvas and footer, including the home hero backdrop. */
+:root[data-theme="dark"]{--theme-page:#182230;background:var(--theme-page)}
+:root[data-theme="dark"] body,:root[data-theme="dark"] body.home-theme{background:var(--theme-page)}
+:root[data-theme="dark"] body .footer,:root[data-theme="dark"] body.home-theme .footer{background:var(--theme-page)}
+:root[data-theme="dark"] body.home-theme .role-hero{background:var(--theme-page)}

@@ -1,3 +1,7 @@
+## v146 dark page and footer background
+
+Dark mode uses #182230 for the document canvas, page body, footer and home hero backdrop. Light mode and the statistics strip retain their existing colours. Assets use v146; schema remains v108_unregistered_player_fide.
+
 ## v145 final statistic divider
 
 The statistics ticker displays a matching right border after Possible strategies in both repeated groups and both themes. Assets use v145; schema remains v108_unregistered_player_fide.
