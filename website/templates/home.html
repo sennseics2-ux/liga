@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Liga SX-AAC{% endblock %}
+{% block page_assets %}<link rel="stylesheet" href="/static/stats-ticker.css?v=144">{% endblock %}
 {% block content %}
 <section class="role-hero" aria-label="Player and captain roles">
   <div class="container role-hero-grid">
@@ -37,6 +38,6 @@
     </article>
   </div>
 </section>
-<section class="stats-strip"><div class="container stats-grid"><div><strong>{{ totals.teams }}</strong><span data-i18n="TEAMS">TEAMS</span></div><div><strong>{{ totals.players }}</strong><span>PLAYERS</span></div><div><strong>{{ totals.games }}</strong><span data-i18n="GAMES PLAYED">GAMES PLAYED</span></div><div><strong>∞</strong><span>POSSIBLE STRATEGIES</span></div></div></section>
+{% include 'home_stats.html' %}
 
 {% endblock %}

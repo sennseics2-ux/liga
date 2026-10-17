@@ -1,0 +1,19 @@
+{% set teams = {'kind':'teams','value':totals.teams,'label':'TEAMS'} %}
+{% set players = {'kind':'players','value':totals.players,'label':'PLAYERS'} %}
+{% set games = {'kind':'games','value':totals.games,'label':'GAMES PLAYED'} %}
+{% set strategies = {'kind':'strategies','value':'∞','label':'POSSIBLE STRATEGIES'} %}
+{% set metrics = [teams,players,games,strategies] %}
+{% macro group(duplicate=false) %}
+<div class="stats-grid stats-ticker-group" role="list"{% if duplicate %} aria-hidden="true" inert{% endif %}>
+  {% for metric in metrics %}<div class="stats-ticker-metric stats-ticker-metric--{{ metric.kind }}" role="listitem">
+    <div class="stats-ticker-copy"><strong>{{ metric.value }}</strong><span class="stats-ticker-label" data-i18n="{{ metric.label }}">{{ metric.label }}</span></div>
+  </div>{% endfor %}
+</div>
+{% endmacro %}
+<section class="stats-strip stats-ticker stats-ticker--plain">
+  <div class="container">
+    <div class="stats-ticker-viewport" tabindex="0" role="region" aria-label="League statistics" data-i18n-aria-label="League statistics">
+      <div class="stats-ticker-track">{{ group() }}{{ group(true) }}</div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,22 @@
+/* Shared CSS-only ticker: the two equally sized groups tile at exactly 50%. */
+.stats-ticker{--ticker-group-min:960px}
+.stats-ticker>.container{min-width:0}
+.stats-ticker-viewport{width:100%;min-width:0;overflow:hidden;overflow:clip}
+.stats-ticker-viewport:focus-visible{outline:2px solid #c7c9cc;outline-offset:4px}
+.stats-ticker-track{display:flex;width:max(200%,calc(var(--ticker-group-min) * 2));will-change:transform;animation:stats-ticker-scroll 28s linear infinite}
+.stats-ticker .stats-ticker-group{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));flex:0 0 50%;width:50%;min-width:0;margin:0;padding:26px 0;gap:0}
+.stats-ticker-copy{display:flex;flex-direction:column;align-items:center;min-width:0}
+.stats-ticker .stats-ticker-label{line-height:1.5;text-align:center}
+.stats-ticker:is(:hover,:focus-within) .stats-ticker-track{animation-play-state:paused}
+@keyframes stats-ticker-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* Reduced motion shows the original statistics once, as a responsive grid. */
+@media(prefers-reduced-motion:reduce){
+ .stats-ticker-track{display:block;width:100%;animation:none;transform:none;will-change:auto}
+ .stats-ticker .stats-ticker-group{width:100%}
+ .stats-ticker-group[aria-hidden="true"]{display:none}
+}
+@media(prefers-reduced-motion:reduce) and (max-width:800px){
+ .stats-ticker .stats-ticker-group{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:20px}
+ .stats-ticker .stats-ticker-group>.stats-ticker-metric:nth-child(even){border-right:0}
+}

@@ -1,3 +1,7 @@
+## v144 accessible home statistics ticker
+
+The home statistics strip uses a 28-second linear CSS ticker. Equal-width duplicate groups create a seamless loop; the duplicate is aria-hidden and inert. Hover or keyboard focus pauses movement, and reduced motion shows one responsive static grid. No ticker JavaScript or new dependencies are needed. The live numbers, labels and visual style are preserved. Assets use v144; schema remains v108_unregistered_player_fide.
+
 ## v143 Portuguese home link labels
 
 The Portuguese home page displays Ver equipas and Ver jogadores on its secondary links. Assets use v143; schema remains v108_unregistered_player_fide.

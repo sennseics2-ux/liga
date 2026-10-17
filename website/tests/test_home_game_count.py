@@ -8,7 +8,7 @@ from test_v31_manager_and_lineup_privacy import arranged_match
 
 def game_count(client):
     html=client.get('/').text
-    strip=html.split('class="stats-strip"',1)[1].split('</section>',1)[0]
+    strip=re.search(r'<section class="stats-strip\b[^>]*>(.*?)</section>',html,re.S).group(1)
     assert 'GAMES PLAYED' in strip and 'ACTIVE TRANSFERS' not in strip
     return int(re.findall(r'<strong>(.*?)</strong>',strip)[2])
 
@@ -36,7 +36,7 @@ def test_completed_private_match_boards_wait_until_kickoff(client):
 
 def test_home_counts_teams_including_teams_without_captains(client):
     def count():
-        strip=client.get('/').text.split('class="stats-strip"',1)[1].split('</section>',1)[0]
+        strip=re.search(r'<section class="stats-strip\b[^>]*>(.*?)</section>',client.get('/').text,re.S).group(1)
         assert 'data-i18n="TEAMS"' in strip and 'CAPTAINS' not in strip
         return int(re.findall(r'<strong>(.*?)</strong>',strip)[0])
     assert count()==0
