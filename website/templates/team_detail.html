@@ -22,7 +22,7 @@
       {% if team.manager_id %}<a class="team-manager-link" href="/users/{{ team.manager_name|urlencode }}/manager">♚ <span data-no-i18n>{{ team.manager_name }}</span> ↗</a>{% else %}<h3>Awaiting appointment</h3>{% endif %}
       <p data-i18n="Team founded {date}" data-i18n-vars="{{ {'date': team.created_at|local_time}|tojson|forceescape }}">Team founded <time datetime="{{ team.created_at }}" data-no-i18n>{{ team.created_at|local_time }}</time></p>
     </div>
-    <div class="team-overview-metrics"><div><span>ACTIVE PLAYERS</span><strong>{{ current|length }}</strong></div><div><span>LEAGUE POINTS</span><strong>{{ current_score }}</strong></div><div><span>TRANSFER BUDGET</span><strong>{{ team.budget }} <small>{% include 'currency.html' %}</small></strong></div></div>
+    <div class="team-overview-metrics"><div><span>ACTIVE PLAYERS</span><strong>{{ current|length }}</strong></div><div><span>LEAGUE POINTS</span><strong>{{ current_score }}</strong></div><div><span>TRANSFER BUDGET</span><strong>{{ team.budget }} {% include 'currency.html' %}</strong></div></div>
   </div>
   {% include 'team_honours.html' %}
   <div class="section-heading"><div><div class="eyebrow dark">RIGHT NOW</div><h2>Current squad</h2><p data-i18n="These players currently belong to {name}." data-i18n-vars="{{ {'name': team.name}|tojson|forceescape }}">These players currently belong to <span data-no-i18n>{{ team.name }}</span>.</p></div><a class="text-link" href="/standings">View standings ↗</a></div>

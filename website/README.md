@@ -1,3 +1,7 @@
+## v155 team budget symbol size
+
+The team profile transfer budget shows its king currency symbol at the same font size as the amount, in both themes. Assets use v155; schema remains v108_unregistered_player_fide.
+
 ## v154 Players heading
 
 Removed the PLAYER DIRECTORY eyebrow text from the Players page. Assets use v154; schema remains v108_unregistered_player_fide.

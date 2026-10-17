@@ -565,3 +565,6 @@ body .section-banner .banner-meta :is(.season-description,.season-dates){margin:
 
 /* V153: underline the official FIDE profile link. */
 .member-profile-page .identity-details .profile-fide-link{text-decoration:underline;text-underline-offset:.15em}
+
+/* V155: match the team budget currency symbol to its amount. */
+.team-overview-metrics strong .credit-symbol{font-size:1em;letter-spacing:normal;color:inherit}
