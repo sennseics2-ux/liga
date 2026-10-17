@@ -158,9 +158,11 @@ def next_success(now, month):
     return datetime(local.year+int(local.month==12),local.month%12+1,1,3,tzinfo=ZoneInfo('Europe/Lisbon')).astimezone(timezone.utc)
 
 
-def sync_ratings(*, fetcher=None, limit=10, force=False, report=None):
+def sync_ratings(*, fetcher=None, limit=10, force=False, report=None, rated_without_flag=False):
     """Refresh due ratings, or the entire roster with force=True, limit=None.
 
+    rated_without_flag limits selection and writes to positively rated records
+    with blank or unrecognised countries. The monthly default is unchanged.
     Shared FIDE IDs use one lookup per run. Network calls happen outside write
     transactions; changed IDs are rechecked before applying a response.
     """
@@ -173,13 +175,20 @@ def sync_ratings(*, fetcher=None, limit=10, force=False, report=None):
     active='' if force else 'account_active=1 AND '
     params=() if force else (store.iso(now),)
     cap=-1 if limit is None else limit
+    user_filter=player_filter=''
+    if rated_without_flag:
+        from countries import country_code
+        user_filter=' AND fide_rating>0 AND fide_has_flag(country)=0'
+        player_filter=' AND rating>0 AND fide_has_flag(country)=0'
     with store.read_db() as db:
+        if rated_without_flag:
+            db.create_function('fide_has_flag',1,lambda country: int(country_code(country) is not None),deterministic=True)
         users=[{**dict(row),'kind':'user'} for row in db.execute(f'''SELECT id,fide_id,fide_attempts FROM users
-            WHERE {active}fide_id IS NOT NULL AND fide_id!=''{due}
+            WHERE {active}fide_id IS NOT NULL AND fide_id!=''{due}{user_filter}
             ORDER BY fide_next_attempt,id LIMIT ?''',(*params,cap))]
         remaining=-1 if limit is None else max(0,limit-len(users))
         players=[{**dict(row),'kind':'player'} for row in db.execute(f'''SELECT id,fide_id,fide_attempts FROM players
-            WHERE user_id IS NULL AND fide_id IS NOT NULL AND fide_id!=''{due}
+            WHERE user_id IS NULL AND fide_id IS NOT NULL AND fide_id!=''{due}{player_filter}
             ORDER BY fide_next_attempt,id LIMIT ?''',(*params,remaining))]
     completed=0
     lookups={}
@@ -205,11 +214,13 @@ def sync_ratings(*, fetcher=None, limit=10, force=False, report=None):
         status='failed' if error else 'updated'
         with store.transaction() as db:
             if user['kind']=='user':
-                current=db.execute('SELECT fide_id,account_active FROM users WHERE id=?',(user['id'],)).fetchone()
+                current=db.execute('SELECT fide_id,account_active,fide_rating AS rating,country FROM users WHERE id=?',(user['id'],)).fetchone()
                 valid=current and (force or current['account_active'])
             else:
-                current=db.execute('SELECT fide_id,user_id FROM players WHERE id=?',(user['id'],)).fetchone()
+                current=db.execute('SELECT fide_id,user_id,rating,country FROM players WHERE id=?',(user['id'],)).fetchone()
                 valid=current and current['user_id'] is None
+            if rated_without_flag:
+                valid=valid and current['rating'] is not None and current['rating']>0 and country_code(current['country']) is None
             if not valid or current['fide_id']!=user['fide_id']:
                 if report:
                     report({**user,'status':'skipped','rating':None,'month':None})

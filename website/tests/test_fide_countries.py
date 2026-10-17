@@ -81,8 +81,10 @@ def test_federation_failure_is_not_hidden_and_preserves_stored_values(client,mon
 def test_requests_for_rating_and_profile_share_pacing_budget(monkeypatch):
     now=[0.0];calls=[]
     monkeypatch.setattr(fide_ratings,'_last_request',None)
-    monkeypatch.setattr(fide_ratings.time,'monotonic',lambda:now[0])
-    monkeypatch.setattr(fide_ratings.time,'sleep',lambda delay:now.__setitem__(0,now[0]+delay))
+    from types import SimpleNamespace
+    # Replace this module's clock, without advancing asyncio's global clock.
+    monkeypatch.setattr(fide_ratings,'time',SimpleNamespace(
+        monotonic=lambda:now[0],sleep=lambda delay:now.__setitem__(0,now[0]+delay)))
     class Opener:
         def open(self,request,timeout):calls.append((request,now[0]))
     monkeypatch.setattr(fide_ratings,'build_opener',lambda _:Opener())
