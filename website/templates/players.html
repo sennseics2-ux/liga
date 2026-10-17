@@ -2,7 +2,7 @@
 {% block title %}Players{% endblock %}
 {% block content %}
 <div class="page-banner section-banner"><div class="container"><h1>Meet the <em>players.</em></h1><p>Find chess players, their teams and their transfer status.</p></div></div>
-<section class="section container">
+<section class="section container players-directory">
   <div class="section-heading"><div><div class="eyebrow dark">PLAYER DIRECTORY</div><h2>Chess players <span class="count-bubble">{{ players|length }}</span></h2></div></div>
   <form method="get" action="/players" class="directory-filters" aria-label="Search and filter players">
     <label class="filter-field filter-search"><span>Search players</span><input name="q" type="search" value="{{ filters.q }}" placeholder="Name or username" maxlength="120"></label>

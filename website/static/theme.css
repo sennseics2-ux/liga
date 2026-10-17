@@ -559,3 +559,6 @@ body .section-banner .banner-meta :is(.season-description,.season-dates){margin:
 :root[data-theme="dark"] body .page-banner.section-banner{background:#23344b;color:#f2f5fa;border-bottom-color:#71849e}
 :root[data-theme="dark"] body .page-banner.section-banner :is(p,.banner-meta){color:#cbd8e9}
 @media(max-width:640px){body .page-banner.section-banner{height:200px;min-height:200px;padding:20px 0}}
+
+/* V150: remove the dark Players directory heading divider. */
+:root[data-theme="dark"] body .players-directory>.section-heading{border-bottom:0}

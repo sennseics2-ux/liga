@@ -1,3 +1,7 @@
+## v150 Players heading divider
+
+Removed the Players directory section heading’s bottom border in dark mode. Other headings and light mode retain their styling. Assets use v150; schema remains v108_unregistered_player_fide.
+
 ## v149 targeted refresh for rated records without country flags
 
 Run deploy.refresh_fide_ratings --rated-without-flag to refresh only records with a positive FIDE rating and a blank/unrecognised country. --dry-run lists the selection without writes or network requests. The command backs up before updating, rechecks eligibility before writes, deduplicates FIDE lookups and reports remaining cases, including missing FIDE IDs. Default monthly/whole-roster refreshes retain their existing behaviour. Assets use v149; schema remains v108_unregistered_player_fide.
