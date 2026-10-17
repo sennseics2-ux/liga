@@ -1,3 +1,7 @@
+## v153 underlined FIDE ID link
+
+Player profiles underline the official FIDE ID link in both themes. Removed the rating underline from v152. Assets use v153; schema remains v108_unregistered_player_fide.
+
 ## v152 underlined FIDE rating
 
 Player profiles underline the FIDE rating value in light and dark mode. Assets use v152; schema remains v108_unregistered_player_fide.
