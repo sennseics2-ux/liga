@@ -20,4 +20,4 @@ def test_informal_portuguese_is_built_into_browser_bundle(client):
     catalogue = json.loads((ROOT/'static/pt-PT.json').read_text())
     assert catalogue['Join your club'] == 'Junta-te ao clube'
     assert '"Join your club":"Junta-te ao clube"' in client.get('/static/i18n.js').text
-    assert 'i18n.js?v=151' in client.get('/').text
+    assert 'i18n.js?v=152' in client.get('/').text

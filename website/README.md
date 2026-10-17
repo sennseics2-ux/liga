@@ -1,3 +1,7 @@
+## v152 underlined FIDE rating
+
+Player profiles underline the FIDE rating value in light and dark mode. Assets use v152; schema remains v108_unregistered_player_fide.
+
 ## v151 official FIDE profile links
 
 FIDE IDs on registered and unregistered player profiles link to https://ratings.fide.com/profile/<FIDE ID>. Assets use v151; schema remains v108_unregistered_player_fide.
