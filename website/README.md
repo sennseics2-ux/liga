@@ -1,3 +1,7 @@
+## v151 official FIDE profile links
+
+FIDE IDs on registered and unregistered player profiles link to https://ratings.fide.com/profile/<FIDE ID>. Assets use v151; schema remains v108_unregistered_player_fide.
+
 ## v150 Players heading divider
 
 Removed the Players directory section heading’s bottom border in dark mode. Other headings and light mode retain their styling. Assets use v150; schema remains v108_unregistered_player_fide.
