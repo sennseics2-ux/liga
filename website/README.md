@@ -1,3 +1,7 @@
+## v147 dark footer top border
+
+The footer has a 1px solid #71849e top border in dark mode. Assets use v147; schema remains v108_unregistered_player_fide.
+
 ## v146 dark page and footer background
 
 Dark mode uses #182230 for the document canvas, page body, footer and home hero backdrop. Light mode and the statistics strip retain their existing colours. Assets use v146; schema remains v108_unregistered_player_fide.

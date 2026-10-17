@@ -543,3 +543,6 @@ body.standings-page .standings-content option:checked{background:#dedede;color:#
 :root[data-theme="dark"] body,:root[data-theme="dark"] body.home-theme{background:var(--theme-page)}
 :root[data-theme="dark"] body .footer,:root[data-theme="dark"] body.home-theme .footer{background:var(--theme-page)}
 :root[data-theme="dark"] body.home-theme .role-hero{background:var(--theme-page)}
+
+/* V147: separate the dark footer from the page content. */
+:root[data-theme="dark"] body .footer{border-top:1px solid #71849e}
