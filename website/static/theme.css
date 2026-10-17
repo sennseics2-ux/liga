@@ -546,3 +546,16 @@ body.standings-page .standings-content option:checked{background:#dedede;color:#
 
 /* V147: separate the dark footer from the page content. */
 :root[data-theme="dark"] body .footer{border-top:1px solid #71849e}
+
+/* V148: one compact banner style for the six primary directory/admin pages. */
+body .page-banner.section-banner{height:176px;min-height:176px;padding:24px 0;background:#1a1b1c;color:#f5f5f5;border-bottom:1px solid #3d3e40}
+body .section-banner>.container{min-width:0}
+body .section-banner h1{margin:0;font-size:clamp(34px,4vw,54px);line-height:1.12;letter-spacing:-1.6px;color:inherit}
+body .section-banner h1 em{font-style:normal;color:inherit}
+body .page-banner.section-banner p{max-width:720px;margin:10px 0 0;font-size:14px;line-height:1.5;color:#d2d2d2}
+body .section-banner .admin-hero-inner{display:block;padding-block:0}
+body .section-banner .banner-meta{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-top:10px;color:#d2d2d2}
+body .section-banner .banner-meta :is(.season-description,.season-dates){margin:0;font-size:14px;line-height:1.5;color:inherit}
+:root[data-theme="dark"] body .page-banner.section-banner{background:#23344b;color:#f2f5fa;border-bottom-color:#71849e}
+:root[data-theme="dark"] body .page-banner.section-banner :is(p,.banner-meta){color:#cbd8e9}
+@media(max-width:640px){body .page-banner.section-banner{height:200px;min-height:200px;padding:20px 0}}

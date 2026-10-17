@@ -1,3 +1,7 @@
+## v148 consistent compact primary page banners
+
+Teams, Players, Seasons, Games, Standings and Admin share a compact banner style: no eyebrow, 34–54px headings, consistent colours and spacing, and a height of 176px on desktop / 200px on mobile. Season status and dates remain visible. Assets use v148; schema remains v108_unregistered_player_fide.
+
 ## v147 dark footer top border
 
 The footer has a 1px solid #71849e top border in dark mode. Assets use v147; schema remains v108_unregistered_player_fide.

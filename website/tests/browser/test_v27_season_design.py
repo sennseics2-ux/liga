@@ -43,7 +43,7 @@ def test_current_season_dropdown_and_completed_match(chromium,league_server,widt
             page.locator('html').evaluate('(el,theme)=>el.dataset.theme=theme',theme)
             assert page.locator('.page-banner').evaluate(banner_styles)==reference
             banner=page.locator('.page-banner').bounding_box()
-            for selector in ['h1','.eyebrow','.season-description','.season-dates']:
+            for selector in ['h1','.season-description','.season-dates']:
                 box=page.locator('.page-banner '+selector).bounding_box()
                 assert box['y']>=banner['y'] and box['y']+box['height']<=banner['y']+banner['height']
             assert_fits_phone(page)

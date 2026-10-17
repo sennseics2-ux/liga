@@ -14,8 +14,8 @@ def test_current_placeholder_is_read_only_and_not_replaced_by_past_seasons(clien
     page=client.get('/seasons')
     assert page.status_code==200
     assert 'data-i18n="Seasons">Seasons</a>' in page.text
-    assert '<section class="page-banner seasons-banner">' in page.text
-    assert '<div class="eyebrow" data-i18n="Seasons">Seasons</div>' in page.text
+    assert '<section class="page-banner seasons-banner section-banner">' in page.text
+    assert '<div class="eyebrow" data-i18n="Seasons">Seasons</div>' not in page.text
     assert '<h1 data-no-i18n>2026-2027</h1>' in page.text
     assert 'Schedule coming soon' in page.text
     assert 'class="fixture-card"' not in page.text
