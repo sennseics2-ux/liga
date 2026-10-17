@@ -1,3 +1,7 @@
+## v154 Players heading
+
+Removed the PLAYER DIRECTORY eyebrow text from the Players page. Assets use v154; schema remains v108_unregistered_player_fide.
+
 ## v153 underlined FIDE ID link
 
 Player profiles underline the official FIDE ID link in both themes. Removed the rating underline from v152. Assets use v153; schema remains v108_unregistered_player_fide.
