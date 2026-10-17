@@ -1,3 +1,7 @@
+## v145 final statistic divider
+
+The statistics ticker displays a matching right border after Possible strategies in both repeated groups and both themes. Assets use v145; schema remains v108_unregistered_player_fide.
+
 ## v144 accessible home statistics ticker
 
 The home statistics strip uses a 28-second linear CSS ticker. Equal-width duplicate groups create a seamless loop; the duplicate is aria-hidden and inert. Hover or keyboard focus pauses movement, and reduced motion shows one responsive static grid. No ticker JavaScript or new dependencies are needed. The live numbers, labels and visual style are preserved. Assets use v144; schema remains v108_unregistered_player_fide.

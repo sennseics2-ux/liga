@@ -1,5 +1,6 @@
 /* Shared CSS-only ticker: the two equally sized groups tile at exactly 50%. */
-.stats-ticker{--ticker-group-min:960px}
+.stats-ticker{--ticker-group-min:960px;--stats-divider:#444547}
+:root[data-theme="dark"] .stats-ticker{--stats-divider:var(--theme-border)}
 .stats-ticker>.container{min-width:0}
 .stats-ticker-viewport{width:100%;min-width:0;overflow:hidden;overflow:clip}
 .stats-ticker-viewport:focus-visible{outline:2px solid #c7c9cc;outline-offset:4px}
@@ -20,3 +21,6 @@
  .stats-ticker .stats-ticker-group{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:20px}
  .stats-ticker .stats-ticker-group>.stats-ticker-metric:nth-child(even){border-right:0}
 }
+
+/* Keep a divider at the end of each repeated group as well. */
+.stats-ticker .stats-ticker-group>.stats-ticker-metric.stats-ticker-metric--strategies{border-right:1px solid var(--stats-divider)}
