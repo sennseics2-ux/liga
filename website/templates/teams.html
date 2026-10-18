@@ -3,7 +3,7 @@
 {% block content %}
 <div class="page-banner section-banner"><div class="container"><h1 data-i18n="League teams.">League <em>teams.</em></h1><p>Explore every team, its current players and its archived squads by season.</p></div></div>
 <section class="section container">
-  <div class="section-heading"><div><div class="eyebrow dark">TEAM DIRECTORY</div><h2>Club teams <span class="count-bubble">{{ teams|length }}</span></h2></div></div>
+  <div class="section-heading"><div><h2>Club teams <span class="count-bubble">{{ teams|length }}</span></h2></div></div>
   <form method="get" action="/teams" class="directory-filters" aria-label="Search and filter teams">
     <label class="filter-field filter-search"><span>Search teams</span><input name="q" type="search" value="{{ filters.q }}" maxlength="120" placeholder="Team or captain name"></label>
     <label class="filter-field"><span>Minimum squad size</span><input name="min_players" type="number" step="1" min="0" max="999" value="{{ filters.min_players if filters.min_players is not none else '' }}" placeholder="Any"></label>

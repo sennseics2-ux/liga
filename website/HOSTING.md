@@ -6,7 +6,7 @@ and downloads are public for visible games.
 
 ## Club landing page at www.sx-aac.com
 
-The v155 release includes a static Portuguese landing page in `landing/`. Its
+The v156 release includes a static Portuguese landing page in `landing/`. Its
 League button opens `https://liga.sx-aac.com/`. Caddy serves the landing page at
 `www.sx-aac.com` and redirects `sx-aac.com` to the www address, while retaining
 the existing League configuration.
@@ -40,7 +40,7 @@ instead of using the shared VM.
 For later changes affecting only the landing page, copy just the release's
 `landing/` directory into `/opt/clubdraft/landing/`. The existing Caddy directory
 mount serves the changed files immediately; the League does not need to stop or
-rebuild. The v155 landing page adds a theme toggle: it follows the device theme
+rebuild. The v156 landing page adds a theme toggle: it follows the device theme
 until a visitor selects light or dark mode, then saves that choice in the browser.
 The landing page and League store preferences separately because they use different
 origins. The layout remains centered and has no chessboard.
@@ -68,7 +68,7 @@ instructions, not evidence that this workspace has changed the live website.
    sudo docker compose down
    sudo rsync -a --exclude='/.env' --exclude='/data/' --exclude='/backups/' \
      --exclude='/secrets/' --exclude='/.venv/' --exclude='/__pycache__/' \
-     ~/chess-fantasy-league-v155/ /opt/clubdraft/
+     ~/chess-fantasy-league-v156/ /opt/clubdraft/
    sudo mkdir -p data backups
    sudo chown -R 10001:10001 data backups
    sudo chmod 700 data backups
@@ -91,7 +91,7 @@ instructions, not evidence that this workspace has changed the live website.
 
 ## V35 release extraction and configuration
 
-The standalone release ZIP has `chess-fantasy-league-v155/` at its root. GitHub's
+The standalone release ZIP has `chess-fantasy-league-v156/` at its root. GitHub's
 Download ZIP instead contains `liga-main/website/` (or `liga-COMMIT/website/`
 for a commit archive). Copy the directory containing
 `main.py`, `compose.yaml`, and `league_migrations.py`; copying `liga-main/` directly
@@ -102,10 +102,10 @@ Use a fresh extraction directory, validate it before downtime, and stop on error
 ```bash
 (
   set -e
-  ZIP="$HOME/chess-fantasy-league-v155.zip"
-  RELEASE_DIR="$(mktemp -d "$HOME/liga-v155-release.XXXXXX")"
+  ZIP="$HOME/chess-fantasy-league-v156.zip"
+  RELEASE_DIR="$(mktemp -d "$HOME/liga-v156-release.XXXXXX")"
   unzip -q "$ZIP" -d "$RELEASE_DIR"
-  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v155"
+  SOURCE_DIR="$RELEASE_DIR/chess-fantasy-league-v156"
   if [ ! -f "$SOURCE_DIR/main.py" ]; then
     for CANDIDATE in "$RELEASE_DIR"/liga-*/website; do
       if [ -f "$CANDIDATE/main.py" ]; then
@@ -542,7 +542,7 @@ sudo env CHESS_USE_OFFSITE_COMPOSE=1 bash deploy/reset_database.sh --keep-admin-
 
 ## Import the requested AA Coimbra players
 
-After installing and rebuilding v155, run inside the live web container:
+After installing and rebuilding v156, run inside the live web container:
 
 ```bash
 cd /opt/clubdraft
@@ -568,7 +568,7 @@ rating or nationality is inferred from the PDF.
 
 ## Refresh all FIDE ratings immediately
 
-After deploying and rebuilding v155, run:
+After deploying and rebuilding v156, run:
 
 ```bash
 cd /opt/clubdraft
@@ -616,7 +616,7 @@ for the full roster; per-record output includes the country or `country unchange
 
 ## Refresh rated records without country flags
 
-After deploying v155, preview the selection on the hosting VM:
+After deploying v156, preview the selection on the hosting VM:
 
 ```bash
 cd /opt/clubdraft
@@ -642,7 +642,7 @@ The preview is read-only and makes no network requests.
 
 ## Fill only missing countries
 
-After deploying v155, run this country-only command:
+After deploying v156, run this country-only command:
 
 ```bash
 cd /opt/clubdraft

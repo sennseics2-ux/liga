@@ -1,3 +1,7 @@
+## v156 Teams heading
+
+Removed the TEAM DIRECTORY eyebrow text from the Teams page. Assets use v156; schema remains v108_unregistered_player_fide.
+
 ## v155 team budget symbol size
 
 The team profile transfer budget shows its king currency symbol at the same font size as the amount, in both themes. Assets use v155; schema remains v108_unregistered_player_fide.
